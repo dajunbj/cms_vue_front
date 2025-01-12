@@ -28,11 +28,13 @@ export default {
 }
 .sidebar {
   width: 220px;
-  background-color: #545c64;
+  background: linear-gradient(180deg, #FFFFFF, #F0F4F8); /* 简约浅色渐变背景 */
+  color: #333333;
 }
 .content {
   flex: 1;
   padding: 20px;
-  background-color: #f0f2f5;
+  background: linear-gradient(180deg, #FFFFFF, #F0F4F8); /* 简约浅色渐变背景 */
+  color: #333333; /* 深灰色字体 */
 }
 </style>

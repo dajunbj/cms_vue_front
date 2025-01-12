@@ -2,9 +2,10 @@ import Vue from "vue";
 import Router from "vue-router";
 
 import HomeView from "../views/HomeView.vue";
-import EmployeeListView from "../views/EmployeeListView.vue";
+import EmployeeListView from "../views/employee/EmployeeListView.vue";
 import SettingView from "../views/SettingView.vue";
 import LoginView from "../views/LoginView.vue";
+import EmployeeRegisterView from '@/views/employee/EmployeeRegisterView.vue'; // 新规画面
 
 import axios from 'axios';
 
@@ -20,7 +21,11 @@ const router = new Router({
     { path: "/login", name: "Login", component: LoginView },
     { path: "/home", name: "Home", component: HomeView, meta: { requiresAuth: true } },//当用户导航到某个路由时，Vue Router 会将该路由的 meta 数据绑定到导航守卫的 to 参数上
     { path: "/employee", name: "User", component: EmployeeListView, meta: { requiresAuth: true } },
+    { path: "/employee/register", name: "User", component: EmployeeRegisterView, meta: { requiresAuth: true } },
     { path: "/setting", name: "Setting", component: SettingView, meta: { requiresAuth: true } },
+    { path: "/employee/detail/:id", name: "EmployeeDetail",component: () => import("@/views/employee/EmployeeDetailView.vue")},
+    { path: "/employee/edit/:id", name: "EmployeeEdit",component: () => import("@/views/employee/EmployeeEditView.vue")},
+    
   ],
 });
 

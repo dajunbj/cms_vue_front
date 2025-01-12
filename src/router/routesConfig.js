@@ -1,6 +1,6 @@
 // routesConfig.js
 import HomeView from "../views/HomeView.vue";
-import EmployeeListView from "../views/EmployeeListView.vue";
+import EmployeeListView from "../views/employee/EmployeeListView.vue";
 import SettingView from "../views/SettingView.vue";
 import LoginView from "../views/LoginView.vue";
 
