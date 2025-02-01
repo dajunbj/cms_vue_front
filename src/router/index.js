@@ -6,8 +6,10 @@ import EmployeeListView from "../views/employee/EmployeeListView.vue";
 import SettingView from "../views/SettingView.vue";
 import LoginView from "../views/LoginView.vue";
 import EmployeeRegisterView from '@/views/employee/EmployeeRegisterView.vue'; // 新规画面
+import ContractListView from "@/views/contract/ContractListView.vue";
 
 import axios from 'axios';
+import ContractRegisterView from "@/views/contract/ContractRegisterView.vue";
 
 // import routesConfig from "./routesConfig";
 
@@ -25,7 +27,11 @@ const router = new Router({
     { path: "/setting", name: "Setting", component: SettingView, meta: { requiresAuth: true } },
     { path: "/employee/detail/:id", name: "EmployeeDetail",component: () => import("@/views/employee/EmployeeDetailView.vue")},
     { path: "/employee/edit/:id", name: "EmployeeEdit",component: () => import("@/views/employee/EmployeeEditView.vue")},
-    
+    { path: "/contract", name: "Contract", component: ContractListView, meta: { requiresAuth: true } },
+    { path: "/contract/register", name: "User", component: ContractRegisterView, meta: { requiresAuth: true } },
+    { path: "/contract/register/:id", name: "Copy", component:() => import("@/views/contract/ContractRegisterView.vue") },
+    { path: "/contract/edit/:id", name: "ContractEdit",component: () => import("@/views/contract/ContractEditView.vue")},
+    { path: "/contract/detail/:id", name: "ContractDetail",component: () => import("@/views/contract/ContractDetailView.vue")}
   ],
 });
 

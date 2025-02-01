@@ -48,8 +48,8 @@
               <span>契約管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/employee">社員一覧</el-menu-item>
-              <el-menu-item index="/setting">休暇一覧</el-menu-item>
+              <el-menu-item index="/contract">契約一覧</el-menu-item>
+              <el-menu-item index="/contract/register">新規契約</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
 

@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import EmployeeListView from "../views/employee/EmployeeListView.vue";
 import SettingView from "../views/SettingView.vue";
 import LoginView from "../views/LoginView.vue";
+import ContractView from "../views/ContractView.vue";
 
 export default [
     { path: "/", redirect: "/login" },
@@ -10,5 +11,7 @@ export default [
     { path: "/home", name: "Home", HomeView, meta: { requiresAuth: true } },
     { path: "/employee", name: "User", EmployeeListView, meta: { requiresAuth: true } },
     { path: "/setting", name: "Setting", SettingView, meta: { requiresAuth: true } },
+    { path: "/contract", name: "Contract", ContractView, meta: { requiresAuth: true }},
+    
   ];
   
