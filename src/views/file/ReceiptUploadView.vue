@@ -8,36 +8,26 @@
 
     <div class="section-container">
       <el-form :model="form" ref="fileForm" label-width="120px">
-        <el-form-item label="ファイル種別" prop="fileType">
-          <el-select v-model="form.fileType" placeholder="ファイル種別を選択してください" @change="clearFile">
-            <el-option label="画像ファイル" value="image"></el-option>
-            <el-option label="PDFファイル" value="pdf"></el-option>
-            <el-option label="Excelファイル" value="excel"></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="ファイルアップロード" prop="file">
+        <!-- 文件上传 -->
+        <el-form-item label="ファイル" prop="file">
           <el-upload
             class="upload-demo"
-            drag
-            action="#"
-            :auto-upload="false"
-            :show-file-list="true"
-            :before-upload="beforeUpload"
+            action="about:blank"
+            :on-change="handleChange"
+            :on-remove="handleRemove"
+            multiple
             :file-list="fileList"
-            @change="handleFileChange"
+            :auto-upload="false" 
           >
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">ファイルをドラッグまたはクリックして選択</div>
+            <el-button size="small" type="primary">クリックしてアップロード</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传 jpg/png 文件</div>
           </el-upload>
         </el-form-item>
 
-        <el-row>
-          <el-col :span="24" style="text-align: center; margin-top: 20px;">
-            <el-button type="primary" @click="submitFile">アップロード</el-button>
-            <el-button type="default" @click="resetForm">キャンセル</el-button>
-          </el-col>
-        </el-row>
+        <!-- 上传按钮 -->
+        <el-form-item>
+          <el-button type="primary" @click="submitFiles">アップロード</el-button>
+        </el-form-item>
       </el-form>
     </div>
   </div>
@@ -45,69 +35,61 @@
 
 <script>
 import axios from "axios";
-
 export default {
   name: "FileUploadComponent",
   data() {
     return {
       form: {
-        fileType: "",
-        file: null,
-      },
-      fileList: [],
-      acceptedFormats: {
-        image: ['image/jpeg', 'image/png', 'image/gif'],
-        pdf: ['application/pdf'],
-        excel: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']
+      fileList: [], // 存储上传的文件列表
       }
     };
   },
   methods: {
-    beforeUpload(file) {
-      if (!this.form.fileType) {
-        this.$message.warning("ファイル種別を選択してください。");
-        return false;
-      }
-      if (!this.acceptedFormats[this.form.fileType].includes(file.type)) {
-        this.$message.error("選択したファイル形式が適切ではありません。");
-        return false;
-      }
-      this.form.file = file;
-      return true;
+    // 文件选择变化时触发
+    handleChange(file, fileList) {
+      console.log("Selected file:", file);
+      console.log("File list updated:", fileList);
+      this.fileList = fileList; // 更新文件列表
     },
-    handleFileChange(file, fileList) {
-      this.fileList = fileList;
+    // 文件被移除时触发
+    handleRemove(file, fileList) {
+      console.log("Removed file:", file);
+      console.log("Updated file list:", fileList);
+      this.fileList = fileList; // 更新文件列表
     },
-    async submitFile() {
-      if (!this.form.file) {
-        this.$message.error("アップロードするファイルを選択してください。");
+    // 点击上传按钮
+    async submitFiles() {
+      // 判断是否选择了文件
+      if (!this.fileList.length) {
+        this.$message.error("ファイルを選択してください！");
         return;
       }
 
+      // 创建 FormData 对象
       const formData = new FormData();
-      formData.append("file", this.form.file);
-      formData.append("fileType", this.form.fileType);
+      this.fileList.forEach((file) => {
+        formData.append("files", file.raw || file); // 获取文件的原始内容
+      });
 
+      // 发起上传请求
       try {
-        await axios.post("/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-        this.$message.success("ファイルが正常にアップロードされました。");
-        this.resetForm();
+        
+        const response = await axios.post("/api/s3/upload", // 替换为后端接口
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        this.$message.success("ファイルが正常にアップロードされました！");
+        console.log("Response:", response.data);
+
+        // 清空文件列表
+        this.fileList = [];
       } catch (error) {
         this.$message.error("アップロードに失敗しました: " + error.message);
       }
     },
-    resetForm() {
-      this.form.fileType = "";
-      this.form.file = null;
-      this.fileList = [];
-    },
-    clearFile() {
-      this.fileList = [];
-      this.form.file = null;
-    }
-  }
+  },
 };
 </script>
 
