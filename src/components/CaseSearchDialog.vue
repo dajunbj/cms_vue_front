@@ -129,18 +129,23 @@ export default {
     async searchCaseInfo() {  
       try {
         if(this.type === 'caseSearch'){
-        const response = await axios.post('/contract/caseSearch', 
+        const response = await axios.post('/popup/caseSearch', 
           { case_title: this.filterValues.case_title,//案件名
           });
         this.searchResult = response.data.data;}
         if(this.type === 'employeeSearch'){
-          const response = await axios.post('/contract/employeeSearch',
+          const response = await axios.post('/popup/employeeSearch',
           { name: this.filterValues.name,//社員名
           });
           this.searchResult = response.data.data;}
         if(this.type === 'customerSearch'){
-          const response = await axios.post('/contract/customerSearch',
+          const response = await axios.post('/popup/customerSearch',
           { customer_name: this.filterValues.customer_name,//社員名
+          });
+          this.searchResult = response.data.data;}
+          if(this.type === 'departmentSearch'){
+          const response = await axios.post('/popup/departmentSearch',
+          { department_name: this.filterValues.department_name,//部門名
           });
           this.searchResult = response.data.data;}
         }

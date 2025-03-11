@@ -63,6 +63,18 @@
               <el-menu-item index="/setting">休暇一覧</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
+
+          <el-submenu index="5" v-if="handleCanAccess">
+            <template slot="title">
+              <i class="el-icon-wallet"></i>
+              <span>顧客管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="/customer">総合一覧</el-menu-item>
+              <el-menu-item index="/customer/register">顧客登録</el-menu-item>
+              <el-menu-item index="/customer/registerRes">責任者登録</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
         </el-menu>
       </div>
     </div>
@@ -72,7 +84,21 @@
 <script>
 export default {
   name: "SidebarMenu",
+  data() {
+    return {
+      canAccess: false,
+    };
+  },
   methods: {
+
+    handleCanAccess() {
+      if(sessionStorage.getItem("right")==="社員"){
+        this.canAccess = false;
+      }
+      else{
+        this.canAccess = true;
+      }
+    },
     handleOpen(key, keyPath) {
       console.log("打开菜单:", key, keyPath);
     },

@@ -56,7 +56,7 @@
 
     <el-row>  
       <el-col :span="10">
-        <el-form-item label="契約開始日" prop="startDate">
+        <el-form-item label="契約終了日" prop="startDate">
             <el-date-picker v-model="form.finishDate" type="date" placeholder="契約終了日"></el-date-picker>
         </el-form-item>
       </el-col>

@@ -35,7 +35,13 @@
             password: this.password,
             }).then((response) => {
                 const token = response.data.token;
+                const right = response.data.right;
+                const role_id = response.data.role_id;
+                const id = response.data.id;
                 sessionStorage.setItem("token", token);
+                sessionStorage.setItem("right", right);
+                sessionStorage.setItem("role_id", role_id);
+                sessionStorage.setItem("id", id);
                 this.$router.push("/home"); // 跳转到首页
             }).catch((error) => {
                 alert("请输入用户名和密码"+error);

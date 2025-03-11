@@ -10,6 +10,9 @@ import ContractListView from "@/views/contract/ContractListView.vue";
 
 import axios from 'axios';
 import ContractRegisterView from "@/views/contract/ContractRegisterView.vue";
+import CustomerView from "../views/customer/CustomerView.vue";
+import CustomerRegisterView from "@/views/customer/CustomerRegisterView.vue";
+import ResponsibleRegisterView from "@/views/customer/ResponsibleRegisterView.vue";
 
 // import routesConfig from "./routesConfig";
 
@@ -31,7 +34,15 @@ const router = new Router({
     { path: "/contract/register", name: "User", component: ContractRegisterView, meta: { requiresAuth: true } },
     { path: "/contract/register/:id", name: "Copy", component:() => import("@/views/contract/ContractRegisterView.vue") },
     { path: "/contract/edit/:id", name: "ContractEdit",component: () => import("@/views/contract/ContractEditView.vue")},
-    { path: "/contract/detail/:id", name: "ContractDetail",component: () => import("@/views/contract/ContractDetailView.vue")}
+    { path: "/contract/detail/:id", name: "ContractDetail",component: () => import("@/views/contract/ContractDetailView.vue")},
+    { path: "/customer", name: "Customer", component: CustomerView, meta: { requiresAuth: true } },
+    { path: "/customer/register", name: "User", component: CustomerRegisterView, meta: { requiresAuth: true } },
+    { path: "/customer/registerRes", name: "User", component: ResponsibleRegisterView, meta: { requiresAuth: true } },
+    { path: "/customer/registerRes/:id", name: "User", component: ResponsibleRegisterView, meta: { requiresAuth: true } },
+    { path: "/customer/edit/:id", name: "CustomerEdit",component: () => import("@/views/customer/CustomerEditView.vue")},
+    { path: "/customer/detail/:id", name: "CustomerDetail",component: () => import("@/views/customer/CustomerDetailView.vue")},
+    { path: "/customer/editRes/:id", name: "ResponsibleEdit",component: () => import("@/views/customer/ResponsibleEditView.vue")},
+    { path: "/customer/detailRes/:id", name: "ResponsibleDetail",component: () => import("@/views/customer/ResponsibleDetailView.vue")},
   ],
 });
 
