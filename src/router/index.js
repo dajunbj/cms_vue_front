@@ -46,7 +46,8 @@ const router = new Router({
     { path: "/customer/editRes/:id", name: "ResponsibleEdit",component: () => import("@/views/customer/ResponsibleEditView.vue")},
     { path: "/customer/detailRes/:id", name: "ResponsibleDetail",component: () => import("@/views/customer/ResponsibleDetailView.vue")},
 
-    { path: "/attendance/regist", name: "AttendanceRegist",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
+    { path: "/attendance/listview", name: "AttendanceListView",component: () => import("@/views/attendance/AttendanceListView.vue")},
+    { path: "/attendance/registview", name: "AttendanceRegistView",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
   ],
 });
 

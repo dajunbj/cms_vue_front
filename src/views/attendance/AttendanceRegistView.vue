@@ -30,7 +30,7 @@
                 format="yyyy年MM月"
                 value-format="yyyy-MM"
                 placeholder="年月を選択"
-                @change="generateMonthlyData"
+                @change="fetchOrGenerateMonthlyData"
               />
             </el-form-item>
           </el-col>
@@ -51,25 +51,25 @@
 
             <el-table-column label="開始時間" >
               <template slot-scope="scope">
-                <el-time-picker v-model="scope.row.start_time" placeholder="開始時間" style="width: 100%;" />
+                <el-time-picker v-model="scope.row.start_time" placeholder="開始時間" style="width: 100%;" @change="() => markModified(scope.row)" />
               </template>
             </el-table-column>
 
             <el-table-column label="終了時間" >
               <template slot-scope="scope">
-                <el-time-picker v-model="scope.row.end_time" placeholder="終了時間" style="width: 100%;" />
+                <el-time-picker v-model="scope.row.end_time" placeholder="終了時間" style="width: 100%;" @change="() => markModified(scope.row)" />
               </template>
             </el-table-column>
 
             <el-table-column label="案件名" >
               <template slot-scope="scope">
-                <el-input v-model="scope.row.case_name" placeholder="案件名" />
+                <el-input v-model="scope.row.case_name" placeholder="案件名" @input="() => markModified(scope.row)" />
               </template>
             </el-table-column>
 
             <el-table-column label="休憩時間(h)" >
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.break_hours" :min="0" :step="0.25" :controls="true" controls-position="right" style="width: 100%;" />
+                <el-input-number v-model="scope.row.break_hours" :min="0" :step="0.25" :controls="true" controls-position="right" style="width: 100%;" @change="() => markModified(scope.row)" />
               </template>
             </el-table-column>
 
@@ -93,6 +93,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "AttendanceRegisterView",
   data() {
@@ -110,25 +112,26 @@ export default {
     const today = new Date();
     const yyyyMM = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2);
     this.form.month = yyyyMM;
-    this.generateMonthlyData(yyyyMM);
+    this.fetchOrGenerateMonthlyData(yyyyMM);
   },
   methods: {
-    generateMonthlyData(monthStr) {
-      const [year, month] = monthStr.split('-').map(Number);
-      const daysInMonth = new Date(year, month, 0).getDate();
-      const list = [];
-      for (let i = 1; i <= daysInMonth; i++) {
-        const dateStr = `${year}-${('0' + month).slice(-2)}-${('0' + i).slice(-2)}`;
-        list.push({
-          date: dateStr,
-          start_time: '',
-          end_time: '',
-          case_name: '',
-          break_hours: 1,
-          attendance_type: this.getAttendanceType(dateStr)
+    async fetchOrGenerateMonthlyData(monthStr) {
+      try {
+        const res = await axios.get(`/attendance/getMonthly`, {
+          params: {
+            employee_id: this.form.employee_id,
+            contract_id: this.form.contract_id,
+            month: monthStr
+          }
         });
+        this.form.attendanceList = res.data;
+      } catch (error) {
+        this.$message.error("データ取得に失敗しました");
+        console.error(error);
       }
-      this.form.attendanceList = list;
+    },
+    markModified(row) {
+      row.is_modified = true;
     },
     isWeekend(dateStr) {
       const day = new Date(dateStr).getDay();
@@ -152,7 +155,10 @@ export default {
     async submitForm() {
       this.isLoading = true;
       try {
-        // await axios.post('/attendance/register', this.form);
+        const modifiedRecords = this.form.attendanceList.filter(item => item.is_modified);
+        if (modifiedRecords.length > 0) {
+          await axios.post('/attendance/register', modifiedRecords);
+        }
         this.$message.success("登録が成功しました");
         this.goBack();
       } catch (e) {

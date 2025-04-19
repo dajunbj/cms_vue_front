@@ -35,7 +35,9 @@
               <span>勤怠管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/attendance/regist">勤怠登録</el-menu-item>
+              
+              <el-menu-item index="/attendance/listview">勤怠一覧</el-menu-item>
+              <el-menu-item index="/attendance/registview">勤怠登録</el-menu-item>
               <el-menu-item index="/setting">休暇申請</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
