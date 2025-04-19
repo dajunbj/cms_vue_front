@@ -2,7 +2,7 @@
   <div style="width: 100%; max-width: 800px; margin: auto;">
     <div class="header-container">
       <h2 class="header-title">
-        <i class="el-icon-upload2"></i> ファイルアップロード
+        <i class="el-icon-upload2"></i> 領収書アップロード
       </h2>
     </div>
 

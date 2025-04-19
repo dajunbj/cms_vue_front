@@ -56,7 +56,7 @@
               <span>給料</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/employee">社員一覧</el-menu-item>
+              <el-menu-item index="/employee">給料一覧</el-menu-item>
               <el-menu-item index="/setting">休暇一覧</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
@@ -76,15 +76,16 @@
           <el-submenu index="6">
             <template slot="title">
               <i class="el-icon-date"></i>
-              <span>精算管理</span>
+              <span>費用申請</span>
             </template>
             <el-menu-item-group>
+              <el-menu-item index="/file/receipt">費用申請</el-menu-item>
               <el-menu-item index="/employee">領収書読込</el-menu-item>
               <el-menu-item index="/setting">ファイル一覧</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
 
-          <el-submenu index="5">
+          <el-submenu index="7">
             <template slot="title">
               <i class="el-icon-wallet"></i>
               <span>ファイル</span>
