@@ -1,54 +1,57 @@
 <template>
-  <div style="width: 100%; max-width: 1000px; overflow-x: hidden;">
-    <!-- 添加标题部分 -->
+  <div style="width: 100%; max-width: 1400px; overflow-x: hidden;">
     <div class="header-container">
       <h2 class="header-title">
         <i class="el-icon-user"></i> 契約登録画面
       </h2>
     </div>
 
-    <!-- 表单部分 -->
     <div class="section-container">
       <el-form :model="form" :rules="rules" ref="contractForm" label-width="150px">
+        <!-- 顧客名 & 顧客ID -->
         <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="契約ID" prop="contract_id">
-              <el-input v-model="form.contract_id" readonly class="el-input-disabled"></el-input>
+              <el-input v-model="form.contract_id" readonly class="el-input-disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="10">
             <el-form-item label="顧客名" prop="customer_name">
-              <el-input v-model="form.customer_name" placeholder="顧客名をご入力ください。" clearable></el-input>
+              <el-input v-model="form.customer_name" placeholder="顧客名をご入力ください。" clearable />
             </el-form-item>
-          </el-col>
-          <el-col :span="1">
-              <el-button  icon="el-icon-search" @click="showCustomerDialog"></el-button>
-          </el-col>
-          <el-col :span="3">
-              <el-input v-model="form.customer_id" :disabled="true"></el-input>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
           <el-col :span="10">
-            <el-form-item label="姓名" prop="name">
-              <el-input v-model="form.name" placeholder="姓名をご入力ください。" clearable></el-input>
+            <el-form-item label="顧客ID">
+              <div class="input-with-button">
+                <el-input v-model="form.customer_id" placeholder="顧客ID" disabled />
+                <el-button icon="el-icon-search" @click="showCustomerDialog" />
+              </div>
             </el-form-item>
           </el-col>
-          <el-col :span="1">
-              <el-button  icon="el-icon-search" @click="showEmployeeDialog"></el-button>
-          </el-col>
-          <el-col :span="3">
-              <el-input v-model="form.employee_id" :disabled="true"></el-input>
+          <el-col :span="10">
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="form.name" placeholder="姓名をご入力ください。" clearable />
+            </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item label="社員ID">
+              <div class="input-with-button">
+                <el-input v-model="form.employee_id" placeholder="社員ID" disabled />
+                <el-button icon="el-icon-search" @click="showEmployeeDialog" />
+              </div>
+            </el-form-item>
+          </el-col>
           <el-col :span="10">
             <el-form-item label="社員タイプ" prop="employee_type">
               <el-select v-model="form.employee_type" placeholder="社員タイプを選択してください" clearable>
-                <el-option label="BP" value="1"></el-option>
-                <el-option label="正社員" value="2"></el-option>
+                <el-option label="BP" value="1" />
+                <el-option label="正社員" value="2" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -57,20 +60,12 @@
         <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="社員電話番号" prop="phone_number">
-              <el-input v-model="form.phone_number" placeholder="番号をご入力ください。" clearable></el-input>
+              <el-input v-model="form.phone_number" placeholder="番号をご入力ください。" clearable />
             </el-form-item>
           </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="契約開始日" prop="start_date">
-              <el-date-picker
-                v-model="form.start_date"
-                type="date"
-                placeholder="契約開始日を選択してください"
-                style="width: 100%;"
-              ></el-date-picker>
+              <el-date-picker v-model="form.start_date" type="date" placeholder="契約開始日を選択してください" style="width: 100%;" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -78,20 +73,12 @@
         <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="契約終了日" prop="end_date">
-              <el-date-picker
-                v-model="form.end_date"
-                type="date"
-                placeholder="契約終了日を選択してください"
-                style="width: 100%;"
-              ></el-date-picker>
+              <el-date-picker v-model="form.end_date" type="date" placeholder="契約終了日を選択してください" style="width: 100%;" />
             </el-form-item>
           </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="単価" prop="unit_price">
-              <el-input v-model="form.unit_price" placeholder="単価をご入力ください。" clearable></el-input>
+              <el-input v-model="form.unit_price" placeholder="単価をご入力ください。" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -99,16 +86,14 @@
         <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="税率" prop="tax_rate">
-              <el-input v-model="form.tax_rate" placeholder="税率をご入力ください。" clearable></el-input>
+              <el-input v-model="form.tax_rate" placeholder="税率をご入力ください。" clearable>
+                <template slot="suffix">%</template>
+              </el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="1">%</el-col>
-        </el-row>
-
-        <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="最低勤務時間" prop="working_hours_min">
-              <el-input v-model="form.working_hours_min" placeholder="最低勤務時間をご入力ください。" clearable></el-input>
+              <el-input v-model="form.working_hours_min" placeholder="最低勤務時間をご入力ください。" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -116,32 +101,26 @@
         <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="最大勤務時間" prop="working_hours_max">
-              <el-input v-model="form.working_hours_max" placeholder="最大勤務時間をご入力ください。" clearable></el-input>
+              <el-input v-model="form.working_hours_max" placeholder="最大勤務時間をご入力ください。" clearable />
             </el-form-item>
           </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="最大残業時間" prop="overtime_limit_hours">
-              <el-input v-model="form.overtime_limit_hours" placeholder="最大残業時間をご入力ください。" clearable></el-input>
+              <el-input v-model="form.overtime_limit_hours" placeholder="最大残業時間をご入力ください。" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
-           <el-col :span="10">
-             <el-form-item label="残業有無" prop="overtime_included">
-               <el-radio v-model="form.overtime_included" :label="1">ある</el-radio>
-               <el-radio v-model="form.overtime_included" :label="0">なし</el-radio>
-             </el-form-item>
-      </el-col>
-        </el-row>
-
-        <el-row :gutter="20" v-if="form.overtime_included===1">
           <el-col :span="10">
+            <el-form-item label="残業有無" prop="overtime_included">
+              <el-radio v-model="form.overtime_included" :label="1">ある</el-radio>
+              <el-radio v-model="form.overtime_included" :label="0">なし</el-radio>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" v-if="form.overtime_included === 1">
             <el-form-item label="残業代開始時間" prop="overtime_start_time">
-              <el-input v-model="form.overtime_start_time" placeholder="開始時間をご入力ください。" clearable></el-input>
+              <el-input v-model="form.overtime_start_time" placeholder="残業代開始時間をご入力ください。" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -151,16 +130,17 @@
             <el-button type="primary" :loading="isLoading" @click="submitForm">登録</el-button>
             <el-button type="default" @click="goBack">戻る</el-button>
           </el-col>
-        </el-row> 
-      <CaseSearchDialog
-      :visible.sync="dialogVisible"
-      :title="dialogTitle"
-      :tableData="dialogData" 
-      :columns="dialogColumns"
-      :filters="dialogFilters"
-      :type="dialogType"
-      @select-case="handleSelectCase" 
-    /> 
+        </el-row>
+
+        <CaseSearchDialog
+          :visible.sync="dialogVisible"
+          :title="dialogTitle"
+          :tableData="dialogData"
+          :columns="dialogColumns"
+          :filters="dialogFilters"
+          :type="dialogType"
+          @select-case="handleSelectCase"
+        />
       </el-form>
     </div>
   </div>
@@ -181,6 +161,7 @@ export default {
         name: "",
         employee_id: "",
         customer_name: "",
+        customer_id: "",
         employee_type: "",
         phone_number: "",
         start_date: "",
@@ -205,160 +186,91 @@ export default {
       dialogType: "",
 
       rules: {
-        name: [
-          { required: true, message: "名前を入力してください", trigger: "blur" },
-        ],
-        customer_name: [
-          { required: true, message: "顧客名を入力してください", trigger: "blur" },
-        ],
-        employee_type: [
-          { required: true, message: "社員タイプを選択してください", trigger: "change" },
-        ],
-        phone_number: [
-          { required: true, message: "電話番号を入力してください", trigger: "blur" },
-        ],
-        start_date: [
-          { required: true, message: "契約開始日を選択してください", trigger: "change" },
-        ],
-        end_date: [
-          { required: true, message: "契約終了日を選択してください", trigger: "change" },
-        ],
+        name: [{ required: true, message: "名前を入力してください", trigger: "blur" }],
+        customer_name: [{ required: true, message: "顧客名を入力してください", trigger: "blur" }],
+        employee_type: [{ required: true, message: "社員タイプを選択してください", trigger: "change" }],
+        phone_number: [{ required: true, message: "電話番号を入力してください", trigger: "blur" }],
+        start_date: [{ required: true, message: "契約開始日を選択してください", trigger: "change" }],
+        end_date: [{ required: true, message: "契約終了日を選択してください", trigger: "change" }],
         unit_price: [
           { required: true, message: "単価を入力してください", trigger: "blur" },
-          { validator: this.demical102Check, trigger: "blur" },
+          { validator: (rule, value, callback) => {
+              const pattern = /^-?\d{1,8}(\.\d{1,2})?$/;
+              const number = Number(value);
+              if (!pattern.test(value)) return callback(new Error("正しい値を入力してください"));
+              if (number > 99999999.99 || number < -99999999.99) return callback(new Error("範囲内の値を入力してください"));
+              callback();
+            }, trigger: "blur" }
         ],
         tax_rate: [
           { required: true, message: "税率を入力してください", trigger: "blur" },
-          { validator: this.demical42Check, trigger: "blur" },
+          { validator: (rule, value, callback) => {
+              const pattern = /^-?\d{1,2}(\.\d{1,2})?$/;
+              const number = Number(value);
+              if (!pattern.test(value)) return callback(new Error("正しい値を入力してください"));
+              if (number > 99.99 || number < -99.99) return callback(new Error("範囲内の値を入力してください"));
+              callback();
+            }, trigger: "blur" }
         ],
         working_hours_min: [
           { required: true, message: "最低勤務時間を入力してください", trigger: "blur" },
-          { validator: this.demical52Check, trigger: "blur" },
+          { validator: (rule, value, callback) => {
+              const pattern = /^-?\d{1,3}(\.\d{1,2})?$/;
+              const number = Number(value);
+              if (!pattern.test(value)) return callback(new Error("正しい値を入力してください"));
+              if (number > 999.99 || number < -999.99) return callback(new Error("範囲内の値を入力してください"));
+              callback();
+            }, trigger: "blur" }
         ],
         working_hours_max: [
-          { required: true, message: "最低勤務時間を入力してください", trigger: "blur" },
-          { validator: this.demical52Check, trigger: "blur" },
+          { required: true, message: "最大勤務時間を入力してください", trigger: "blur" },
+          { validator: (rule, value, callback) => {
+              const pattern = /^-?\d{1,3}(\.\d{1,2})?$/;
+              const number = Number(value);
+              if (!pattern.test(value)) return callback(new Error("正しい値を入力してください"));
+              if (number > 999.99 || number < -999.99) return callback(new Error("範囲内の値を入力してください"));
+              callback();
+            }, trigger: "blur" }
         ],
         overtime_limit_hours: [
-          { required: true, message: "最低勤務時間を入力してください", trigger: "blur" },
-          { validator: this.demical52Check, trigger: "blur" },
+          { required: true, message: "最大残業時間を入力してください", trigger: "blur" },
+          { validator: (rule, value, callback) => {
+              const pattern = /^-?\d{1,3}(\.\d{1,2})?$/;
+              const number = Number(value);
+              if (!pattern.test(value)) return callback(new Error("正しい値を入力してください"));
+              if (number > 999.99 || number < -999.99) return callback(new Error("範囲内の値を入力してください"));
+              callback();
+            }, trigger: "blur" }
         ],
         overtime_start_time: [
-          { required: true, message: "最低勤務時間を入力してください", trigger: "blur" },
-          { validator: this.demical52Check, trigger: "blur" },
-        ],
-      },
+          { required: true, message: "残業代開始時間を入力してください", trigger: "blur" },
+          { validator: (rule, value, callback) => {
+              const pattern = /^-?\d{1,3}(\.\d{1,2})?$/;
+              const number = Number(value);
+              if (!pattern.test(value)) return callback(new Error("正しい値を入力してください"));
+              if (number > 999.99 || number < -999.99) return callback(new Error("範囲内の値を入力してください"));
+              callback();
+            }, trigger: "blur" }
+        ]
+      }
     };
   },
 
   created() {
-    const contract_id = this.$route.params.id; // URL から ID を取得
-    this.fetchContractDetails(contract_id);
+    const contract_id = this.$route.params.id;
+    if (contract_id) {
+      this.fetchContractDetails(contract_id);
+    }
   },
 
   methods: {
-
-    showEmployeeDialog() {
-      this.dialogVisible = true;
-      this.dialogTitle="社員検索";
-      this.dialogColumns= [
-        { prop: "name", label: "社員名前", width: "220" },
-        { prop: "employee_id", label: "社員ID", width: "220" },
-      ];
-      this.dialogFilters= [
-        {
-          prop: "name",
-          label: "社員名前",
-          type: "el-input",
-          width: 300,
-          props: { placeholder: "社員名前を入力してください", clearable: true},
-        },];
-        this.dialogType="employeeSearch";
-    },
-    
-    showCustomerDialog() {
-      this.dialogVisible = true;
-      this.dialogTitle="顧客検索";
-      this.dialogColumns= [
-        { prop: "customer_name", label: "顧客名", width: "220" },
-        { prop: "customer_id", label: "ユニーク識別子", width: "220" },
-      ];
-      this.dialogFilters= [
-        {
-          prop: "customer_name",
-          label: "顧客名前",
-          type: "el-input",
-          width: 300,
-          props: { placeholder: "顧客名前を入力してください", clearable: true},
-        },];
-        this.dialogType="customerSearch";
-    },
-
-    async handleSelectCase(selectedCase) {
-      //PopUp画面戻り値の設定
-      if(this.dialogTitle === "社員検索") {
-        this.form.employee_id = selectedCase.employee_id;
-        this.form.name = selectedCase.name;
-      }else if(this.dialogTitle === "顧客検索"){
-        this.form.customer_name = selectedCase.customer_name;
-        this.form.customer_id= selectedCase.customer_id;
-        this.form.responsible_id = selectedCase.responsible_id;
-      }
-    },
     async fetchContractDetails(contract_id) {
       try {
-        if(contract_id){
         const response = await axios.get(`/contract/contractDetail/${contract_id}`);
         this.form = response.data;
-        this.form.overtime_included = response.data.overtime_included ? 1 : 0;}
-        else{
-          console.log("新規登録");
-        }
+        this.form.overtime_included = response.data.overtime_included ? 1 : 0;
       } catch (error) {
-        this.$message.error("社員情報の取得に失敗しました");
-      }
-      this.form.contract_id =null;
-    },
-
-    demical52Check(rule, value, callback){
-      const decimalPattern = /^-?\d{1,3}(\.\d{1,2})?$/;
-      const numberValue = Number(value);
-      if(!decimalPattern.test(value)){
-        callback(new Error("正しい値を入力してください"));
-      }
-      else if (numberValue > 999.99 || numberValue < -999.99){
-        callback(new Error("正しいの値を入力してください"));
-      } 
-      else{
-        callback();
-      }
-    },
-
-    demical102Check(rule, value, callback){
-      const decimalPattern = /^-?\d{1,8}(\.\d{1,2})?$/;
-      const numberValue = Number(value);
-      if(!decimalPattern.test(value)){
-        callback(new Error("正しい値を入力してください"));
-      }
-      else if (numberValue > 99999999.99 || numberValue < -99999999.99){
-        callback(new Error("正しいの値を入力してください"));
-      } 
-      else{
-        callback();
-      }
-    },
-
-    demical42Check(rule, value, callback){
-      const decimalPattern = /^-?\d{1,2}(\.\d{1,2})?$/;
-      const numberValue = Number(value);
-      if(!decimalPattern.test(value)){
-        callback(new Error("正しい値を入力してください"));
-      }
-      else if (numberValue > 9.99 || numberValue < -9.99){
-        callback(new Error("正しいの値を入力してください"));
-      } 
-      else{
-        callback();
+        this.$message.error("契約情報の取得に失敗しました");
       }
     },
 
@@ -366,27 +278,13 @@ export default {
       this.isLoading = true;
       this.$refs.contractForm.validate(async (valid) => {
         if (valid) {
-          console.log(this.form.responsible_id);
           try {
-            if(this.form.employee_type === "1"){
-              this.form.employee_type = "BP";
-            }
-            else if(this.form.employee_type === "2"){
-              this.form.employee_type = "正社員";
-            }
-            else{
-              console.log(this.form.employee_type);
-            }
             const response = await axios.post("/contract/register", this.form);
-            if(response.data.status === "success"){
-            this.$message.success("更新が成功しました") ;
-            this.$router.push("/contract");
-            }
-            else if(response.data.status === "erro"){
-              this.$message.error("更新に失敗しました: " + response.data.message);
-            }
-            else{
-              this.$message.error("更新に失敗しました");
+            if (response.data.status === "success") {
+              this.$message.success("登録が成功しました");
+              this.$router.push("/contract");
+            } else {
+              this.$message.error("登録に失敗しました: " + response.data.message);
             }
           } catch (error) {
             this.$message.error("登録に失敗しました: " + error.message);
@@ -394,23 +292,67 @@ export default {
         } else {
           this.$message.error("入力内容を確認してください");
         }
+        this.isLoading = false;
       });
-      this.isLoading = false;
     },
-    resetForm() {
-      Object.keys(this.form).forEach((key) => {
-        this.form[key] = "";
-      });
-      this.form.sex = "1"; 
-      this.$refs.contractForm.clearValidate();
-      this.$router.push("/contract");
-    },
+
     goBack() {
       this.$router.push("/contract");
     },
-  },
+
+    showCustomerDialog() {
+      this.dialogVisible = true;
+      this.dialogTitle = "顧客検索";
+      this.dialogType = "customerSearch";
+      this.dialogColumns = [
+        { prop: "customer_name", label: "顧客名", width: "200" },
+        { prop: "customer_id", label: "顧客ID", width: "200" }
+      ];
+      this.dialogFilters = [
+        {
+          prop: "customer_name",
+          label: "顧客名",
+          type: "el-input",
+          width: 200,
+          props: { placeholder: "顧客名を入力してください", clearable: true }
+        }
+      ];
+    },
+
+    showEmployeeDialog() {
+      this.dialogVisible = true;
+      this.dialogTitle = "社員検索";
+      this.dialogType = "employeeSearch";
+      this.dialogColumns = [
+        { prop: "name", label: "氏名", width: "200" },
+        { prop: "employee_id", label: "社員ID", width: "200" }
+      ];
+      this.dialogFilters = [
+        {
+          prop: "name",
+          label: "氏名",
+          type: "el-input",
+          width: 200,
+          props: { placeholder: "社員名を入力してください", clearable: true }
+        }
+      ];
+    },
+
+    handleSelectCase(selectedCase) {
+      if (this.dialogType === "employeeSearch") {
+        this.form.employee_id = selectedCase.employee_id;
+        this.form.name = selectedCase.name;
+      } else if (this.dialogType === "customerSearch") {
+        this.form.customer_id = selectedCase.customer_id;
+        this.form.customer_name = selectedCase.customer_name;
+      }
+      this.dialogVisible = false;
+    }
+  }
 };
 </script>
+
+
 
 <style scoped>
 .header-container {
@@ -434,9 +376,16 @@ export default {
 }
 .section-container {
   background-color: #FFFFFF;
-  padding: 15px;
-  margin-bottom: 20px;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.input-with-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.input-with-button .el-input {
+  flex: 1;
 }
 </style>
