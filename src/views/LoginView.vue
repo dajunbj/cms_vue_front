@@ -34,12 +34,15 @@
             username: this.username,
             password: this.password,
             }).then((response) => {
-                if (response.data.success) {
+              alert(response.data);
+                if (response.data.status) {
+                  alert("success");
                   const token = response.data.token;
                   sessionStorage.setItem("token", token);
                   this.$router.push("/home");                 
                 } else {
-                  alert(response.data.message);
+                  alert("failure");
+                  alert(response.data.status);
                 }
 
             });
