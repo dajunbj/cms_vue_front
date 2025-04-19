@@ -14,5 +14,5 @@ export default [
     { path: "/setting", name: "Setting", SettingView, meta: { requiresAuth: true } },
     { path: "/contract", name: "Contract", ContractView, meta: { requiresAuth: true }},
     { path: "/customer", name: "Customer", CustomerView, meta: { requiresAuth: true } },
-  ];
+   ];
   

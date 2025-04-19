@@ -105,15 +105,6 @@ export default {
     };
   },
   methods: {
-
-    handleCanAccess() {
-      if(sessionStorage.getItem("right")==="社員"){
-        this.canAccess = false;
-      }
-      else{
-        this.canAccess = true;
-      }
-    },
     handleOpen(key, keyPath) {
       console.log("打开菜单:", key, keyPath);
     },
