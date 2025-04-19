@@ -40,41 +40,40 @@
           <el-table
             :data="form.attendanceList"
             border
-            style="min-width: 1100px;"
             :row-style="getRowStyle"
             height="500"
           >
-            <el-table-column label="日付" prop="date" width="160">
+            <el-table-column label="日付" prop="date" >
               <template slot-scope="scope">
                 {{ scope.row.date }}<span v-if="getDayName(scope.row.date)">（{{ getDayName(scope.row.date) }}）</span>
               </template>
             </el-table-column>
 
-            <el-table-column label="開始時間" width="140">
+            <el-table-column label="開始時間" >
               <template slot-scope="scope">
                 <el-time-picker v-model="scope.row.start_time" placeholder="開始時間" style="width: 100%;" />
               </template>
             </el-table-column>
 
-            <el-table-column label="終了時間" width="140">
+            <el-table-column label="終了時間" >
               <template slot-scope="scope">
                 <el-time-picker v-model="scope.row.end_time" placeholder="終了時間" style="width: 100%;" />
               </template>
             </el-table-column>
 
-            <el-table-column label="案件名" width="200">
+            <el-table-column label="案件名" >
               <template slot-scope="scope">
                 <el-input v-model="scope.row.case_name" placeholder="案件名" />
               </template>
             </el-table-column>
 
-            <el-table-column label="休憩時間(h)" width="150">
+            <el-table-column label="休憩時間(h)" >
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.break_hours" :min="0" :step="0.25" :controls="true" controls-position="right" style="width: 100%;" />
               </template>
             </el-table-column>
 
-            <el-table-column label="勤怠区分" width="100">
+            <el-table-column label="勤怠区分" >
               <template slot-scope="scope">
                 <span>{{ scope.row.attendance_type }}</span>
               </template>
