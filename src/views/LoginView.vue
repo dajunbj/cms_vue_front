@@ -34,11 +34,14 @@
             username: this.username,
             password: this.password,
             }).then((response) => {
-                const token = response.data.token;
-                sessionStorage.setItem("token", token);
-                this.$router.push("/home"); // 跳转到首页
-            }).catch((error) => {
-                alert("请输入用户名和密码"+error);
+                if (response.data.success) {
+                  const token = response.data.token;
+                  sessionStorage.setItem("token", token);
+                  this.$router.push("/home");                 
+                } else {
+                  alert(response.data.message);
+                }
+
             });
         } else {
             alert("请输入用户名和密码");

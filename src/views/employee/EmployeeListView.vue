@@ -42,12 +42,12 @@
       <el-col :span="24">
         <el-table :data="filteredEmployees" border style="width: 100%; margin-top: 20px;" height="300px" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column prop="employeeId" label="ID" header-align="center" :class="'no-wrap-column'"></el-table-column>
+          <el-table-column prop="employee_id" label="ID" header-align="center" :class="'no-wrap-column'"></el-table-column>
           <el-table-column prop="name" label="名前" header-align="center"></el-table-column>
           <el-table-column prop="sex" label="性別" header-align="center"></el-table-column>
-          <el-table-column prop="birthday" label="誕生日" header-align="center"></el-table-column>
+          <el-table-column prop="date_of_birth" label="誕生日" header-align="center"></el-table-column>
           <el-table-column prop="address" label="住所" header-align="center"></el-table-column>
-          <el-table-column prop="phone" label="電話" header-align="center"></el-table-column>
+          <el-table-column prop="phone_number" label="電話" header-align="center"></el-table-column>
           <el-table-column label="動作" align="center">
             <template slot-scope="scope">
               <el-button @click="clickReference(scope.row)" type="text" size="small">参照</el-button>

@@ -1,24 +1,22 @@
 <template>
   <div style="width: 100%; max-width: 1000px; overflow-x: hidden;">
-    <!-- 添加标题部分 -->
     <div class="header-container">
       <h2 class="header-title">
         <i class="el-icon-user"></i> 社員情報登録画面
       </h2>
     </div>
 
-    <!-- 表单部分 -->
     <div class="section-container">
       <el-form :model="form" :rules="rules" ref="employeeForm" label-width="150px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="社員ID" prop="employeeId">
-              <el-input v-model="form.employeeId" placeholder="社員IDをご入力ください。" clearable></el-input>
+            <el-form-item label="社員ID" prop="employee_id">
+              <el-input v-model="form.employee_id" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="名前" prop="name">
-              <el-input v-model="form.name" placeholder="名前をご入力ください。" clearable></el-input>
+              <el-input v-model="form.name" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -27,19 +25,27 @@
           <el-col :span="12">
             <el-form-item label="性別" prop="sex">
               <el-radio-group v-model="form.sex">
-                <el-radio label="1">男性</el-radio>
-                <el-radio label="2">女性</el-radio>
+                <el-radio label="男">男性</el-radio>
+                <el-radio label="女">女性</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="生年月日" prop="birthday">
-              <el-date-picker
-                v-model="form.birthday"
-                type="date"
-                placeholder="生年月日を選択してください"
-                style="width: 100%;"
-              ></el-date-picker>
+            <el-form-item label="勤務年数" prop="work_years">
+              <el-input-number v-model="form.work_years" :min="0" style="width: 100%;" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="得意技術" prop="specialty_skills">
+              <el-input v-model="form.specialty_skills" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="年齢" prop="age">
+              <el-input-number v-model="form.age" :min="0" style="width: 100%;" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -47,55 +53,103 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="住所" prop="address">
-              <el-input v-model="form.address" placeholder="住所をご入力ください。" clearable></el-input>
+              <el-input v-model="form.address" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="携帯" prop="phone">
-              <el-input v-model="form.phone" placeholder="携帯をご入力ください。" clearable></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="入社年月日" prop="joiningDate">
-              <el-date-picker
-                v-model="form.joiningDate"
-                type="date"
-                placeholder="入社年月日を選択してください"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="メール" prop="mail">
-              <el-input v-model="form.mail" placeholder="メールをご入力ください。" clearable></el-input>
+            <el-form-item label="技術者の技術説明" prop="technic_description">
+              <el-input type="textarea" v-model="form.technic_description" rows="2" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="職種" prop="jobType">
-              <el-select v-model="form.jobType" placeholder="職種を選択してください" clearable>
-                <el-option label="営業" value="営業"></el-option>
-                <el-option label="開発" value="開発"></el-option>
-                <el-option label="経理" value="経理"></el-option>
+            <el-form-item label="社員タイプ" prop="employee_type">
+              <el-select v-model="form.employee_type" placeholder="選択">
+                <el-option label="自社" value="self" />
+                <el-option label="BP" value="BP" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="給料" prop="salary">
-              <el-input-number v-model="form.salary" placeholder="給料をご入力ください" :min="0" :max="1000000" style="width: 100%;"></el-input-number>
+            <el-form-item label="会社ID" prop="company_id">
+              <el-input v-model="form.company_id" />
             </el-form-item>
           </el-col>
         </el-row>
 
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="BP会社ID" prop="bp_company_id">
+              <el-input v-model="form.bp_company_id" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="部門ID" prop="department_id">
+              <el-input v-model="form.department_id" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="入社日" prop="hire_date">
+              <el-date-picker v-model="form.hire_date" type="date" style="width: 100%;" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="退社日" prop="resignation_date">
+              <el-date-picker v-model="form.resignation_date" type="date" style="width: 100%;" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="電話番号" prop="phone_number">
+              <el-input v-model="form.phone_number" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="メール" prop="email">
+              <el-input v-model="form.email" clearable />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="役職" prop="position">
+              <el-input v-model="form.position" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="基本給" prop="salary">
+              <el-input-number v-model="form.salary" :min="0" style="width: 100%;" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="ボーナス" prop="bonus">
+              <el-input-number v-model="form.bonus" :min="0" style="width: 100%;" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="契約タイプ" prop="contract_type">
+              <el-input v-model="form.contract_type" clearable />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 同样样式继续加入其他字段，可按功能组块：緊急連絡先・在留資格など -->
+
         <el-row>
           <el-col :span="24" style="text-align: center; margin-top: 20px;">
             <el-button type="primary" @click="submitForm">保存</el-button>
-            <el-button type="default" @click="resetForm">キャンセル</el-button>
+            <el-button @click="resetForm">リセット</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -104,85 +158,81 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 
 export default {
-  name: "EmployeeRegisterView",
   data() {
     return {
       form: {
-        employeeId: "",
-        name: "",
-        sex: "1",
-        birthday: "",
-        address: "",
-        phone: "",
-        joiningDate: "",
-        mail: "",
-        jobType: "",
-        salary: 0,
+        employee_id: '',
+        name: '',
+        sex: '',
+        work_years: null,
+        specialty_skills: '',
+        age: null,
+        address: '',
+        technic_description: '',
+        employee_type: '',
+        company_id: '',
+        bp_company_id: '',
+        department_id: '',
+        hire_date: '',
+        resignation_date: '',
+        phone_number: '',
+        email: '',
+        position: '',
+        salary: null,
+        bonus: null,
+        contract_type: ''
+        // 其他字段（emergency、residence等）请按需继续补充
       },
       rules: {
-        employeeId: [
-          { required: true, message: "社員IDを入力してください", trigger: "blur" },
+        employee_id: [{ required: true, message: '社員IDを入力してください', trigger: 'blur' }],
+        name: [{ required: true, message: '名前を入力してください', trigger: 'blur' }],
+        sex: [{ required: true, message: '性別を選択してください', trigger: 'change' }],
+        work_years: [{ type: 'number', required: true, message: '勤務年数を入力してください', trigger: 'blur' }],
+        specialty_skills: [{ required: true, message: '得意技術を入力してください', trigger: 'blur' }],
+        age: [{ type: 'number', required: true, message: '年齢を入力してください', trigger: 'blur' }],
+        address: [{ required: true, message: '住所を入力してください', trigger: 'blur' }],
+        technic_description: [{ required: true, message: '技術説明を入力してください', trigger: 'blur' }],
+        employee_type: [{ required: true, message: '社員タイプを選択してください', trigger: 'change' }],
+        company_id: [{ required: true, message: '会社IDを入力してください', trigger: 'blur' }],
+        bp_company_id: [{ required: false, message: 'BP会社IDを入力してください', trigger: 'blur' }],
+        department_id: [{ required: false, message: '部門IDを入力してください', trigger: 'blur' }],
+        hire_date: [{ required: true, message: '入社日を選択してください', trigger: 'change' }],
+        resignation_date: [{ required: false, message: '退社日を選択してください', trigger: 'change' }],
+        phone_number: [{ required: true, message: '電話番号を入力してください', trigger: 'blur' }],
+        email: [
+          { required: true, message: 'メールを入力してください', trigger: 'blur' },
+          { type: 'email', message: '正しいメール形式を入力してください', trigger: 'blur' }
         ],
-        name: [
-          { required: true, message: "名前を入力してください", trigger: "blur" },
-        ],
-        sex: [
-          { required: true, message: "性別を選択してください", trigger: "change" },
-        ],
-        birthday: [
-          { required: true, message: "生年月日を選択してください", trigger: "change" },
-        ],
-        address: [
-          { required: true, message: "住所を入力してください", trigger: "blur" },
-        ],
-        phone: [
-          { required: true, message: "携帯を入力してください", trigger: "blur" },
-        ],
-        joiningDate: [
-          { required: true, message: "入社年月日を選択してください", trigger: "change" },
-        ],
-        mail: [
-          { required: true, message: "メールを入力してください", trigger: "blur" },
-          { type: "email", message: "正しいメール形式を入力してください", trigger: "blur" },
-        ],
-        jobType: [
-          { required: true, message: "職種を選択してください", trigger: "change" },
-        ],
-        salary: [
-          { required: true, message: "給料を入力してください", trigger: "blur" },
-        ],
-      },
-    };
+        position: [{ required: true, message: '役職を入力してください', trigger: 'blur' }],
+        salary: [{ type: 'number', required: true, message: '基本給を入力してください', trigger: 'blur' }],
+        bonus: [{ type: 'number', required: false, message: 'ボーナスを入力してください', trigger: 'blur' }],
+        contract_type: [{ required: true, message: '契約タイプを入力してください', trigger: 'blur' }]
+      }
+    }
   },
   methods: {
-    async submitForm() {
-      this.$refs.employeeForm.validate(async (valid) => {
+    submitForm() {
+      this.$refs.employeeForm.validate((valid) => {
         if (valid) {
-          try {
-            await axios.post("/employee/register", this.form);
-            this.$message.success("登録が成功しました");
-            this.resetForm();
-          } catch (error) {
-            this.$message.error("登録に失敗しました: " + error.message);
-          }
-        } else {
-          this.$message.error("入力内容を確認してください");
+          axios.post('/employee/register', this.form)
+            .then(() => {
+              this.$message.success('登録が成功しました');
+              this.resetForm();
+            })
+            .catch((error) => {
+              this.$message.error('登録に失敗しました: ' + error.message);
+            });
         }
       });
     },
     resetForm() {
-      Object.keys(this.form).forEach((key) => {
-        this.form[key] = "";
-      });
-      this.form.sex = "1"; 
-      this.$refs.employeeForm.clearValidate();
-      this.$router.push("/employee");
-    },
-  },
-};
+      this.$refs.employeeForm.resetFields();
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -196,7 +246,7 @@ export default {
   margin: 0;
   font-size: 24px;
   font-weight: bold;
-  color: #333333;
+  color: #333;
   display: flex;
   align-items: center;
 }
@@ -206,9 +256,8 @@ export default {
   color: #409EFF;
 }
 .section-container {
-  background-color: #FFFFFF;
+  background-color: #fff;
   padding: 15px;
-  margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

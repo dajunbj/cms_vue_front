@@ -25,6 +25,8 @@ const router = new Router({
     { path: "/setting", name: "Setting", component: SettingView, meta: { requiresAuth: true } },
     { path: "/employee/detail/:id", name: "EmployeeDetail",component: () => import("@/views/employee/EmployeeDetailView.vue")},
     { path: "/employee/edit/:id", name: "EmployeeEdit",component: () => import("@/views/employee/EmployeeEditView.vue")},
+
+    { path: "/file/receipt", name: "ReceiptUpload",component: () => import("@/views/file/ReceiptUploadView.vue")},
     
   ],
 });

@@ -23,7 +23,7 @@
             </template>
             <el-menu-item-group style="border-right:none;background-color: transparent;">
               <el-menu-item index="/employee" style="border-right:none;background-color: transparent;">社員一覧</el-menu-item>
-              <el-menu-item index="/setting" style="border-right:none;background-color: transparent;">休暇一覧</el-menu-item>
+              <el-menu-item index="/setting" style="border-right:none;background-color: transparent;">ファイルアップロード</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group>
               <el-menu-item index="1-1">选项１－１</el-menu-item>
@@ -61,6 +61,17 @@
             <el-menu-item-group>
               <el-menu-item index="/employee">社員一覧</el-menu-item>
               <el-menu-item index="/setting">休暇一覧</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+
+          <el-submenu index="5">
+            <template slot="title">
+              <i class="el-icon-wallet"></i>
+              <span>ファイル</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="/file/receipt">領収書</el-menu-item>
+              <el-menu-item index="/employee">履歴</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
