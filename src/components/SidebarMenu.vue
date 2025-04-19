@@ -73,6 +73,17 @@
             </el-menu-item-group>
           </el-submenu>
 
+          <el-submenu index="6">
+            <template slot="title">
+              <i class="el-icon-date"></i>
+              <span>精算管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="/employee">領収書読込</el-menu-item>
+              <el-menu-item index="/setting">ファイル一覧</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+
           <el-submenu index="5">
             <template slot="title">
               <i class="el-icon-wallet"></i>
