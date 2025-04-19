@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; max-width: 1000px; overflow-x: hidden;">
+  <div style="width: 100%; max-width: 1000px; overflow-y: hidden;">
 
 
     <div class="menu-section-container">
@@ -24,6 +24,7 @@
             <el-menu-item-group style="border-right:none;background-color: transparent;">
               <el-menu-item index="/employee" style="border-right:none;background-color: transparent;">社員一覧</el-menu-item>
               <el-menu-item index="/setting" style="border-right:none;background-color: transparent;">休暇一覧</el-menu-item>
+              <el-menu-item index="/employee">履歴</el-menu-item>
             </el-menu-item-group>
 
           </el-submenu>
@@ -34,8 +35,8 @@
               <span>勤怠管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/employee">社員一覧</el-menu-item>
-              <el-menu-item index="/setting">休暇一覧</el-menu-item>
+              <el-menu-item index="/attendance/regist">勤怠登録</el-menu-item>
+              <el-menu-item index="/setting">休暇申請</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
 
@@ -80,25 +81,11 @@
             </template>
             <el-menu-item-group>
               <el-menu-item index="/file/receipt">費用申請</el-menu-item>
-              <el-menu-item index="/employee">領収書読込</el-menu-item>
+              <el-menu-item index="/file/receipt">領収書</el-menu-item>
               <el-menu-item index="/setting">ファイル一覧</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-
-          <el-submenu index="7">
-            <template slot="title">
-              <i class="el-icon-wallet"></i>
-              <span>ファイル</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/file/receipt">領収書</el-menu-item>
-              <el-menu-item index="/employee">履歴</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          
-          
         </el-menu>
-        
       </div>
     </div>
   </div>
