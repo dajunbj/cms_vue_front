@@ -35,13 +35,11 @@
             password: this.password,
             }).then((response) => {
               alert(response.data);
-                if (response.data.status) {
-                  alert("success");
+                if (response.data.sucess) {
                   const token = response.data.token;
                   sessionStorage.setItem("token", token);
                   this.$router.push("/home");                 
                 } else {
-                  alert("failure");
                   alert(response.data.status);
                 }
 
