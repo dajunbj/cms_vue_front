@@ -109,22 +109,18 @@ export default {
     };
   },
   created() {
-    const today = new Date();
-    const yyyyMM = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2);
-    this.form.month = yyyyMM;
-    this.fetchOrGenerateMonthlyData(yyyyMM);
+    const monthFromQuery = this.$route.query.month;
+    this.form.month = monthFromQuery;
+    this.fetchOrGenerateMonthlyData(monthFromQuery);
   },
   methods: {
     async fetchOrGenerateMonthlyData(monthStr) {
+      axios.defaults.withCredentials = true;
       try {
-        const res = await axios.get(`/attendance/registerview/registInit`, {
-          params: {
-            employee_id: this.form.employee_id,
-            contract_id: this.form.contract_id,
+        const res = await axios.post(`/attendance/registerview/registInit`, {
             month: monthStr
-          }
         });
-        this.form.attendanceList = res.data;
+        this.form.attendanceList = res.data.data;
       } catch (error) {
         this.$message.error("データ取得に失敗しました");
         console.error(error);
