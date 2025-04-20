@@ -45,7 +45,7 @@
           >
             <el-table-column label="日付" prop="date" >
               <template slot-scope="scope">
-                {{ scope.row.date }}<span v-if="getDayName(scope.row.date)">（{{ getDayName(scope.row.date) }}）</span>
+                {{ scope.row.workday }}<span v-if="getDayName(scope.row.workday)">（{{ getDayName(scope.row.workday) }}）</span>
               </template>
             </el-table-column>
 

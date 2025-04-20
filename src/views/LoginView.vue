@@ -29,6 +29,7 @@
     },
     methods: {
       handleLogin() {
+        axios.defaults.withCredentials = true;
         if (this.username && this.password) {
             axios.post("http://localhost:8080/auth/login", {
             username: this.username,
