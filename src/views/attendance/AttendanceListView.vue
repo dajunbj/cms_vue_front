@@ -43,10 +43,11 @@
         v-loading="loading"
         height="300px"
       >
-        <el-table-column prop="sheet_id" label="勤務ID" width="120" header-align="center" />
         <el-table-column prop="employee_id" label="社員ID" width="100" header-align="center" />
         <el-table-column prop="employeeName" label="社員名" header-align="center" />
-        <el-table-column prop="working_hours" label="勤務総時間" header-align="center" />
+        <el-table-column prop="workmonth" label="勤務月" header-align="center" />
+        <el-table-column prop="workhours" label="勤務総時間" header-align="center" />
+        <el-table-column prop="workday_count" label="勤務日数" header-align="center" />
         <el-table-column label="操作" width="150" align="center">
           <template v-slot="scope">
             <el-button type="text" size="small" @click="edit(scope.row)">編集</el-button>
@@ -79,28 +80,41 @@ export default {
   },
   methods: {
     init() {
+      axios.defaults.withCredentials = true;
       const now = new Date();
       this.searchForm.month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       this.search();
     },
     async search() {
       this.loading = true;
-      
-      const res = await axios.get('/attendance/listview/search', {
-        params: {
+      const res = await axios.post('/attendance/listview/search', {
           month: this.searchForm.month,
           employeeName: this.searchForm.employeeName
-        }
       });
 
       this.attendanceList = res.data.data;
       this.loading = false;
     },
-    createNew() {
-      this.$router.push({ name: '/attendance/registview', query: { month: this.searchForm.month } });
-      this.$router.push({ path: `/attendance/registview` }); // 新規登録画面へ
+    async createNew() {
+      axios.defaults.withCredentials = true;
+      try {
+        const res = await axios.get('/attendance/checkRegistered', {
+          params: { month: this.searchForm.month }
+        });
+        if (res.data && res.data.exists) {
+          this.$message.error("この月の勤怠はすでに登録されています。編集画面から修正してください。");
+        } else {
+          this.$router.push({
+            path: `/attendance/registview`,
+            query: { month: this.searchForm.month }
+          });
+        }
+      } catch (e) {
+        this.$message.error("登録状況の確認に失敗しました");
+      }
     },
     edit(row) {
+      axios.defaults.withCredentials = true;
       this.$router.push({ name: 'AttendanceForm', query: { id: row.id } });
     }
   }

@@ -117,7 +117,7 @@ export default {
   methods: {
     async fetchOrGenerateMonthlyData(monthStr) {
       try {
-        const res = await axios.get(`/attendance/getMonthly`, {
+        const res = await axios.get(`/attendance/registerview/registInit`, {
           params: {
             employee_id: this.form.employee_id,
             contract_id: this.form.contract_id,
