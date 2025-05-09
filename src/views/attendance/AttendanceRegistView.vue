@@ -43,7 +43,7 @@
             :row-style="getRowStyle"
             height="500"
           >
-            <el-table-column label="日付" prop="date" >
+            <el-table-column label="日付" prop="workday" >
               <template slot-scope="scope">
                 {{ scope.row.workday }}<span v-if="getDayName(scope.row.workday)">（{{ getDayName(scope.row.workday) }}）</span>
               </template>
@@ -51,13 +51,13 @@
 
             <el-table-column label="開始時間" >
               <template slot-scope="scope">
-                <el-time-picker v-model="scope.row.start_time" placeholder="開始時間" style="width: 100%;" @change="() => markModified(scope.row)" />
+                <el-time-picker v-model="scope.row.start_time" placeholder="開始時間" value-format="HH:mm" format="HH:mm" style="width: 100%;" @change="() => markModified(scope.row)" />
               </template>
             </el-table-column>
 
             <el-table-column label="終了時間" >
               <template slot-scope="scope">
-                <el-time-picker v-model="scope.row.end_time" placeholder="終了時間" style="width: 100%;" @change="() => markModified(scope.row)" />
+                <el-time-picker v-model="scope.row.end_time" placeholder="終了時間"  value-format="HH:mm" format="HH:mm" style="width: 100%;" @change="() => markModified(scope.row)" />
               </template>
             </el-table-column>
 
@@ -144,9 +144,9 @@ export default {
       return ['日', '月', '火', '水', '木', '金', '土'][day];
     },
     getRowStyle({ row }) {
-      const day = new Date(row.date).getDay();
+      const day = new Date(row.workday).getDay();
       if (day === 0 || day === 6) {
-        return { backgroundColor: '#e0f8e0' };
+        return { backgroundColor: '#f0f0f0' }; // 灰色背景（可改）
       }
       return {};
     },
