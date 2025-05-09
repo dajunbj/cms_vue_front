@@ -94,6 +94,7 @@
 
 <script>
 import axios from 'axios';
+import { formatDateToMonth } from '@/utils/dateUtil';
 
 export default {
   name: "AttendanceRegisterView",
@@ -109,9 +110,9 @@ export default {
     };
   },
   created() {
-    const monthFromQuery = this.$route.query.month;
-    this.form.month = monthFromQuery;
-    this.fetchOrGenerateMonthlyData(monthFromQuery);
+    //勤怠年月
+    this.form.month = formatDateToMonth(this.$route.query.month);
+    this.fetchOrGenerateMonthlyData(this.form.month);
   },
   methods: {
     async fetchOrGenerateMonthlyData(monthStr) {
@@ -120,7 +121,8 @@ export default {
         const res = await axios.post(`/attendance/registerview/registInit`, {
             month: monthStr
         });
-        this.form.attendanceList = res.data.data;
+        this.form.attendanceList = res.data.data.attendanceList;
+        this.form.employee_id = res.data.data.employee_id;
       } catch (error) {
         this.$message.error("データ取得に失敗しました");
         console.error(error);

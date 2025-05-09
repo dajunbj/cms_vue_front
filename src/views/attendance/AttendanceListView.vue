@@ -63,6 +63,7 @@
 <script>
 
 import axios from 'axios';
+import { formatDateToMonth } from '@/utils/dateUtil';
 
 export default {
   data() {
@@ -101,12 +102,14 @@ export default {
         const res = await axios.get('/attendance/checkRegistered', {
           params: { month: this.searchForm.month }
         });
+
         if (res.data && res.data.exists) {
           this.$message.error("この月の勤怠はすでに登録されています。編集画面から修正してください。");
         } else {
+
           this.$router.push({
             path: `/attendance/registview`,
-            query: { month: this.searchForm.month }
+            query: { month: formatDateToMonth(this.searchForm.month) }
           });
         }
       } catch (e) {
