@@ -43,37 +43,75 @@
             :row-style="getRowStyle"
             height="500"
           >
-            <el-table-column label="日付" prop="workday" >
+            <el-table-column label="日付" prop="workday">
               <template slot-scope="scope">
                 {{ scope.row.workday }}<span v-if="getDayName(scope.row.workday)">（{{ getDayName(scope.row.workday) }}）</span>
               </template>
             </el-table-column>
-
-            <el-table-column label="開始時間" >
+            <el-table-column label="休日出勤" width="80">
               <template slot-scope="scope">
-                <el-time-picker v-model="scope.row.start_time" placeholder="開始時間" value-format="HH:mm" format="HH:mm" style="width: 100%;" @change="() => markModified(scope.row)" />
+                <el-checkbox
+                  v-if="isWeekend(scope.row.workday)"
+                  v-model="scope.row.enabled"
+                  @change="() => markModified(scope.row)"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column label="開始時間">
+              <template slot-scope="scope">
+                <el-time-picker
+                  v-model="scope.row.start_time"
+                  placeholder="開始時間"
+                  value-format="HH:mm"
+                  format="HH:mm"
+                  style="width: 100%;"
+                  :disabled="!scope.row.enabled"
+                  @change="() => markModified(scope.row)"
+                />
               </template>
             </el-table-column>
 
-            <el-table-column label="終了時間" >
+            <el-table-column label="終了時間">
               <template slot-scope="scope">
-                <el-time-picker v-model="scope.row.end_time" placeholder="終了時間"  value-format="HH:mm" format="HH:mm" style="width: 100%;" @change="() => markModified(scope.row)" />
+                <el-time-picker
+                  v-model="scope.row.end_time"
+                  placeholder="終了時間"
+                  value-format="HH:mm"
+                  format="HH:mm"
+                  style="width: 100%;"
+                  :disabled="!scope.row.enabled"
+                  @change="() => markModified(scope.row)"
+                />
               </template>
             </el-table-column>
 
-            <el-table-column label="案件名" >
+            <el-table-column label="案件名">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.case_name" placeholder="案件名" @input="() => markModified(scope.row)" />
+                <el-input
+                  v-model="scope.row.case_name"
+                  placeholder="案件名"
+                  :disabled="!scope.row.enabled"
+                  @input="() => markModified(scope.row)"
+                />
               </template>
             </el-table-column>
 
-            <el-table-column label="休憩時間(h)" >
+            <el-table-column label="休憩時間(h)">
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.break_hours" :min="0" :step="0.25" :controls="true" controls-position="right" style="width: 100%;" @change="() => markModified(scope.row)" />
+                <el-input-number
+                  v-model="scope.row.break_hours"
+                  :min="0"
+                  :step="0.25"
+                  :controls="true"
+                  controls-position="right"
+                  style="width: 100%;"
+                  :disabled="!scope.row.enabled"
+                  @change="() => markModified(scope.row)"
+                />
               </template>
             </el-table-column>
 
-            <el-table-column label="勤怠区分" >
+            <el-table-column label="勤怠区分">
               <template slot-scope="scope">
                 <span>{{ scope.row.attendance_type }}</span>
               </template>
@@ -110,7 +148,6 @@ export default {
     };
   },
   created() {
-    //勤怠年月
     this.form.month = formatDateToMonth(this.$route.query.month);
     this.fetchOrGenerateMonthlyData(this.form.month);
   },
@@ -121,7 +158,10 @@ export default {
         const res = await axios.post(`/attendance/registerview/registInit`, {
             month: monthStr
         });
-        this.form.attendanceList = res.data.data.attendanceList;
+        this.form.attendanceList = res.data.data.attendanceList.map(row => {
+          row.enabled = !this.isWeekend(row.workday);
+          return row;
+        });
         this.form.employee_id = res.data.data.employee_id;
       } catch (error) {
         this.$message.error("データ取得に失敗しました");
@@ -135,10 +175,6 @@ export default {
       const day = new Date(dateStr).getDay();
       return day === 0 || day === 6;
     },
-    getAttendanceType(dateStr) {
-      const day = new Date(dateStr).getDay();
-      return day === 0 || day === 6 ? '休日' : '平日';
-    },
     getDayName(dateStr) {
       const day = new Date(dateStr).getDay();
       return ['日', '月', '火', '水', '木', '金', '土'][day];
@@ -146,7 +182,7 @@ export default {
     getRowStyle({ row }) {
       const day = new Date(row.workday).getDay();
       if (day === 0 || day === 6) {
-        return { backgroundColor: '#f0f0f0' }; // 灰色背景（可改）
+        return { backgroundColor: '#f0f0f0' };
       }
       return {};
     },
