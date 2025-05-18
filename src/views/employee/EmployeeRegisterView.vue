@@ -10,29 +10,16 @@
       <el-form :model="form" :rules="rules" ref="employeeForm" label-width="150px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="社員ID" prop="employee_id">
-              <el-input v-model="form.employee_id" placeholder="社員IDをご入力ください。" clearable></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="名前" prop="name">
               <el-input v-model="form.name" clearable></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="性別" prop="sex">
               <el-radio-group v-model="form.sex">
                 <el-radio label="男">男性</el-radio>
                 <el-radio label="女">女性</el-radio>
               </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="勤務年数" prop="work_years">
-              <el-input-number v-model="form.work_years" :min="0" style="width: 100%;" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -43,7 +30,6 @@
               <el-date-picker v-model="form.date_of_birth" type="date" style="width: 100%;" />
             </el-form-item>
           </el-col>
-
           <el-col :span="12" dis>
             <el-form-item label="年齢" prop="age">
               <el-input-number v-model="form.age" :min="0" style="width: 100%;" :disabled="true" />
@@ -189,10 +175,8 @@ export default {
         name: [{ required: true, message: '名前を入力してください', trigger: 'blur' }],
         sex: [{ required: true, message: '性別を選択してください', trigger: 'change' }],
         work_years: [{ type: 'number', required: true, message: '勤務年数を入力してください', trigger: 'blur' }],
-        specialty_skills: [{ required: true, message: '得意技術を入力してください', trigger: 'blur' }],
-        age: [{ type: 'number', required: true, message: '年齢を入力してください', trigger: 'blur' }],
+        date_of_birth: [{required: true,message: '生年月日を選択してください',trigger: 'blur'}],
         address: [{ required: true, message: '住所を入力してください', trigger: 'blur' }],
-        technic_description: [{ required: true, message: '技術説明を入力してください', trigger: 'blur' }],
         employee_type: [{ required: true, message: '社員タイプを選択してください', trigger: 'change' }],
 
         bp_company_id: [{
