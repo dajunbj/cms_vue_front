@@ -38,6 +38,10 @@
                 if (response.data.success) {
                   const token = response.data.token;
                   sessionStorage.setItem("token", token);
+                  
+                  //権限設定
+                  this.$store.commit('setPlanCode', response.data.company.plan_code)
+
                   this.$router.push("/home");                 
                 } else {
                   alert(response.data.message);
@@ -52,7 +56,8 @@
           //不正ログイン防止のトークン
           const token = "mytoken";
           sessionStorage.setItem("token",token);
-          
+  
+
           const tokenExpirationTime = new Date().getTime() + 60000; // 1 小时有效期
           sessionStorage.setItem("tokenExpiration", tokenExpirationTime);
       },

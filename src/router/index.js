@@ -51,10 +51,6 @@ const router = new Router({
   ],
 });
 
-// const router = new Router({
-//   mode: "history",
-//   routes: routesConfig,
-// });
 
 //全局Routerの追加
 router.beforeEach((to, from, next) => {

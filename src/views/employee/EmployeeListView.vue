@@ -33,7 +33,7 @@
         <el-button icon="el-icon-delete" @click="deleteAllSelected('/employee/deleteAll')" type="primary">全削除</el-button>
       </el-col>
     </el-row>
-    
+
 </div>
     <!-- 检索结果和翻页部分 -->
     <div class="section-container">
@@ -44,9 +44,8 @@
           <el-table-column type="selection" width="55" align="center"></el-table-column>
           <el-table-column prop="employee_id" label="ID" header-align="center" :class="'no-wrap-column'"></el-table-column>
           <el-table-column prop="name" label="名前" header-align="center"></el-table-column>
-          <el-table-column prop="sex" label="性別" header-align="center"></el-table-column>
+          <el-table-column prop="gender" label="性別" header-align="center"></el-table-column>
           <el-table-column prop="date_of_birth" label="誕生日" header-align="center"></el-table-column>
-          <el-table-column prop="address" label="住所" header-align="center"></el-table-column>
           <el-table-column prop="phone_number" label="電話" header-align="center"></el-table-column>
           <el-table-column label="動作" align="center">
             <template slot-scope="scope">
@@ -55,7 +54,7 @@
             </template>
           </el-table-column>
         </el-table>
-        
+
         <!-- 翻页组件 -->
         <el-pagination
           style="margin-top: 20px; text-align: center;"
@@ -160,10 +159,11 @@ export default {
       this.companyId = selectedCompany.id;
     },
     clickReference(row) {
-      this.$router.push({ path: `/employee/detail/${row.employeeId}` }); // 跳转参照画面
+      alert(row.employee_id);
+      this.$router.push({ path: `/employee/detail/${row.employee_id}` });
     },
     clickEdit(row) {
-      this.$router.push({ path: `/employee/edit/${row.employeeId}` }); // 跳转编辑画面
+      this.$router.push({ path: `/employee/edit/${row.employee_id}` });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val.map(item => item.id);
@@ -193,7 +193,6 @@ export default {
 
 <style scoped>
 .header-container {
-  /* background-color: #F5F7FA; */
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 8px;
@@ -250,9 +249,9 @@ export default {
   text-align: center;
 }
 .input-label .el-input__inner {
-  border: none; /* 去掉边框 */
-  background-color: transparent; /* 设置背景为透明 */
-  color: #333; /* 设置字体颜色（可选） */
-  box-shadow: none; /* 去掉阴影（如果有） */
+  border: none;
+  background-color: transparent;
+  color: #333;
+  box-shadow: none;
 }
 </style>
