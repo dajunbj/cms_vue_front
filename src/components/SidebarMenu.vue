@@ -4,7 +4,7 @@
 
       <div class="logo-container">
         <img :src="require('@/assets/company1.png')" alt="会社ロゴ" class="company-logo" />
-        <span class="company-title">営業支援</span>
+        <span class="company-title">精算支援システム</span>
       </div>
 
       <div class="menu-container">
@@ -32,7 +32,7 @@
           <el-submenu index="2" v-if="permissions.showPayroll">
             <template slot="title">
               <i class="el-icon-wallet"></i>
-              <span>給料</span>
+              <span>給料管理</span>
             </template>
             <el-menu-item-group>
               <el-menu-item index="/employee">給料一覧</el-menu-item>
@@ -44,7 +44,7 @@
           <el-submenu index="3" v-if="permissions.showExpenseApproval">
             <template slot="title">
               <i class="el-icon-date"></i>
-              <span>費用申請OCR</span>
+              <span>費用OCR</span>
             </template>
             <el-menu-item-group>
               <el-menu-item index="/file/receipt">費用申請</el-menu-item>
@@ -57,7 +57,7 @@
           <el-submenu index="4" v-if="permissions.showSettlement">
             <template slot="title">
               <i class="el-icon-s-data"></i>
-              <span>決算</span>
+              <span>会社決算</span>
             </template>
             <el-menu-item-group>
               <el-menu-item index="/settlement/summary">損益表</el-menu-item>
@@ -78,7 +78,7 @@
           </el-submenu>
 
           <!-- 勤怠管理 -->
-          <el-submenu index="6">
+          <!-- <el-submenu index="6">
             <template slot="title">
               <i class="el-icon-date"></i>
               <span>勤怠管理</span>
@@ -88,10 +88,10 @@
               <el-menu-item index="/attendance/registview">勤怠登録</el-menu-item>
               <el-menu-item index="/setting">休暇申請</el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
+          </el-submenu> -->
 
           <!-- 契約管理 -->
-          <el-submenu index="7">
+          <!-- <el-submenu index="7">
             <template slot="title">
               <i class="el-icon-postcard"></i>
               <span>契約管理</span>
@@ -100,10 +100,10 @@
               <el-menu-item index="/contract">契約一覧</el-menu-item>
               <el-menu-item index="/contract/register">新規契約</el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
+          </el-submenu> -->
 
           <!-- 🟡顧客管理（plan + right 制御） -->
-          <el-submenu index="8" v-if="permissions.showCustomer && canAccess">
+          <!-- <el-submenu index="8" v-if="permissions.showCustomer && canAccess">
             <template slot="title">
               <i class="el-icon-wallet"></i>
               <span>顧客管理</span>
@@ -113,7 +113,7 @@
               <el-menu-item index="/customer/register">顧客登録</el-menu-item>
               <el-menu-item index="/customer/registerRes">責任者登録</el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
+          </el-submenu> -->
 
         </el-menu>
       </div>
