@@ -1,233 +1,308 @@
 <template>
-    <div style="width: 100%; max-width: 1400px; overflow-x: hidden;">
-        <div class="header-container">
-        <h2 class="header-title">
-            <i class="el-icon-user"></i> 責任者編集
-        </h2>
-        </div>
-        <!-- 标签页主体 -->
-        <div class="section-container">
-            <el-form :model="form" :rules="rules" ref="form" label-width="150px">
-                <el-row>
-                    <el-col :span="10">
-                        <el-form-item label="ユニーク識別子" prop="responsible_id" >
-                            <el-input v-model="form.responsible_id" readonly class="el-input-disabled"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="10" :offset="2">
-                        <el-form-item label="責任者の電話番号" prop="responsible_phone">
-                            <el-input v-model="form.responsible_phone" placeholder="顧客の電話番号" clearable></el-input>
-                        </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="10">
-                        <el-form-item label="対応する顧客" prop="customer_id">
-                            <el-input v-model="form.customer_name" placeholder="対応する顧客" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="1">
-                            <el-button  icon="el-icon-search" @click="showCustomerDialog"></el-button>
-                    </el-col>
-                    <el-col :span="1">
-                        <el-input v-model="form.customer_id" :disabled="true"></el-input>
-                    </el-col>
-                    <el-col :span="10">
-                        <el-form-item label="責任者の役割" prop="responsible_type">
-                            <el-input v-model="form.responsible_type" placeholder="責任者の役割" clearable></el-input>
-                        </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="10">
-                        <el-form-item label="責任者所属部門" prop="department_name">
-                            <el-input v-model="form.department_name" placeholder="責任者所属部門"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="1">
-                            <el-button  icon="el-icon-search" @click="showDepartmentDialog"></el-button>
-                    </el-col>
-                    <el-col :span="1">
-                        <el-input v-model="form.department_id" :disabled="true"></el-input>
-                    </el-col>
-                    <el-col :span="10">
-                        <el-form-item label="責任者名" prop="responsible_name">
-                            <el-input v-model="form.responsible_name" placeholder="責任者名"></el-input>
-                        </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="10">
-                        <el-form-item label="メールアドレス" prop="responsible_email">
-                            <el-input v-model="form.responsible_email" placeholder="メールアドレス"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="20" style="text-align: center; margin-top: 20px;">
-                            <el-button type="primary" :loading="isLoading" @click="submitForm">登録</el-button>
-                            <el-button type="default" @click="goBack">戻る</el-button>
-                    </el-col>
-                </el-row> 
-            </el-form>
-                <!-- 使用通用弹窗 -->
-                <CaseSearchDialog
-                :visible.sync="dialogVisible"
-                :title="dialogTitle"
-                :tableData="dialogData"
-                :columns="dialogColumns"
-                :filters="dialogFilters"
-                :type="dialogType"
-                @select-case="handleSelectCase" 
-                />
-        </div>
+  <div style="width: 100%; max-width: 1400px; overflow-x: hidden;">
+    <div class="header-container">
+      <h2 class="header-title">
+        <i class="el-icon-user" /> 責任者編集
+      </h2>
     </div>
+    <div class="section-container">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="150px"
+      >
+        <el-row>
+          <el-col :span="10">
+            <el-form-item
+              label="ユニーク識別子"
+              prop="responsible_id"
+            >
+              <el-input
+                v-model="form.responsible_id"
+                readonly
+                class="el-input-disabled"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col
+            :span="10"
+            :offset="2"
+          >
+            <el-form-item
+              label="責任者の電話番号"
+              prop="responsible_phone"
+            >
+              <el-input
+                v-model="form.responsible_phone"
+                placeholder="顧客の電話番号"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="10">
+            <el-form-item
+              label="対応する顧客"
+              prop="customer_id"
+            >
+              <el-input
+                v-model="form.customer_name"
+                placeholder="対応する顧客"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="1">
+            <el-button
+              icon="el-icon-search"
+              @click="showCustomerDialog"
+            />
+          </el-col>
+          <el-col :span="1">
+            <el-input
+              v-model="form.customer_id"
+              :disabled="true"
+            />
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="責任者の役割"
+              prop="responsible_type"
+            >
+              <el-input
+                v-model="form.responsible_type"
+                placeholder="責任者の役割"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="10">
+            <el-form-item
+              label="責任者所属部門"
+              prop="department_name"
+            >
+              <el-input
+                v-model="form.department_name"
+                placeholder="責任者所属部門"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="1">
+            <el-button
+              icon="el-icon-search"
+              @click="showDepartmentDialog"
+            />
+          </el-col>
+          <el-col :span="1">
+            <el-input
+              v-model="form.department_id"
+              :disabled="true"
+            />
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="責任者名"
+              prop="responsible_name"
+            >
+              <el-input
+                v-model="form.responsible_name"
+                placeholder="責任者名"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="10">
+            <el-form-item
+              label="メールアドレス"
+              prop="responsible_email"
+            >
+              <el-input
+                v-model="form.responsible_email"
+                placeholder="メールアドレス"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col
+            :span="20"
+            style="text-align: center; margin-top: 20px;"
+          >
+            <el-button
+              type="primary"
+              :loading="isLoading"
+              @click="submitForm"
+            >
+              登録
+            </el-button>
+            <el-button
+              type="default"
+              @click="goBack"
+            >
+              戻る
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+
+      <CaseSearchDialog
+        v-model:visible="dialogVisible"
+        :title="dialogTitle"
+        :table-data="dialogData"
+        :columns="dialogColumns"
+        :filters="dialogFilters"
+        :type="dialogType"
+        @select-case="handleSelectCase"
+      />
+    </div>
+  </div>
 </template>
 
-<script>
-import axios from 'axios';
-import CaseSearchDialog from "@/components/CaseSearchDialog.vue";
-export default {
-    components: { CaseSearchDialog },
-    data() {
-        return {
-            form: {
-                responsible_id: '',
-                responsible_phone: '',
-                customer_name: '',
-                customer_id: '',
-                responsible_type: '',
-                department_id: '',
-                responsible_name: '',
-                responsible_email: '',
-            },
-                dialogTitle: '',
-                dialogVisible: false,
-                dialogData: [],
-                dialogColumns: [],
-                dialogFilters: [],
-                dialogType:'',
-            rules: {
-                responsible_id: [
-                    { required: true, message: '責任者のユニーク識別子は必須です', trigger: 'blur' },
-                ],
-                responsible_phone: [
-                    { required: true, message: '責任者の電話番号は必須です', trigger: 'blur' },
-                ],
-                customer_id: [
-                    { required: true, message: '対応する顧客のIDは必須です', trigger: 'blur' },
-                ],
-                responsible_type: [
-                    { required: true, message: '責任者の役割は必須です', trigger: 'change' },
-                ],
-                department_id: [
-                    { required: true, message: '責任者所属部門IDは必須です', trigger: 'blur' },
-                ],
-                responsible_name: [
-                    { required: true, message: '責任者名は必須です', trigger: 'blur' },
-                ],
-                responsible_email: [
-                    { required: true, message: 'メールアドレスは必須です', trigger: 'blur' },
-                ],
-            }
-        }
-    },
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import axios from 'axios'
+import CaseSearchDialog from '@/components/CaseSearchDialog.vue'
 
-    //初始化时获取ID
-  created() {
-    const responsible_id = this.$route.params.id; // URL から ID を取得
-    this.fetchResponsibleDetails(responsible_id);
-  },
+const route = useRoute()
+const router = useRouter()
+const formRef = ref(null)
+const isLoading = ref(false)
 
-  methods: {
-    showCustomerDialog() {
-      this.dialogVisible = true;
-      this.dialogTitle = "顧客選択画面";
-      this.dialogColumns= [
-                    { prop: "customer_name", label: "顧客名", width: "220" },
-                    { prop: "customer_id", label: "ユニーク識別子", width: "220" },
-                ];
-      this.dialogFilters= [
-                    {
-                    prop: "customer_name",
-                    label: "顧客名",
-                    type: "el-input",
-                    width: 300,
-                    props: { placeholder: "顧客名を入力してください", clearable: true },
-                    },
-                ];
-      this.dialogType="customerSearch";
-    },
+const form = reactive({
+  responsible_id: '',
+  responsible_phone: '',
+  customer_name: '',
+  customer_id: '',
+  responsible_type: '',
+  department_id: '',
+  department_name: '',
+  responsible_name: '',
+  responsible_email: '',
+})
 
-    showDepartmentDialog() {
-      this.dialogVisible = true;
-      this.dialogTitle = "部門選択画面";
-      this.dialogColumns= [
-                    { prop: "department_name", label: "部門名", width: "220" },
-                    { prop: "department_id", label: "部門ID", width: "220" },
-                ];
-      this.dialogFilters= [
-                    {
-                    prop: "department_name",
-                    label: "部門名",
-                    type: "el-input",
-                    width: 300,
-                    props: { placeholder: "部門名を入力してください", clearable: true },
-                    },
-                ];
-      this.dialogType="departmentSearch";
-    },
+const dialogTitle = ref('')
+const dialogVisible = ref(false)
+const dialogData = ref([])
+dialogData.value = []
+const dialogColumns = ref([])
+const dialogFilters = ref([])
+const dialogType = ref('')
 
-    async handleSelectCase(selectedCase) {
-      if(this.dialogType=="customerSearch"){
-      this.form.customer_id = selectedCase.customer_id;
-      this.form.customer_name = selectedCase.customer_name;
-      }
-      else if(this.dialogType=="departmentSearch"){
-       this.form.department_id = selectedCase.department_id; 
-       this.form.department_name = selectedCase.department_name;
-      }
-      this.dialogVisible = false;
-    },
+const rules = {
+  responsible_id: [{ required: true, message: '責任者のユニーク識別子は必須です', trigger: 'blur' }],
+  responsible_phone: [{ required: true, message: '責任者の電話番号は必須です', trigger: 'blur' }],
+  customer_id: [{ required: true, message: '対応する顧客のIDは必須です', trigger: 'blur' }],
+  responsible_type: [{ required: true, message: '責任者の役割は必須です', trigger: 'change' }],
+  department_id: [{ required: true, message: '責任者所属部門IDは必須です', trigger: 'blur' }],
+  responsible_name: [{ required: true, message: '責任者名は必須です', trigger: 'blur' }],
+  responsible_email: [{ required: true, message: 'メールアドレスは必須です', trigger: 'blur' }],
+}
 
-    async fetchResponsibleDetails(responsible_id) {
-      try {
-        const response = await axios.get(`/customer/responsibleDetail/${responsible_id}`);
-        this.form = response.data;
-      } catch (error) {
-        this.$message.error("顧客情報の取得に失敗しました");
-      }
+const showCustomerDialog = () => {
+  dialogTitle.value = '顧客選択画面'
+  dialogColumns.value = [
+    { prop: 'customer_name', label: '顧客名', width: '220' },
+    { prop: 'customer_id', label: 'ユニーク識別子', width: '220' },
+  ]
+  dialogFilters.value = [
+    {
+      prop: 'customer_name',
+      label: '顧客名',
+      type: 'el-input',
+      width: 300,
+      props: { placeholder: '顧客名を入力してください', clearable: true },
     },
+  ]
+  dialogType.value = 'customerSearch'
+  dialogVisible.value = true
+}
 
-    async submitForm() {
-      this.isLoading = true;
-      this.$refs.form.validate(async (valid) => {
-        if (valid) {
-          try {
-            const response = await axios.post("/customer/updateResponsible", this.form);
-            if(response.data.status === "success"){
-            this.$message.success("更新が成功しました") ;
-            this.$router.push("/customer");
-            }
-            else if(response.data.status === "error"){
-              this.$message.error("更新に失敗しました: " + response.data.message);
-            }
-            else{
-              this.$message.error("更新に失敗しました");
-            }
-          } catch (error) {
-            this.$message.error("登録に失敗しました: " + error.message);
-          }
-        } else {
-          this.$message.error("入力内容を確認してください");
-        }
-      });
-      this.isLoading = false;
+const showDepartmentDialog = () => {
+  dialogTitle.value = '部門選択画面'
+  dialogColumns.value = [
+    { prop: 'department_name', label: '部門名', width: '220' },
+    { prop: 'department_id', label: '部門ID', width: '220' },
+  ]
+  dialogFilters.value = [
+    {
+      prop: 'department_name',
+      label: '部門名',
+      type: 'el-input',
+      width: 300,
+      props: { placeholder: '部門名を入力してください', clearable: true },
     },
+  ]
+  dialogType.value = 'departmentSearch'
+  dialogVisible.value = true
+}
 
-    goBack() {
-      this.$router.push("/customer");
-    },
+const handleSelectCase = (selectedCase) => {
+  if (dialogType.value === 'customerSearch') {
+    form.customer_id = selectedCase.customer_id
+    form.customer_name = selectedCase.customer_name
+  } else if (dialogType.value === 'departmentSearch') {
+    form.department_id = selectedCase.department_id
+    form.department_name = selectedCase.department_name
+  }
+  dialogVisible.value = false
+}
+
+const fetchResponsibleDetails = async (responsible_id) => {
+  try {
+    const response = await axios.get(`/customer/responsibleDetail/${responsible_id}`)
+    Object.assign(form, response.data)
+  } catch (error) {
+    ElMessage.error('顧客情報の取得に失敗しました')
   }
 }
+
+const submitForm = () => {
+  isLoading.value = true
+  formRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        const response = await axios.post('/customer/updateResponsible', form)
+        if (response.data.status === 'success') {
+          ElMessage.success('更新が成功しました')
+          router.push('/customer')
+        } else if (response.data.status === 'error') {
+          ElMessage.error('更新に失敗しました: ' + response.data.message)
+        } else {
+          ElMessage.error('更新に失敗しました')
+        }
+      } catch (error) {
+        ElMessage.error('登録に失敗しました: ' + error.message)
+      }
+    } else {
+      ElMessage.error('入力内容を確認してください')
+    }
+    isLoading.value = false
+  })
+}
+
+const goBack = () => {
+  router.push('/customer')
+}
+
+onMounted(() => {
+  const id = route.params.id
+  if (id) fetchResponsibleDetails(id)
+})
 </script>
+
+<style scoped>
+.el-input-disabled {
+  background-color: #f5f7fa;
+}
+</style>

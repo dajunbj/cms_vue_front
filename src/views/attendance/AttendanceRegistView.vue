@@ -1,22 +1,109 @@
+<script setup>
+import { reactive, ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import axios from 'axios'
+import { formatDateToMonth } from '@/utils/dateUtil'
+
+const router = useRouter()
+const route = useRoute()
+const attendanceForm = ref(null)
+const isLoading = ref(false)
+
+const form = reactive({
+  employee_id: '',
+  contract_id: '',
+  month: '',
+  attendanceList: []
+})
+
+const isWeekend = (dateStr) => {
+  const day = new Date(dateStr).getDay()
+  return day === 0 || day === 6
+}
+
+const getDayName = (dateStr) => {
+  const day = new Date(dateStr).getDay()
+  return ['日', '月', '火', '水', '木', '金', '土'][day]
+}
+
+const getRowStyle = ({ row }) => {
+  const day = new Date(row.workday).getDay()
+  return (day === 0 || day === 6) ? { backgroundColor: '#f0f0f0' } : {}
+}
+
+const markModified = (row) => {
+  row.is_modified = true
+}
+
+const fetchOrGenerateMonthlyData = async (monthStr) => {
+  axios.defaults.withCredentials = true
+  try {
+    const res = await axios.post('/attendance/registerview/registInit', {
+      month: monthStr
+    })
+    form.attendanceList = res.data.data.attendanceList.map(row => {
+      row.enabled = !isWeekend(row.workday)
+      return row
+    })
+    form.employee_id = res.data.data.employee_id
+  } catch (error) {
+    ElMessage.error('データ取得に失敗しました')
+    console.error(error)
+  }
+}
+
+const submitForm = async () => {
+  isLoading.value = true
+  try {
+    const modifiedRecords = form.attendanceList.filter(item => item.is_modified)
+    if (modifiedRecords.length > 0) {
+      await axios.post('/attendance/register', modifiedRecords)
+    }
+    ElMessage.success('登録が成功しました')
+    router.push('/attendance')
+  } catch (e) {
+    ElMessage.error('登録に失敗しました')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  form.month = formatDateToMonth(route.query.month)
+  fetchOrGenerateMonthlyData(form.month)
+})
+</script>
+
 <template>
   <div class="attendance-wrapper">
     <div class="header-container">
       <h2 class="header-title">
-        <i class="el-icon-date"></i> 勤怠登録画面
+        <i class="el-icon-date" /> 勤怠登録画面
       </h2>
     </div>
 
     <div class="section-container">
-      <el-form :model="form" ref="attendanceForm" label-width="120px">
+      <el-form
+        ref="attendanceForm"
+        :model="form"
+        label-width="120px"
+      >
         <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="社員ID">
-              <el-input v-model="form.employee_id" placeholder="社員IDを入力してください" />
+              <el-input
+                v-model="form.employee_id"
+                placeholder="社員IDを入力してください"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="10">
             <el-form-item label="契約ID">
-              <el-input v-model="form.contract_id" placeholder="契約IDを入力してください" />
+              <el-input
+                v-model="form.contract_id"
+                placeholder="契約IDを入力してください"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -43,170 +130,114 @@
             :row-style="getRowStyle"
             height="500"
           >
-            <el-table-column label="日付" prop="workday">
-              <template slot-scope="scope">
-                {{ scope.row.workday }}<span v-if="getDayName(scope.row.workday)">（{{ getDayName(scope.row.workday) }}）</span>
+            <el-table-column
+              label="日付"
+              prop="workday"
+            >
+              <template #default="{ row }">
+                {{ row.workday }}<span v-if="getDayName(row.workday)">（{{ getDayName(row.workday) }}）</span>
               </template>
             </el-table-column>
-            <el-table-column label="休日出勤" width="80">
-              <template slot-scope="scope">
+
+            <el-table-column
+              label="休日出勤"
+              width="80"
+            >
+              <template #default="{ row }">
                 <el-checkbox
-                  v-if="isWeekend(scope.row.workday)"
-                  v-model="scope.row.enabled"
-                  @change="() => markModified(scope.row)"
+                  v-if="isWeekend(row.workday)"
+                  v-model="row.enabled"
+                  @change="() => markModified(row)"
                 />
               </template>
             </el-table-column>
+
             <el-table-column label="開始時間">
-              <template slot-scope="scope">
+              <template #default="{ row }">
                 <el-time-picker
-                  v-model="scope.row.start_time"
+                  v-model="row.start_time"
                   placeholder="開始時間"
                   value-format="HH:mm"
                   format="HH:mm"
                   style="width: 100%;"
-                  :disabled="!scope.row.enabled"
-                  @change="() => markModified(scope.row)"
+                  :disabled="!row.enabled"
+                  @change="() => markModified(row)"
                 />
               </template>
             </el-table-column>
 
             <el-table-column label="終了時間">
-              <template slot-scope="scope">
+              <template #default="{ row }">
                 <el-time-picker
-                  v-model="scope.row.end_time"
+                  v-model="row.end_time"
                   placeholder="終了時間"
                   value-format="HH:mm"
                   format="HH:mm"
                   style="width: 100%;"
-                  :disabled="!scope.row.enabled"
-                  @change="() => markModified(scope.row)"
+                  :disabled="!row.enabled"
+                  @change="() => markModified(row)"
                 />
               </template>
             </el-table-column>
 
             <el-table-column label="案件名">
-              <template slot-scope="scope">
+              <template #default="{ row }">
                 <el-input
-                  v-model="scope.row.case_name"
+                  v-model="row.case_name"
                   placeholder="案件名"
-                  :disabled="!scope.row.enabled"
-                  @input="() => markModified(scope.row)"
+                  :disabled="!row.enabled"
+                  @input="() => markModified(row)"
                 />
               </template>
             </el-table-column>
 
             <el-table-column label="休憩時間(h)">
-              <template slot-scope="scope">
+              <template #default="{ row }">
                 <el-input-number
-                  v-model="scope.row.break_hours"
+                  v-model="row.break_hours"
                   :min="0"
                   :step="0.25"
                   :controls="true"
                   controls-position="right"
                   style="width: 100%;"
-                  :disabled="!scope.row.enabled"
-                  @change="() => markModified(scope.row)"
+                  :disabled="!row.enabled"
+                  @change="() => markModified(row)"
                 />
               </template>
             </el-table-column>
 
             <el-table-column label="勤怠区分">
-              <template slot-scope="scope">
-                <span>{{ scope.row.attendance_type }}</span>
+              <template #default="{ row }">
+                <span>{{ row.attendance_type }}</span>
               </template>
             </el-table-column>
           </el-table>
         </div>
 
         <el-row>
-          <el-col :span="24" style="text-align: center; margin-top: 20px;">
-            <el-button type="primary" :loading="isLoading" @click="submitForm">登録</el-button>
-            <el-button type="default" @click="goBack">戻る</el-button>
+          <el-col
+            :span="24"
+            style="text-align: center; margin-top: 20px;"
+          >
+            <el-button
+              type="primary"
+              :loading="isLoading"
+              @click="submitForm"
+            >
+              登録
+            </el-button>
+            <el-button
+              type="default"
+              @click="() => router.push('/attendance')"
+            >
+              戻る
+            </el-button>
           </el-col>
         </el-row>
       </el-form>
     </div>
   </div>
 </template>
-
-<script>
-import axios from 'axios';
-import { formatDateToMonth } from '@/utils/dateUtil';
-
-export default {
-  name: "AttendanceRegisterView",
-  data() {
-    return {
-      form: {
-        employee_id: '',
-        contract_id: '',
-        month: '',
-        attendanceList: []
-      },
-      isLoading: false
-    };
-  },
-  created() {
-    this.form.month = formatDateToMonth(this.$route.query.month);
-    this.fetchOrGenerateMonthlyData(this.form.month);
-  },
-  methods: {
-    async fetchOrGenerateMonthlyData(monthStr) {
-      axios.defaults.withCredentials = true;
-      try {
-        const res = await axios.post(`/attendance/registerview/registInit`, {
-            month: monthStr
-        });
-        this.form.attendanceList = res.data.data.attendanceList.map(row => {
-          row.enabled = !this.isWeekend(row.workday);
-          return row;
-        });
-        this.form.employee_id = res.data.data.employee_id;
-      } catch (error) {
-        this.$message.error("データ取得に失敗しました");
-        console.error(error);
-      }
-    },
-    markModified(row) {
-      row.is_modified = true;
-    },
-    isWeekend(dateStr) {
-      const day = new Date(dateStr).getDay();
-      return day === 0 || day === 6;
-    },
-    getDayName(dateStr) {
-      const day = new Date(dateStr).getDay();
-      return ['日', '月', '火', '水', '木', '金', '土'][day];
-    },
-    getRowStyle({ row }) {
-      const day = new Date(row.workday).getDay();
-      if (day === 0 || day === 6) {
-        return { backgroundColor: '#f0f0f0' };
-      }
-      return {};
-    },
-    async submitForm() {
-      this.isLoading = true;
-      try {
-        const modifiedRecords = this.form.attendanceList.filter(item => item.is_modified);
-        if (modifiedRecords.length > 0) {
-          await axios.post('/attendance/register', modifiedRecords);
-        }
-        this.$message.success("登録が成功しました");
-        this.goBack();
-      } catch (e) {
-        this.$message.error("登録に失敗しました");
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    goBack() {
-      this.$router.push('/attendance');
-    }
-  }
-};
-</script>
 
 <style scoped>
 .attendance-wrapper {

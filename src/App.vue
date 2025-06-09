@@ -1,24 +1,28 @@
 <template>
-  <div id="app" class="layout">
+  <div
+    id="app"
+    class="layout"
+  >
     <!-- 登录页面不显示菜单 -->
-    <div v-if="$route.path !== '/login'" class="sidebar">
+    <div
+      v-if="route.path !== '/login'"
+      class="sidebar"
+    >
       <SidebarMenu />
     </div>
 
     <!-- 右侧内容区域 -->
     <div class="content">
-      <router-view></router-view>
+      <router-view />
     </div>
   </div>
 </template>
 
-<script>
-import SidebarMenu from "./components/SidebarMenu.vue";
+<script setup>
+import { useRoute } from 'vue-router'
+import SidebarMenu from './components/SidebarMenu.vue'
 
-export default {
-  name: "App",
-  components: { SidebarMenu },
-};
+const route = useRoute()
 </script>
 
 <style>

@@ -2,14 +2,20 @@
   <div style="width: 100%; max-width: 800px; margin: auto;">
     <div class="header-container">
       <h2 class="header-title">
-        <i class="el-icon-upload2"></i> 領収書アップロード
+        <i class="el-icon-upload2" /> 領収書アップロード
       </h2>
     </div>
 
     <div class="section-container">
-      <el-form :model="form" ref="fileForm" label-width="120px">
-        <!-- 文件上传 -->
-        <el-form-item label="ファイル" prop="file">
+      <el-form
+        ref="fileForm"
+        :model="form"
+        label-width="120px"
+      >
+        <el-form-item
+          label="ファイル"
+          prop="file"
+        >
           <el-upload
             class="upload-demo"
             action="about:blank"
@@ -17,79 +23,77 @@
             :on-remove="handleRemove"
             multiple
             :file-list="fileList"
-            :auto-upload="false" 
+            :auto-upload="false"
           >
-            <el-button size="small" type="primary">クリックしてアップロード</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传 jpg/png 文件</div>
+            <el-button
+              size="small"
+              type="primary"
+            >
+              クリックしてアップロード
+            </el-button>
+            <template #tip>
+              <div class="el-upload__tip">
+                只能上传 jpg/png 文件
+              </div>
+            </template>
           </el-upload>
         </el-form-item>
 
-        <!-- 上传按钮 -->
         <el-form-item>
-          <el-button type="primary" @click="submitFiles">アップロード</el-button>
+          <el-button
+            type="primary"
+            @click="submitFiles"
+          >
+            アップロード
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 
-<script>
-import axios from "axios";
-export default {
-  name: "FileUploadComponent",
-  data() {
-    return {
-      form: {
-      fileList: [], // 存储上传的文件列表
-      }
-    };
-  },
-  methods: {
-    // 文件选择变化时触发
-    handleChange(file, fileList) {
-      console.log("Selected file:", file);
-      console.log("File list updated:", fileList);
-      this.fileList = fileList; // 更新文件列表
-    },
-    // 文件被移除时触发
-    handleRemove(file, fileList) {
-      console.log("Removed file:", file);
-      console.log("Updated file list:", fileList);
-      this.fileList = fileList; // 更新文件列表
-    },
-    // 点击上传按钮
-    async submitFiles() {
-      // 判断是否选择了文件
-      if (!this.fileList.length) {
-        this.$message.error("ファイルを選択してください！");
-        return;
-      }
+<script setup>
+import { ref, reactive } from 'vue';
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
 
-      // 创建 FormData 对象
-      const formData = new FormData();
-      this.fileList.forEach((file) => {
-        formData.append("files", file.raw || file); // 获取文件的原始内容
-      });
+const fileForm = ref(null);
+const fileList = ref([]);
+const form = reactive({ fileList });
 
-      // 发起上传请求
-      try {
-        
-        const response = await axios.post("/api/s3/upload", // 替换为后端接口
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-        this.$message.success("ファイルが正常にアップロードされました！");
-        console.log("Response:", response.data);
+const handleChange = (file, files) => {
+  console.log("Selected file:", file);
+  console.log("File list updated:", files);
+  fileList.value = files;
+};
 
-        // 清空文件列表
-        this.fileList = [];
-      } catch (error) {
-        this.$message.error("アップロードに失敗しました: " + error.message);
-      }
-    },
-  },
+const handleRemove = (file, files) => {
+  console.log("Removed file:", file);
+  console.log("Updated file list:", files);
+  fileList.value = files;
+};
+
+const submitFiles = async () => {
+  if (!fileList.value.length) {
+    ElMessage.error("ファイルを選択してください！");
+    return;
+  }
+
+  const formData = new FormData();
+  fileList.value.forEach((file) => {
+    formData.append("files", file.raw || file);
+  });
+
+  try {
+    const response = await axios.post("/api/s3/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    ElMessage.success("ファイルが正常にアップロードされました！");
+    console.log("Response:", response.data);
+    fileList.value = [];
+  } catch (error) {
+    ElMessage.error("アップロードに失敗しました: " + error.message);
+  }
 };
 </script>
 

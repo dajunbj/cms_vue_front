@@ -1,11 +1,12 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+// src/store/index.js
 
-Vue.use(Vuex)
+import { createStore } from 'vuex'
 
-export default new Vuex.Store({
-  state: {
-    planCode: 'basic'  //デフォルトプラン
+export default createStore({
+  state() {
+    return {
+      planCode: 'basic' // デフォルトプラン
+    }
   },
   mutations: {
     setPlanCode(state, code) {
