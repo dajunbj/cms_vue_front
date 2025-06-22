@@ -4,8 +4,7 @@
      <div class="logo-title-row">
     <img :src="logo" alt="会社ロゴ" class="company-logo" />
     <h3 class="company-title">精算支援システム</h3>
-  </div>
-
+    </div>
       <el-menu
         default-active="2"
         class="el-menu-vertical-demo"
@@ -32,8 +31,8 @@
             <span>給料管理</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="/employee">給料一覧</el-menu-item>
-            <el-menu-item index="/setting">休暇一覧</el-menu-item>
+              <el-menu-item index="/SalaryDetail">給料一覧</el-menu-item>
+              <el-menu-item index="/SalaryDetail">給料詳細</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
 
