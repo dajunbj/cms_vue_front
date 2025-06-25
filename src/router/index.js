@@ -40,6 +40,11 @@ const routes = [
 
   { path: "/attendance/listview", component: () => import("@/views/attendance/AttendanceListView.vue") },
   { path: "/attendance/registview", component: () => import("@/views/attendance/AttendanceRegistView.vue") },
+  {
+    path: '/ocr/read',
+    name: 'OcrRead',
+    component: () => import('@/views/ocr/OcrRead.vue')
+  },
 ]
 
 const router = createRouter({

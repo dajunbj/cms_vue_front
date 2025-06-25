@@ -70,6 +70,15 @@
             <el-menu-item index="/final-adjustment/entry">申告入力</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
+
+<el-sub-menu v-if="permissions.showOcrAuth" index="8">
+  <template #title>
+    <el-icon><Search /></el-icon>
+    <span>OCR</span>
+  </template>
+  <el-menu-item index="/ocr/read">OCR読取</el-menu-item>
+</el-sub-menu>
+
       </el-menu>
     </el-col>
   </el-row>
@@ -87,7 +96,8 @@ import {
   Wallet,
   Document,
   DocumentChecked,
-  DataAnalysis
+  DataAnalysis,
+  Search
 } from '@element-plus/icons-vue'
 
 const store = useStore()
