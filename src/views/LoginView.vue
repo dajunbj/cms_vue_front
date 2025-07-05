@@ -64,8 +64,8 @@ const handleLogin = async () => {
       const token = data.token
       sessionStorage.setItem('token', token)
       sessionStorage.setItem('tokenExpiration', new Date().getTime() + 60 * 60 * 1000) // 1小时有效
-
       store.commit('setPlanCode', data.company.plan_code)
+      store.commit('setUserRole', data.company.user_role)
 
       router.push('/home')
     } else {

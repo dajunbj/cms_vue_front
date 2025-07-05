@@ -1,10 +1,10 @@
 <template>
   <el-row class="tac">
     <el-col :span="24">
-     <div class="logo-title-row">
-    <img :src="logo" alt="会社ロゴ" class="company-logo" />
-    <h3 class="company-title">精算支援システム</h3>
-    </div>
+      <div class="logo-title-row">
+        <img :src="logo" alt="会社ロゴ" class="company-logo" />
+        <h3 class="company-title">精算支援システム</h3>
+      </div>
       <el-menu
         default-active="2"
         class="el-menu-vertical-demo"
@@ -31,8 +31,8 @@
             <span>給料管理</span>
           </template>
           <el-menu-item-group>
-              <el-menu-item index="/SalaryDetail">給料一覧</el-menu-item>
-              <el-menu-item index="/SalaryDetail">給料詳細</el-menu-item>
+            <el-menu-item index="/SalaryDetail">給料一覧</el-menu-item>
+            <el-menu-item index="/SalaryDetail">給料詳細</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
 
@@ -75,9 +75,10 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { PLAN_PERMISSIONS } from '@/permissions/plan'
+import { ROLE_PERMISSIONS } from '@/permissions/role'
 import logo from '@/assets/company1.png'
 
 // 图标
@@ -91,11 +92,21 @@ import {
 
 const store = useStore()
 const planCode = computed(() => store.state.planCode)
-const permissions = computed(() => PLAN_PERMISSIONS[planCode.value] || {})
+const userRole = computed(() => store.state.userRole)
+// 取得权限配置
+const planPermissions = computed(() => PLAN_PERMISSIONS[planCode.value] || {})
+const rolePermissions = computed(() => ROLE_PERMISSIONS[userRole.value] || {})
 
-const canAccess = ref(false)
-onMounted(() => {
-  canAccess.value = sessionStorage.getItem('right') !== '社員'
+// 合并权限：契約プラン × 角色权限（都为 true 才显示）
+const permissions = computed(() => {
+  const result = {}
+  const allKeys = new Set([...Object.keys(planPermissions.value), ...Object.keys(rolePermissions.value)])
+  for (const key of allKeys) {
+    result[key] = planPermissions.value[key] && rolePermissions.value[key]
+  }
+  alert('plan:'+planCode.value);
+  alert('role:'+userRole.value);
+  return result
 })
 
 const handleOpen = (key, keyPath) => {
@@ -112,13 +123,11 @@ const handleClose = (key, keyPath) => {
   align-items: center;
   padding: 10px 20px;
 }
-
 .company-logo {
   width: 40px;
   height: 40px;
   margin-right: 10px;
 }
-
 .company-title {
   font-size: 20px;
   font-weight: bold;
