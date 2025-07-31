@@ -1,10 +1,10 @@
 <template>
   <el-row class="tac">
     <el-col :span="24">
-     <div class="logo-title-row">
-    <img :src="logo" alt="会社ロゴ" class="company-logo" />
-    <h3 class="company-title">精算支援システム</h3>
-  </div>
+      <div class="logo-title-row">
+        <img :src="logo" alt="会社ロゴ" class="company-logo" />
+        <h3 class="company-title">精算支援システム</h3>
+      </div>
 
       <el-menu
         default-active="2"
@@ -67,28 +67,44 @@
           </template>
           <el-menu-item-group>
             <el-menu-item index="/final-adjustment">年末調整一覧</el-menu-item>
-            <el-menu-item index="/final-adjustment/entry">申告入力</el-menu-item>
+            <el-menu-item index="/final-adjustment/entry"
+              >申告入力</el-menu-item
+            >
           </el-menu-item-group>
         </el-sub-menu>
 
-<el-sub-menu v-if="permissions.showOcrAuth" index="8">
-  <template #title>
-    <el-icon><Search /></el-icon>
-    <span>OCR</span>
-  </template>
-  <el-menu-item index="/ocr/read">OCR読取</el-menu-item>
-</el-sub-menu>
+        <el-sub-menu v-if="permissions.showOcrAuth" index="8">
+          <template #title>
+            <el-icon><Search /></el-icon>
+            <span>OCR</span>
+          </template>
+          <el-menu-item index="/ocr/read">OCR読取</el-menu-item>
+        </el-sub-menu>
 
+        <el-sub-menu v-if="permissions.showExpense" index="9">
+          <template #title>
+            <el-icon><Document /></el-icon>
+            <span>経費管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="/expense/receipt-upload"
+              >領収書アップロード</el-menu-item
+            >
+            <el-menu-item index="/expense/apply">経費申請</el-menu-item>
+            <el-menu-item index="/expense/approval">承認処理</el-menu-item>
+            <el-menu-item index="/expense/history">申請履歴</el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
       </el-menu>
     </el-col>
   </el-row>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { PLAN_PERMISSIONS } from '@/permissions/plan'
-import logo from '@/assets/company1.png'
+import { computed, ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import { PLAN_PERMISSIONS } from "@/permissions/plan";
+import logo from "@/assets/company1.png";
 
 // 图标
 import {
@@ -97,24 +113,24 @@ import {
   Document,
   DocumentChecked,
   DataAnalysis,
-  Search
-} from '@element-plus/icons-vue'
+  Search,
+} from "@element-plus/icons-vue";
 
-const store = useStore()
-const planCode = computed(() => store.state.planCode)
-const permissions = computed(() => PLAN_PERMISSIONS[planCode.value] || {})
+const store = useStore();
+const planCode = computed(() => store.state.planCode);
+const permissions = computed(() => PLAN_PERMISSIONS[planCode.value] || {});
 
-const canAccess = ref(false)
+const canAccess = ref(false);
 onMounted(() => {
-  canAccess.value = sessionStorage.getItem('right') !== '社員'
-})
+  canAccess.value = sessionStorage.getItem("right") !== "社員";
+});
 
 const handleOpen = (key, keyPath) => {
-  console.log('打开菜单:', key, keyPath)
-}
+  console.log("打开菜单:", key, keyPath);
+};
 const handleClose = (key, keyPath) => {
-  console.log('关闭菜单:', key, keyPath)
-}
+  console.log("关闭菜单:", key, keyPath);
+};
 </script>
 
 <style scoped>
