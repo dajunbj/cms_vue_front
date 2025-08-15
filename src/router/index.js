@@ -146,11 +146,6 @@ const routes = [
     path: '/attendance/registview',
     component: () => import('@/views/attendance/AttendanceRegistView.vue')
   },
-  {
-    path: '/ocr/read',
-    name: 'OcrRead',
-    component: () => import('@/views/ocr/OcrRead.vue')
-  },
   // 領収書アップロード・確認画面
   {
     path: '/expense/receipt-upload',
@@ -160,32 +155,8 @@ const routes = [
     }
   },
 
-  // 経費申請作成画面
-  {
-    path: '/expense/apply',
-    component: () => import('@/views/expense/ExpenseApplyView.vue'),
-    meta: {
-      requiresAuth: true
-    }
-  },
+  { path: '/expense/receipt-list', component: () => import('@/views/expense/ReceiptListView.vue'), meta: { requiresAuth: true } }
 
-  // 経費承認画面（管理者用）
-  {
-    path: '/expense/approval',
-    component: () => import('@/views/expense/ExpenseApprovalView.vue'),
-    meta: {
-      requiresAuth: true
-    }
-  },
-
-  // 経費履歴・出力画面
-  {
-    path: '/expense/history',
-    component: () => import('@/views/expense/ExpenseHistoryView.vue'),
-    meta: {
-      requiresAuth: true
-    }
-  }
 ];
 
 const router = createRouter({

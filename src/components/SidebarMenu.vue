@@ -73,14 +73,6 @@
           </el-menu-item-group>
         </el-sub-menu>
 
-        <el-sub-menu v-if="permissions.showOcrAuth" index="8">
-          <template #title>
-            <el-icon><Search /></el-icon>
-            <span>OCR</span>
-          </template>
-          <el-menu-item index="/ocr/read">OCR読取</el-menu-item>
-        </el-sub-menu>
-
         <el-sub-menu v-if="permissions.showExpense" index="9">
           <template #title>
             <el-icon><Document /></el-icon>
@@ -90,9 +82,7 @@
             <el-menu-item index="/expense/receipt-upload"
               >領収書アップロード</el-menu-item
             >
-            <el-menu-item index="/expense/apply">経費申請</el-menu-item>
-            <el-menu-item index="/expense/approval">承認処理</el-menu-item>
-            <el-menu-item index="/expense/history">申請履歴</el-menu-item>
+            <el-menu-item index="/expense/receipt-list">経費申請</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
       </el-menu>
