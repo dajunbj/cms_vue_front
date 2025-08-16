@@ -27,3 +27,7 @@ export async function useAuthRights() {
 
   return authData
 }
+
+export function deleteAllSelected() {
+  return '';
+}
