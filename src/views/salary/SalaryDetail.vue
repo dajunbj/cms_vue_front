@@ -1,432 +1,262 @@
 <template>
   <div class="page-container">
-    <!-- フィルター条件 -->
-    <el-row class="toolbar" justify="start" :gutter="20">
+    <!-- フィルター -->
+    <el-row class="toolbar" :gutter="16" justify="start">
       <el-col :span="6">
-        <el-select
-          v-model="selectedEmployeeId"
-          placeholder="社員名を選択"
-          style="width: 100%;"
-          :loading="loadingEmployees"
-          @change="onSelectionChange"
-          filterable
-          clearable
-        >
-          <el-option
-            v-for="emp in employeeList"
-            :key="emp.id"
-            :label="emp.name"
-            :value="emp.id"
-          />
+        <el-select v-model="selectedEmployeeId"
+                   placeholder="社員名を選択"
+                   style="width:100%"
+                   filterable clearable
+                   :loading="loadingEmployees"
+                   @change="fetchDetail">
+          <el-option v-for="emp in employeeList"
+                     :key="emp.id"
+                     :label="emp.name"
+                     :value="emp.id" />
         </el-select>
       </el-col>
-
       <el-col :span="6">
-        <el-date-picker
-          v-model="selectedFiscalYear"
-          type="year"
-          placeholder="給料年"
-          format="YYYY年"
-          value-format="YYYY"
-          style="width: 100%;"
-          @change="onSelectionChange"
-          :disabled="!selectedEmployeeId"
-        />
+        <el-date-picker v-model="selectedMonth"
+                        type="month"
+                        placeholder="給料年月"
+                        value-format="YYYY-MM-01"
+                        format="YYYY年MM月"
+                        style="width:100%"
+                        :disabled="!selectedEmployeeId"
+                        @change="fetchDetail" />
       </el-col>
-
       <el-col :span="4">
-        <el-button
-          type="primary"
-          :icon="Document"
-          :disabled="!combinedTable.length"
-          @click="downloadCSV"
-        >
-          給与明細を出力
-        </el-button>
+        <el-button type="primary" :icon="Document" :disabled="!detail"
+                   @click="downloadCSV">明細票CSV出力</el-button>
       </el-col>
     </el-row>
 
-    <!-- 明細表示テーブル -->
-    <el-card shadow="never" body-class="table-card-body">
-      <div class="table-scroll">
-        <el-table
-          :data="combinedTable"
-          border
-          style="width: 100%; font-size: 12px;"
-          :row-class-name="rowClassName"
-          :empty-text="tableEmptyText"
-          v-loading="loadingDetails"
-        >
-          <el-table-column label="カテゴリ" width="150" fixed>
-            <template #default="{ row, $index }">
-              <span v-if="shouldShowGroup($index, row.group)">
-                {{ row.group }}
-              </span>
-            </template>
-          </el-table-column>
+    <!-- 明細票 -->
+    <el-card class="slip" shadow="never" v-loading="loadingDetail">
+      <div class="slip-header">
+        <div class="title">給与明細</div>
+        <div class="meta">
+          <div><span>社員番号</span><strong>{{ detail?.employee_id || '—' }}</strong></div>
+          <div><span>氏名</span><strong>{{ detail?.employee_name || '—' }}</strong></div>
+          <div><span>年月</span><strong>{{ headerYyyymm }}</strong></div>
+        </div>
+      </div>
 
-          <el-table-column prop="item" label="項目" width="220" fixed />
-
-          <el-table-column
-            v-for="(month, colIndex) in months"
-            :key="colIndex"
-            :label="month"
-            :prop="'month_' + (colIndex + 1)"
-            width="120"
-            align="right"
-          >
-            <!-- 作用域插槽可访问父作用域的 colIndex -->
-            <template #default="{ row }">
-              <template v-if="colIndex >= currentMonthIndex && !row.total">
-                <el-input-number
-                  v-model="row['month_' + (colIndex + 1)]"
-                  :min="0"
-                  size="small"
-                  controls-position="right"
-                  @change="onCellEdit(row, colIndex)"
-                />
-              </template>
-              <template v-else>
-                <strong v-if="row.total">{{ format(row['month_' + (colIndex + 1)]) }}</strong>
-                <span v-else>{{ format(row['month_' + (colIndex + 1)]) }}</span>
-              </template>
-            </template>
-          </el-table-column>
+      <!-- ① 勤怠 -->
+      <div class="block">
+        <div class="block-title"><span class="badge badge-blue">1</span> 勤怠</div>
+        <el-table :data="attendanceRows" border size="small" style="width:100%">
+          <el-table-column prop="work_days" label="就業日数" align="center"/>
+          <el-table-column prop="attend_days" label="出勤日数" align="center"/>
+          <el-table-column prop="absent_days" label="欠勤日数" align="center"/>
+          <el-table-column prop="special_leave" label="特別休暇日数" align="center"/>
+          <el-table-column prop="paid_leave" label="有給休暇日数" align="center"/>
+          <el-table-column prop="remain_leave" label="有給休暇残日数" align="center"/>
         </el-table>
+        <el-table :data="attendanceTimeRows" border size="small" style="width:100%;margin-top:6px">
+          <el-table-column prop="work_time" label="労働時間" align="center"/>
+          <el-table-column prop="ot_time" label="残業時間" align="center"/>
+          <el-table-column prop="midnight_time" label="深夜時間" align="center"/>
+          <el-table-column prop="holiday_time" label="休日労働時間" align="center"/>
+          <el-table-column prop="lateearly_time" label="遅刻早退時間" align="center"/>
+        </el-table>
+      </div>
+
+      <!-- ② 支給 -->
+      <div class="block">
+        <div class="block-title"><span class="badge badge-orange">2</span> 支給</div>
+        <el-row :gutter="12">
+          <el-col v-for="(col,idx) in payCols" :key="idx" :span="6">
+            <el-table :data="col" border size="small" style="width:100%">
+              <el-table-column prop="label" label="" width="150"/>
+              <el-table-column prop="value" label="" align="right">
+                <template #default="{row}">{{ formatYen(row.value) }}</template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- ③ 控除 -->
+      <div class="block">
+        <div class="block-title"><span class="badge badge-purple">3</span> 控除</div>
+        <el-row :gutter="12">
+          <el-col v-for="(col,idx) in dedCols" :key="idx" :span="6">
+            <el-table :data="col" border size="small" style="width:100%">
+              <el-table-column prop="label" label="" width="150"/>
+              <el-table-column prop="value" label="" align="right">
+                <template #default="{row}">{{ formatYen(row.value) }}</template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 集計 -->
+      <div class="summary">
+        <div class="cell"><div class="k">総支給額</div><div class="v">{{ formatYen(totals.total_payment) }}</div></div>
+        <div class="cell"><div class="k">総控除額</div><div class="v">{{ formatYen(totals.total_deduction) }}</div></div>
+        <div class="cell strong"><div class="k">差引支給額</div><div class="v">{{ formatYen(totals.net_payment) }}</div></div>
       </div>
     </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { Document } from '@element-plus/icons-vue'
 
-/** =========================
- *    UI 状态
- * ========================= */
 const loadingEmployees = ref(false)
-const loadingDetails   = ref(false)
+const loadingDetail = ref(false)
+const employeeList = ref([])
+const selectedEmployeeId = ref(null)
+const selectedMonth = ref(null)
+const detail = ref(null)
 
-const selectedFiscalYear = ref(null)  // '2024' 这样的字符串
-const selectedEmployeeId = ref(null)  // 绑定社員ID
-const employeeList       = ref([])    // [{ id: string, name: string }]
-
-// 9月〜翌8月（会计年度）
-const months = ['9月','10月','11月','12月','1月','2月','3月','4月','5月','6月','7月','8月']
-
-// 以 员工ID → 年度 为 key 的明细缓存
-// { [employeeId]: { [fiscalYear]: { personal:[], company:[] } } }
-const salaryDataByYear = reactive({})
-
-/** 当期月份在会计年度内的列序号（0..11）
- * 9=0,10=1,11=2,12=3,1=4,...,8=11
- */
-const currentMonthIndex = computed(() => {
-  const today = new Date()
-  const m = today.getMonth() + 1 // 1..12
-  return m >= 9 ? (m - 9) : (m + 3)
+const headerYyyymm = computed(() => {
+  if (!detail.value?.salary_month) return '—'
+  return detail.value.salary_month.substring(0,7).replace('-', '年') + '月'
 })
 
-/** 选中社員名（用于导出文件名） */
-const selectedEmployeeName = computed(() => {
-  const emp = employeeList.value.find(e => e.id === selectedEmployeeId.value)
-  return emp?.name || ''
+// 勤怠
+const attendanceRows = computed(() => [{
+  work_days: detail.value?.working_days ?? 0,
+  attend_days: detail.value?.working_days ?? 0,
+  absent_days: detail.value?.absent_days ?? 0,
+  special_leave: detail.value?.special_leave_days ?? 0,
+  paid_leave: detail.value?.paid_leave_days ?? 0,
+  remain_leave: detail.value?.paid_leave_remain_days ?? 0
+}])
+const attendanceTimeRows = computed(() => [{
+  work_time: fmtH(detail.value?.working_hours ?? 0),
+  ot_time: fmtH(detail.value?.overtime_hours ?? 0),
+  midnight_time: fmtH(detail.value?.midnight_hours ?? 0),
+  holiday_time: fmtH(detail.value?.holiday_work_hours ?? 0),
+  lateearly_time: fmtH(detail.value?.late_early_hours ?? 0)
+}])
+
+// 支給/控除列表
+const payRows = computed(() => [
+  { label:'基本給', value: detail.value?.base_salary||0 },
+  { label:'残業手当', value: detail.value?.overtime_allowance||0 },
+  { label:'深夜労働手当', value: detail.value?.midnight_allowance||0 },
+  { label:'休日労働手当', value: detail.value?.holiday_allowance||0 },
+  { label:'資格手当', value: detail.value?.qualification_allowance||0 },
+  { label:'役職手当', value: detail.value?.position_allowance||0 },
+  { label:'住宅手当', value: detail.value?.housing_allowance||0 },
+  { label:'通勤手当', value: detail.value?.commuting_allowance||0 }
+])
+const dedRows = computed(() => [
+  { label:'健康保険', value: detail.value?.health_insurance||0 },
+  { label:'介護保険', value: detail.value?.nursing_insurance||0 },
+  { label:'厚生年金', value: detail.value?.welfare_pension||0 },
+  { label:'雇用保険', value: detail.value?.employment_insurance||0 },
+  { label:'所得税', value: detail.value?.income_tax||0 },
+  { label:'住民税', value: detail.value?.resident_tax||0 }
+])
+
+// 四列拆分
+function splitFour(list){
+  const size = Math.ceil(list.length/4)
+  return [list.slice(0,size), list.slice(size,2*size), list.slice(2*size,3*size), list.slice(3*size)]
+}
+const payCols = computed(()=> splitFour(payRows.value))
+const dedCols = computed(()=> splitFour(dedRows.value))
+
+// 合计
+const totals = computed(()=>{
+  const total_payment = payRows.value.reduce((a,b)=>a+Number(b.value||0),0)
+  const total_deduction = dedRows.value.reduce((a,b)=>a+Number(b.value||0),0)
+  return {
+    total_payment,
+    total_deduction,
+    net_payment: total_payment-total_deduction
+  }
 })
 
-/** 表格无数据时文案 */
-const tableEmptyText = computed(() => {
-  if (loadingDetails.value) return '読込中...'
-  if (!selectedEmployeeId.value) return '社員を選択してください'
-  if (!selectedFiscalYear.value) return '年を選択してください'
-  return 'データがありません'
-})
+function formatYen(v){ return '¥'+Number(v||0).toLocaleString() }
+function fmtH(h){ const m=Math.round(Number(h)*60); return `${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}` }
 
-/** =========================
- *    定义项（后端字段→显示）
- * ========================= */
-const ITEM_DEFS = {
-  base_salary:         { label: '基本給',     group: '支給',   bucket: 'personal' },
-  position_allowance:  { label: '職務手当',   group: '支給',   bucket: 'personal' },
-  commuting_allowance: { label: '通勤手当',   group: '支給',   bucket: 'personal' },
-
-  // 如需扩展控除/会社負担字段，在此增加：
-  // income_tax:        { label: '所得税',     group: '控除',   bucket: 'personal' },
-  // resident_tax:      { label: '住民税',     group: '控除',   bucket: 'personal' },
-  // health_insurance:  { label: '健康保険',   group: '控除',   bucket: 'personal' },
-  // welfare_pension:   { label: '厚生年金',   group: '控除',   bucket: 'personal' },
-  // company_health_insurance: { label: '会社負担 健康保険', group: '会社負担', bucket: 'company' },
-}
-
-/** =========================
- *    工具函数
- * ========================= */
-
-/** 解析 salary_month → 会计年度 + 月序号 */
-function parseMonthIndexAndFiscalYear(salary_month) {
-  const m = String(salary_month).match(/(\d{4})\D?(\d{1,2})/)
-  if (!m) return { fiscalYear: 'Unknown', monthIndex: 0 }
-  const y = parseInt(m[1], 10)
-  const mo = parseInt(m[2], 10) // 1..12
-
-  const monthIndex = mo >= 9 ? (mo - 9) : (mo + 3)
-  const fiscalYear = String(mo >= 9 ? y : (y - 1))
-  return { fiscalYear, monthIndex }
-}
-
-/** 生成某一分组的合计行 */
-function makeTotalRow(rows, groupLabel, totalItemLabel) {
-  if (!rows.length) return null
-  const sum = Array(12).fill(0)
-  rows.forEach(r => {
-    for (let i = 0; i < 12; i++) sum[i] += Number(r.data[i] || 0)
-  })
-  return { type: groupLabel, item: totalItemLabel, total: true, data: sum }
-}
-
-/** =========================
- *    数据获取
- * ========================= */
-
-/** 取得社員列表 */
-async function fetchEmployeeList() {
+// mock数据/请求
+async function fetchEmployeeList(){
   loadingEmployees.value = true
-  try {
-    alert("l1");
-    const res = await axios.post('/salarydetail/listEmployees');
-    alert("22");
-    const raw = res.data?.data ?? []
-    alert("33:"+raw.Id+"_"+raw.name);
-    employeeList.value = raw.map((r, idx) => {
-      if (typeof r === 'string') return { id: String(idx + 1), name: r }
-      const id   = r.id ?? r.employee_id ?? r.emp_id ?? String(idx + 1)
-      const name = r.name ?? r.employee_name ?? r.emp_name ?? `未命名(${id})`
-      return { id: String(id), name: String(name) }
-    })
-    if (employeeList.value.length && !selectedEmployeeId.value) {
+  try{
+    const res = await axios.post('/salarydetail/listEmployees')
+    employeeList.value = res.data?.data || []
+    if(employeeList.value.length && !selectedEmployeeId.value){
       selectedEmployeeId.value = employeeList.value[0].id
     }
-  } catch (e) {
-    console.error('社員取得エラー:', e)
-  } finally {
-    loadingEmployees.value = false
-  }
+  }finally{ loadingEmployees.value=false }
+}
+async function fetchDetail(){
+  if(!selectedEmployeeId.value||!selectedMonth.value) return
+  loadingDetail.value=true
+  try{
+    const res = await axios.post('/salarydetail/getDetail',{
+      employee_id:1, //selectedEmployeeId.value,
+      salary_month:selectedMonth.value
+    })
+    detail.value = res.data?.data || {}
+  }finally{ loadingDetail.value=false }
 }
 
-/** 取得并构建某社員/年度的明细（支持仅传社員，后端返回多年度我们会缓存） */
-async function fetchSalaryDataFromBackend(empId = selectedEmployeeId.value, fiscalYear = selectedFiscalYear.value) {
-  if (!empId) return
-  loadingDetails.value = true
-  try {
-    const response = await axios.post('/salarydetail/initSalaryDetail', {
-      employee_id: empId || undefined,
-      fiscal_year: fiscalYear || undefined,
-      // 你的后端若要求其他参数，请在此补充
-    })
-    const list = response.data?.data || []
-
-    const structured = {}
-    for (const rec of list) {
-      const emp = String(rec.employee_id || empId || '未指定')
-      const { fiscalYear: fy, monthIndex } = parseMonthIndexAndFiscalYear(rec.salary_month)
-
-      if (!structured[emp]) structured[emp] = {}
-      if (!structured[emp][fy]) structured[emp][fy] = { personal: [], company: [] }
-
-      // 扫描金额字段 → 填充到分桶
-      for (const key of Object.keys(ITEM_DEFS)) {
-        const def = ITEM_DEFS[key]
-        const val = rec[key]
-        if (val == null) continue
-
-        const arr = structured[emp][fy][def.bucket] // 'personal' | 'company'
-        let row = arr.find(r => r.type === def.group && r.item === def.label)
-        if (!row) {
-          row = { type: def.group, item: def.label, total: false, data: Array(12).fill(0) }
-          arr.push(row)
-        }
-        row.data[monthIndex] += Number(val) || 0
-      }
-    }
-
-    // 计算合计、差引
-    Object.values(structured).forEach(yearMap => {
-      Object.values(yearMap).forEach(bucketMap => {
-        // personal
-        const personal = bucketMap.personal
-        const payRows   = personal.filter(r => r.type === '支給' && !r.total)
-        const dedRows   = personal.filter(r => r.type === '控除' && !r.total)
-
-        const payTotal = makeTotalRow(payRows, '支給', '総支給')
-        const dedTotal = makeTotalRow(dedRows, '控除', '控除合計')
-        if (payTotal) personal.push(payTotal)
-        if (dedTotal) personal.push(dedTotal)
-        if (payTotal && dedTotal) {
-          const net = payTotal.data.map((v, i) => v - dedTotal.data[i])
-          personal.push({ type: '支給', item: '差引支給額', total: true, data: net })
-        }
-
-        // company
-        const company = bucketMap.company
-        const compRows = company.filter(r => r.type === '会社負担' && !r.total)
-        const compTotal = makeTotalRow(compRows, '会社負担', '会社負担合計')
-        if (compTotal) company.push(compTotal)
-      })
-    })
-
-    // 写入缓存
-    const empKey = Object.keys(structured)[0]
-    if (empKey) {
-      if (!salaryDataByYear[empKey]) salaryDataByYear[empKey] = {}
-      Object.assign(salaryDataByYear[empKey], structured[empKey])
-    }
-
-    // 初始化/校正 年度选择（优先当前会计年度）
-    const years = Object.keys(salaryDataByYear[empId] || {})
-    if (years.length > 0) {
-      const now = new Date()
-      const nowFY = String((now.getMonth() + 1) >= 9 ? now.getFullYear() : (now.getFullYear() - 1))
-      if (!selectedFiscalYear.value || !years.includes(selectedFiscalYear.value)) {
-        selectedFiscalYear.value = years.includes(nowFY) ? nowFY : years[0]
-      }
-    }
-  } catch (e) {
-    console.error('明細取得エラー:', e)
-  } finally {
-    loadingDetails.value = false
-  }
+function downloadCSV(){
+  const lines=[]
+  lines.push(['社員番号',detail.value?.employee_id,'氏名',detail.value?.employee_name,'年月',headerYyyymm.value])
+  lines.push([])
+  lines.push(['①勤怠'])
+  const a=attendanceRows.value[0]
+  lines.push(['就業日数','出勤日数','欠勤日数','特別休暇日数','有給休暇日数','有給休暇残日数'])
+  lines.push([a.work_days,a.attend_days,a.absent_days,a.special_leave,a.paid_leave,a.remain_leave])
+  lines.push(['労働時間','残業時間','深夜時間','休日労働時間','遅刻早退時間'])
+  const t=attendanceTimeRows.value[0]
+  lines.push([t.work_time,t.ot_time,t.midnight_time,t.holiday_time,t.lateearly_time])
+  lines.push([])
+  lines.push(['②支給'])
+  payRows.value.forEach(r=>lines.push([r.label,r.value]))
+  lines.push(['支給計',totals.value.total_payment])
+  lines.push([])
+  lines.push(['③控除'])
+  dedRows.value.forEach(r=>lines.push([r.label,r.value]))
+  lines.push(['控除計',totals.value.total_deduction])
+  lines.push([])
+  lines.push(['差引支給額',totals.value.net_payment])
+  const csv = lines.map(r=>r.join(',')).join('\n')
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'})
+  const aTag=document.createElement('a')
+  aTag.href=URL.createObjectURL(blob)
+  aTag.download=`${detail.value?.employee_name||'未指定'}_${headerYyyymm.value}_給与明細.csv`
+  document.body.appendChild(aTag); aTag.click(); document.body.removeChild(aTag)
+  URL.revokeObjectURL(aTag.href)
 }
 
-/** =========================
- *    组合表数据
- * ========================= */
-const combinedTable = computed(() => {
-  const empId = selectedEmployeeId.value
-  const fy    = selectedFiscalYear.value
-  const personal = salaryDataByYear[empId]?.[fy]?.personal || []
-  const company  = salaryDataByYear[empId]?.[fy]?.company  || []
-
-  const build = (list, type) =>
-    list.map(row => {
-      const r = { group: row.type, item: row.item, total: row.total, type }
-      for (let i = 0; i < 12; i++) r[`month_${i + 1}`] = row.data[i] || 0
-      return r
-    })
-
-  return [...build(personal, 'personal'), ...build(company, 'company')]
-})
-
-/** =========================
- *    生命周期
- * ========================= */
-onMounted(async () => {
+onMounted(async ()=>{
   await fetchEmployeeList()
-  if (selectedEmployeeId.value) {
-    await fetchSalaryDataFromBackend(selectedEmployeeId.value, selectedFiscalYear.value)
-  }
+  const d=new Date(); selectedMonth.value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`
+  await fetchDetail()
 })
-
-/** =========================
- *    事件处理
- * ========================= */
-function onSelectionChange() {
-  // 切换社員或年度时重新拉取（年度可能为空，让后端返多年度也可）
-  fetchSalaryDataFromBackend(selectedEmployeeId.value, selectedFiscalYear.value)
-}
-
-function onCellEdit(row, colIndex) {
-  // 此处仅前端修改单元格的显示值；如需“联动实时重算合计”，
-  // 可在这里根据 row.group / row.total == false 找到原桶并重算合计行。
-  // 推荐：编辑完成后调用保存API，成功后重新 fetch 一次，保证口径一致。
-  console.log('Cell edited:', { item: row.item, monthIndex: colIndex })
-}
-
-/** =========================
- *    表格辅助
- * ========================= */
-function shouldShowGroup(index, group) {
-  if (index === 0) return true
-  return combinedTable.value[index - 1]?.group !== group
-}
-
-function rowClassName({ row }) {
-  if (row.total) return 'row-total'
-  if (row.group === '支給') return 'row-pay'
-  if (row.group === '控除') return 'row-deduction'
-  if (row.group === '勤務情報') return 'row-attendance'
-  if (row.group === '会社負担') return 'row-company'
-  return ''
-}
-
-function format(value) {
-  const v = Number(value || 0)
-  return '¥' + v.toLocaleString()
-}
-
-/** =========================
- *    CSV 导出
- * ========================= */
-function downloadCSV() {
-  const rows = combinedTable.value.map(row => {
-    return [row.group, row.item, ...Array(12).fill(0).map((_, i) => row[`month_${i + 1}`] || 0)]
-  })
-
-  let csvContent = 'カテゴリ,項目,' + months.join(',') + '\n'
-  rows.forEach(r => {
-    // 简单转义逗号/引号
-    const escaped = r.map(cell => {
-      const s = String(cell ?? '')
-      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
-    })
-    csvContent += escaped.join(',') + '\n'
-  })
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-
-  const emp = selectedEmployeeName.value || '未指定'
-  const fy  = selectedFiscalYear.value || '年度不明'
-  link.download = `${emp}_${fy}_給与明細.csv`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(link.href)
-}
 </script>
 
 <style scoped>
-.page-container {
-  padding: 20px;
-  background-color: #f9f9f9;
+.page-container{ padding:16px; background:#f7f8fa; }
+.toolbar{ margin-bottom:12px; }
+.slip{ background:#fff; }
+.slip-header{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px; }
+.slip-header .title{ font-size:18px; font-weight:600; }
+.slip-header .meta{ display:flex; gap:16px; }
+.slip-header .meta span{ color:#666; margin-right:6px; }
+.block{ margin-top:12px; }
+.block-title{ font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+.badge{ display:inline-flex; width:22px; height:22px; border-radius:50%; color:#fff; align-items:center; justify-content:center; font-weight:700; }
+.badge-blue{ background:#3f51b5; }
+.badge-orange{ background:#ff9800; }
+.badge-purple{ background:#7e57c2; }
+.summary{
+  margin-top:12px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;
+  background:#f0f3f7; padding:10px; border-radius:6px;
 }
-.toolbar {
-  margin-bottom: 16px;
-}
-.table-card-body {
-  padding: 0;
-}
-.table-scroll {
-  max-height: 900px;
-  overflow-y: auto;
-}
-
-/* 行着色 */
-::v-deep(.row-pay) {
-  background-color: #e3f2fd !important;
-}
-::v-deep(.row-deduction) {
-  background-color: #ffebee !important;
-}
-::v-deep(.row-attendance) {
-  background-color: #eeeeee !important;
-}
-::v-deep(.row-company) {
-  background-color: #fff8e1 !important;
-}
-::v-deep(.row-total) {
-  background-color: #e8f5e9 !important;
-  font-weight: bold;
-}
+.summary .cell{ background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px; display:flex; justify-content:space-between; }
+.summary .cell .k{ color:#666; }
+.summary .cell.strong{ background:#e8f5e9; border-color:#c8e6c9; font-weight:700; }
 </style>

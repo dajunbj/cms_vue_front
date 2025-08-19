@@ -40,7 +40,7 @@ const routes = [
 
   { path: "/attendance/listview", name: "AttendanceListView",component: () => import("@/views/attendance/AttendanceListView.vue")},
   { path: "/attendance/registview", name: "AttendanceRegistView",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
-  { path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalaryDetail.vue")},
+  { path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalarySlip.vue")},
   ];
 
 const router = createRouter({
