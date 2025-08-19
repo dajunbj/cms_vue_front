@@ -31,7 +31,7 @@
             <span>給料管理</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="/SalaryDetail">給料一覧</el-menu-item>
+            <el-menu-item index="/SalaryList">給料一覧</el-menu-item>
             <el-menu-item index="/SalaryDetail">給料詳細</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
