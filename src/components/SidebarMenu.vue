@@ -83,6 +83,7 @@
               >領収書アップロード</el-menu-item
             >
             <el-menu-item index="/expense/receipt-list">経費申請</el-menu-item>
+            <el-menu-item index="/expense/approval">経費承認</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
       </el-menu>

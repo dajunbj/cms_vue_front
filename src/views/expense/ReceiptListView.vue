@@ -1,21 +1,27 @@
 <template>
   <div class="p-4">
-    <!-- 検索フォーム + 一括申請 -->
+    <!-- ================== 検索フォーム + 一括申請ボタン ================== -->
     <el-card class="mb-4">
       <el-form :inline="true" :model="query">
+        <!-- 店名で部分一致検索 -->
         <el-form-item label="店名">
           <el-input v-model="query.storeName" placeholder="店名で検索" clearable />
         </el-form-item>
+
+        <!-- 状態で絞り込み -->
         <el-form-item label="状態">
           <el-select v-model="query.status" placeholder="状態を選択" clearable style="width: 180px">
             <el-option v-for="s in statusOptions" :key="s" :label="s" :value="s" />
           </el-select>
         </el-form-item>
+
+        <!-- 検索／リセットボタン -->
         <el-form-item>
           <el-button type="primary" :loading="loading" @click="fetchList(1)">検索</el-button>
           <el-button @click="reset">リセット</el-button>
         </el-form-item>
 
+        <!-- 一括申請ボタン（選択されていて、かつ全て申請可能状態で有効） -->
         <el-form-item style="margin-left: 12px">
           <el-button
             type="success"
@@ -26,7 +32,7 @@
       </el-form>
     </el-card>
 
-    <!-- 一覧テーブル -->
+    <!-- ================== 領収書一覧テーブル ================== -->
     <el-card>
       <el-table
         :data="items"
@@ -35,10 +41,10 @@
         :row-key="row => row.id"
         @selection-change="onSelectionChange"
       >
-        <!-- 选择列 -->
+        <!-- 選択用チェックボックス列 -->
         <el-table-column type="selection" width="48" reserve-selection />
 
-        <!-- 画像 -->
+        <!-- 領収書画像 -->
         <el-table-column label="画像" width="110">
           <template #default="{ row }">
             <el-image
@@ -48,6 +54,7 @@
               fit="cover"
               style="width: 80px; height: 80px; border-radius: 4px;"
             >
+              <!-- 読み込みエラー時の表示 -->
               <template #error>
                 <div style="font-size:12px; color:#999; width:80px;">No Image</div>
               </template>
@@ -55,6 +62,7 @@
           </template>
         </el-table-column>
 
+        <!-- 店名・発行日・金額・状態・登録日時 -->
         <el-table-column prop="storeName" label="店名" min-width="180" />
         <el-table-column prop="issueDate" label="発行日" width="130" />
         <el-table-column label="金額" width="120" align="right">
@@ -67,7 +75,7 @@
         </el-table-column>
         <el-table-column prop="createdAt" label="登録日時" min-width="160" />
 
-        <!-- 操作 -->
+        <!-- 編集・単票申請などの操作列 -->
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link @click="goEdit(row.id)">編集</el-button>
@@ -81,6 +89,7 @@
         </el-table-column>
       </el-table>
 
+      <!-- ページネーション -->
       <div class="mt-3" style="display:flex; justify-content:flex-end;">
         <el-pagination
           background
@@ -93,12 +102,13 @@
       </div>
     </el-card>
 
-    <!-- 一括申請ダイアログ -->
+    <!-- ================== 一括申請ダイアログ ================== -->
     <el-dialog v-model="dlg.visible" title="一括申請" width="520px">
       <div style="margin-bottom: 12px;">
         選択件数: <b>{{ selectedRows.length }}</b> 件 /
         合計金額: <b>￥{{ formatYen(totalSelectedAmount) }}</b>
       </div>
+      <!-- 摘要入力 -->
       <el-input
         v-model="dlg.summary"
         type="textarea"
@@ -114,6 +124,14 @@
 </template>
 
 <script setup>
+/**
+ * 領収書一覧画面
+ * - 検索フォーム（店名・状態で絞り込み）
+ * - 一覧テーブル（画像プレビュー、状態タグ付き）
+ * - ページネーション
+ * - 一括申請ダイアログ
+ * - 単票申請・編集ボタン
+ */
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -121,20 +139,23 @@ import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 
-// 一覧・検索
-const items = ref([])
-const total = ref(0)
-const page = ref(1)
-const size = ref(10)
-const loading = ref(false)
+// 一覧データ管理
+const items = ref([])      // 表示用アイテム
+const total = ref(0)       // 総件数
+const page = ref(1)        // 現在ページ
+const size = ref(10)       // 1ページ件数
+const loading = ref(false) // ローディング状態
 
+// 検索条件
 const query = ref({
   storeName: '',
   status: ''
 })
 
+// 状態選択肢
 const statusOptions = ['草稿', '確認済', '申請済', '承認済', '差し戻し']
 
+// 状態→タグ色変換
 const statusTagType = (s) => {
   switch (s) {
     case '確認済': return 'success'
@@ -145,11 +166,13 @@ const statusTagType = (s) => {
   }
 }
 
-// 你已配置了 /uploads 代理到后端，因此这里直接原样返回
+// 画像URL解決（バックエンドで /uploads が公開されている前提）
 const resolveImageUrl = (p) => p || ''
 
+// 金額フォーマット（カンマ区切り、整数円）
 const formatYen = (n) => new Intl.NumberFormat('ja-JP').format(Number(n || 0))
 
+// 一覧取得処理
 const fetchList = async (toPage = page.value) => {
   loading.value = true
   try {
@@ -172,19 +195,25 @@ const fetchList = async (toPage = page.value) => {
   }
 }
 
+// 検索条件リセット
 const reset = () => {
   query.value.storeName = ''
   query.value.status = ''
   fetchList(1)
 }
 
-// 选择 & 一括申請
-const selectedRows = ref([])
+// ================== 選択 & 一括申請関連 ==================
+const selectedRows = ref([])  // 選択中の行
 const onSelectionChange = (rows) => { selectedRows.value = rows }
+
+// 「申請可能」状態（草稿・確認済）のみ許可
 const canApply = (s) => ['草稿', '確認済'].includes(s)
 const allSelectable = computed(() => selectedRows.value.length > 0 && selectedRows.value.every(r => canApply(r.status)))
+
+// 選択分の合計金額
 const totalSelectedAmount = computed(() => selectedRows.value.reduce((sum, r) => sum + Number(r.amount || 0), 0))
 
+// 一括申請ダイアログ管理
 const dlg = ref({ visible: false, summary: '', loading: false })
 
 const openBulkApply = () => {
@@ -196,6 +225,7 @@ const openBulkApply = () => {
   dlg.value.visible = true
 }
 
+// 一括申請実行
 const doBulkApply = async () => {
   try {
     dlg.value.loading = true
@@ -204,7 +234,7 @@ const doBulkApply = async () => {
       receiptIds: ids,
       summary: dlg.value.summary
     }, {
-      headers: { 'X-User-Id': '1' }
+      headers: { 'X-User-Id': '1' } // ★ ユーザーIDは将来的にログイン情報と連動
     })
     ElMessage.success('一括申請しました')
     dlg.value.visible = false
@@ -218,7 +248,7 @@ const doBulkApply = async () => {
   }
 }
 
-// 单条申請 & 編集
+// ================== 単票申請 & 編集 ==================
 const applyOne = async (id) => {
   try {
     await axios.post('/api/expense/requests', { receiptIds: [id], summary: '' }, {
@@ -232,14 +262,17 @@ const applyOne = async (id) => {
   }
 }
 
+// 編集画面へ遷移
 const goEdit = (id) => {
   router.push(`/expense/receipt-edit/${id}`)
 }
 
+// 初期表示時に一覧取得
 onMounted(() => fetchList(1))
 </script>
 
 <style scoped>
+/* マージン調整 */
 .mb-4 { margin-bottom: 16px; }
 .mt-3 { margin-top: 12px; }
 </style>
