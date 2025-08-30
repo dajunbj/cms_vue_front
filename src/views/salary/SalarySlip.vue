@@ -335,7 +335,7 @@ function formatYen (v) { return '¥' + Number(v || 0).toLocaleString() }
 async function fetchEmployees () {
   loadingEmployees.value = true
   try {
-    const res = await axios.post('/salarydetail/listEmployees')
+    const res = await axios.post('/salary/listEmployees')
     employeeList.value = (res.data?.data || []).map((r, i) => ({
       id: String(r.id ?? r.employee_id ?? (i + 1)),
       name: r.name ?? r.employee_name ?? `未命名(${i + 1})`
@@ -352,7 +352,7 @@ async function fetchDetail () {
   if (!selectedEmployeeId.value || !selectedMonth.value) return
   loadingDetail.value = true
   try {
-    const res = await axios.post('/salarydetail/getDetail', {
+    const res = await axios.post('/salary/getDetail', {
       employee_id: selectedEmployeeId.value,
       salary_month: selectedMonth.value
     })
