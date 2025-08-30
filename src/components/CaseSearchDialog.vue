@@ -74,6 +74,7 @@ import axios from "axios"
 
 export default {
   name: "CommonSearchDialog",
+  // 显式声明会触发的事件（按你的用法全列上）
   props: {
     visible: {
       type: Boolean,
@@ -100,6 +101,14 @@ export default {
       default: "",
     },
   },
+  emits: [
+    "update:visible",
+    "select-case",
+    "select-employee",
+    "select-company",
+    "select-department"
+  ],
+  
   data() {
     return {
       localVisible: this.visible,
