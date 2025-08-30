@@ -21,8 +21,24 @@ module.exports = {
     'plugin:vue/recommended', // 若你升级 CLI 后可换成 vue3-recommended
   ],
   rules: {
-    // 你可以按需关闭警告
-    // 'no-console': 'off',
-    // 'no-unused-vars': 'warn',
+    // 直接关闭
+    'vue/max-attributes-per-line': 'off',
+    'vue/first-attribute-linebreak': 'off',
+    'vue/html-closing-bracket-newline': 'off',
+    'vue/singleline-html-element-content-newline': 'off',
+    'vue/html-closing-bracket-spacing': 'off',
+    'vue/attributes-order': 'off',
+    'vue/html-self-closing': 'off',
+    // 或者降级为提示（不算 warning）
+    // 'vue/max-attributes-per-line': 0,
   },
+    overrides: [
+    {
+      files: ['**/*.vue'],
+      rules: {
+        'vue/max-attributes-per-line': 'off',
+        // ...按需添加
+      }
+    }
+  ]
 }

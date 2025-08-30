@@ -138,14 +138,13 @@ const routes = [
     component: () => import("@/views/customer/ResponsibleDetailView.vue"),
   },
 
-  {
-    path: "/attendance/listview",
-    component: () => import("@/views/attendance/AttendanceListView.vue"),
-  },
-  {
-    path: "/attendance/registview",
-    component: () => import("@/views/attendance/AttendanceRegistView.vue"),
-  },
+
+  { path: "/attendance/listview", name: "AttendanceListView",component: () => import("@/views/attendance/AttendanceListView.vue")},
+  { path: "/attendance/registview", name: "AttendanceRegistView",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
+  { path: "/SalaryList", name: "SalaryList",component: () => import("@/views/salary/SalaryList.vue")},
+  { path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalarySlip.vue")},
+  ];
+
   // 領収書アップロード・確認画面
   {
     path: "/expense/receipt-upload",

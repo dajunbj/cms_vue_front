@@ -96,6 +96,7 @@ export default {
       default: () => [],
     },
   },
+  emits: ['update:visible', 'select-company'],
   data() {
     return {
       localVisible: this.visible,

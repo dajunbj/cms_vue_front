@@ -8,6 +8,11 @@ export async function deleteAllSelected(url) {
     return;
   }
 
+  return authData
+}
+
+export function deleteAllSelected() {
+  return '';
   try {
     await axios.post(url, {
       delListId: this.multipleSelection
