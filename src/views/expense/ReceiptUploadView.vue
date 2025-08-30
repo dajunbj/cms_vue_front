@@ -4,7 +4,7 @@
       ツールバー：アップロード／OCR／保存／Excel出力
     ========================================================== -->
     <el-row class="toolbar" justify="space-between" align="middle">
-      <div class="left" style="display:flex;gap:8px;align-items:center">
+      <div class="left" style="display: flex; gap: 8px; align-items: center">
         <!-- 画像アップロード（選択のみ、自動アップロードなし） -->
         <el-upload
           ref="uploadRef"
@@ -54,7 +54,7 @@
               v-for="(img, idx) in images"
               :key="img.localId"
               :class="['thumb', { active: idx === activeIndex }]"
-              @click="setActive(idx)"
+              @click="onThumbClick(idx)"
             >
               <el-image :src="img.previewUrl" fit="cover" class="thumb-img" />
               <div class="thumb-meta">
@@ -64,15 +64,26 @@
                   <!-- ファイル名（省略表示） -->
                   <span class="name" :title="img.name">{{ img.name }}</span>
                   <!-- ステータスタグ -->
-                  <el-tag size="small" class="status-tag" :type="tagType(img.status)">
-                    {{ img.status || '未処理' }}
+                  <el-tag
+                    size="small"
+                    class="status-tag"
+                    :type="tagType(img.status)"
+                  >
+                    {{ img.status || "未処理" }}
                   </el-tag>
                 </div>
                 <!-- 発行先プレビュー -->
-                <small class="issuer">{{ img.issuer || '発行先：未認識' }}</small>
+                <small class="issuer">{{
+                  img.issuer || "発行先：未認識"
+                }}</small>
               </div>
               <!-- 行削除（クリック伝播停止） -->
-              <el-button text type="danger" size="small" @click.stop="remove(idx)">
+              <el-button
+                text
+                type="danger"
+                size="small"
+                @click.stop="remove(idx)"
+              >
                 削除
               </el-button>
             </div>
@@ -86,7 +97,9 @@
           <template #header>
             <div class="viewer-header">
               <div>
-                <el-tag type="info">No. {{ activeImage?.localId ?? '-' }}</el-tag>
+                <el-tag type="info"
+                  >No. {{ activeImage?.localId ?? "-" }}</el-tag
+                >
                 <span class="file-name">{{ activeImage?.name }}</span>
               </div>
               <div class="viewer-tools">
@@ -144,7 +157,7 @@
               <el-form-item>
                 <!-- 保存ボタン（未保存→新規／保存済→差分更新） -->
                 <el-button type="primary" @click="saveOne">
-                  {{ activeImage?.savedId ? '変更後内容を保存' : '現在を保存' }}
+                  {{ activeImage?.savedId ? "変更後内容を保存" : "現在を保存" }}
                 </el-button>
                 <!-- 取消ボタン（保存済のみ表示） -->
                 <el-button
@@ -171,7 +184,7 @@
                 <el-table-column prop="status" label="ステータス" width="100">
                   <template #default="scope">
                     <el-tag size="small" :type="tagType(scope.row.status)">
-                      {{ scope.row.status || '未処理' }}
+                      {{ scope.row.status || "未処理" }}
                     </el-tag>
                   </template>
                 </el-table-column>
@@ -219,18 +232,18 @@ import {
   computed,
   onMounted,
   onBeforeUnmount,
-  nextTick
-} from 'vue'
-import api from '@/api'
+  nextTick,
+} from "vue";
+import api from "@/api";
 import {
   ZoomIn,
   ZoomOut,
   RefreshLeft,
   RefreshRight,
   FullScreen,
-  ScaleToOriginal
-} from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+  ScaleToOriginal,
+} from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 /* ============================================================
  * 型注釈（参考）：アップロード画像モデル
@@ -252,100 +265,113 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 /* ------------------------------------------------------------
  * 1) 画面状態（リアクティブ）
  * ---------------------------------------------------------- */
-let idSeq = 1
-const images = ref([])
-const activeIndex = ref(-1)
+let idSeq = 1;
+const images = ref([]);
+const activeIndex = ref(-1);
 
 /** アクティブ画像の編集フォーム */
-const form = reactive({ issuer: '', number: '', amount: '', date: '' })
+const form = reactive({ issuer: "", number: "", amount: "", date: "" });
 
 /** 進捗・ヒント */
-const status = ref('待機')
-const hint = ref('準備完了')
-const progress = ref(0)
+const status = ref("待機");
+const hint = ref("準備完了");
+const progress = ref(0);
 
 /** プレビュー：ズーム・回転 */
-const viewerRef = ref(null)
-const imgRef = ref(null)
-const zoom = ref(1)
-const rotation = ref(0)
+const viewerRef = ref(null);
+const imgRef = ref(null);
+const zoom = ref(1);
+const rotation = ref(0);
 
 /** 現在のアクティブ画像 */
-const activeImage = computed(() => images.value[activeIndex.value] || null)
+const activeImage = computed(() => images.value[activeIndex.value] || null);
 
 /* ------------------------------------------------------------
  * 2) 全選択（半選択表示付き）
  * ---------------------------------------------------------- */
 const allChecked = computed({
   get() {
-    return images.value.length > 0 && images.value.every((it) => it.checked)
+    return images.value.length > 0 && images.value.every((it) => it.checked);
   },
   set(val) {
-    images.value.forEach((it) => (it.checked = !!val))
-  }
-})
+    images.value.forEach((it) => (it.checked = !!val));
+  },
+});
 const indeterminate = computed(() => {
-  const checked = images.value.filter((it) => it.checked).length
-  return checked > 0 && checked < images.value.length
-})
+  const checked = images.value.filter((it) => it.checked).length;
+  return checked > 0 && checked < images.value.length;
+});
 
 /** 選択済み集合（全体／未読） */
-const selectedImages = computed(() => images.value.filter((it) => it.checked))
+const selectedImages = computed(() => images.value.filter((it) => it.checked));
 const selectedUnread = computed(() =>
-  selectedImages.value.filter((it) => it.status !== '読取済み')
-)
+  selectedImages.value.filter((it) => it.status !== "読取済み")
+);
 
 /* ------------------------------------------------------------
- * 3) サムネイル操作（選択トグル＋アクティブ切替）
+ * 3) サムネイル操作
  * ---------------------------------------------------------- */
+/** 行→フォーム同期 */
+function syncFormFromItem(it) {
+  Object.assign(form, {
+    issuer: it.issuer || "",
+    number: it.number || "",
+    amount: it.amount || "",
+    date: it.date || "",
+  });
+}
+
 /**
  * サムネイルクリック：
  *  - checked をトグル
- *  - アクティブ変更
- *  - 右上フォーム同期
- *  - プレビュー再レイアウト（完全表示）
+ *  - アクティブ切替（フォーム同期／プレビュー完全表示）
  */
-function setActive(idx) {
-  activeIndex.value = idx
-  const it = images.value[idx]
-  if (!it) return
-  it.checked = !it.checked
-  syncFormFromItem(it)
-  nextTick(() => fitToContainer())
+function onThumbClick(idx) {
+  const it = images.value[idx];
+  if (!it) return;
+  it.checked = !it.checked;
+  focusOnly(idx);
 }
 
 /** 直近アクティブにのみ切替（チェック状態に影響しない） */
 function focusOnly(idx) {
-  activeIndex.value = idx
-  const it = images.value[idx]
-  if (!it) return
-  syncFormFromItem(it)
-  nextTick(() => fitToContainer())
+  activeIndex.value = idx;
+  const it = images.value[idx];
+  if (!it) return;
+  syncFormFromItem(it);
+  nextTick(() => fitToContainer());
 }
 
-/** 前後移動 */
+/** 前後移動（チェック状態は変更しない） */
 function prev() {
-  if (activeIndex.value > 0) setActive(activeIndex.value - 1)
+  if (activeIndex.value > 0) focusOnly(activeIndex.value - 1);
 }
 function next() {
-  if (activeIndex.value < images.value.length - 1) setActive(activeIndex.value + 1)
+  if (activeIndex.value < images.value.length - 1)
+    focusOnly(activeIndex.value + 1);
 }
 
 /** 行削除（Blob URL 解放＋インデックス整合） */
 function remove(idx) {
-  const it = images.value[idx]
-  if (it?.previewUrl?.startsWith('blob:')) URL.revokeObjectURL(it.previewUrl)
-  images.value.splice(idx, 1)
+  const it = images.value[idx];
+  if (it?.previewUrl?.startsWith("blob:")) URL.revokeObjectURL(it.previewUrl);
+  images.value.splice(idx, 1);
   if (activeIndex.value >= images.value.length) {
-    activeIndex.value = images.value.length - 1
+    activeIndex.value = images.value.length - 1;
   }
 }
 
+// —— 用于累计一轮选择中新增加的数量（去抖显示） ——
+const pendingAdded = ref(0)
+let changeDebounceTimer = null
+
 /* ------------------------------------------------------------
- * 4) アップロード（重複除外・自動初期選択）
+ * 4) アップロード（重複除外・自動初期選択）＋去抖累计提示
  * ---------------------------------------------------------- */
 function onFilePicked(_uploadFile, uploadFiles) {
+  const before = images.value.length
   const newly = []
+
   for (const uf of uploadFiles) {
     if (!uf.raw) continue
     const dup = images.value.some(
@@ -368,391 +394,388 @@ function onFilePicked(_uploadFile, uploadFiles) {
       amount: '',
       date: '',
       status: '未処理',
-      checked: false
+      checked: false,
     })
   }
 
   if (newly.length) {
     images.value.push(...newly)
-    if (activeIndex.value === -1) setActive(0) // 初回は 1 枚目をアクティブに
-    hint.value = `${newly.length}枚を追加しました`
+    if (activeIndex.value === -1) focusOnly(0)
   }
+
+  // 本次 onChange 实际新增的数量
+  const addedNow = images.value.length - before
+  if (addedNow > 0) {
+    pendingAdded.value += addedNow
+  }
+
+  // 去抖：多次 onChange（每个文件一次）结束后统一提示本轮合计
+  if (changeDebounceTimer) clearTimeout(changeDebounceTimer)
+  changeDebounceTimer = setTimeout(() => {
+    if (pendingAdded.value > 0) {
+      hint.value = `${pendingAdded.value}枚を追加しました`
+      pendingAdded.value = 0
+    }
+    changeDebounceTimer = null
+  }, 120)
 }
+
+// 卸载时清理定时器
+onBeforeUnmount(() => {
+  if (changeDebounceTimer) clearTimeout(changeDebounceTimer)
+})
+
 
 /* ------------------------------------------------------------
  * 5) OCR 実行（選択分／すべて・未読のみ）
  * ---------------------------------------------------------- */
-/** 選択分を OCR（選択内の未読のみ） */
 async function readSelected() {
-  const selected = images.value.filter((it) => it.checked)
+  const selected = images.value.filter((it) => it.checked);
   if (!selected.length) {
-    hint.value = '選択がありません'
-    return
+    hint.value = "選択がありません";
+    return;
   }
 
   // プレビューは選択の先頭へ（チェック状態は変更しない）
-  const first = selected[0]
-  const firstIdx = images.value.indexOf(first)
-  if (firstIdx >= 0) focusOnly(firstIdx)
+  const first = selected[0];
+  const firstIdx = images.value.indexOf(first);
+  if (firstIdx >= 0) focusOnly(firstIdx);
 
-  const targets = selected.filter((it) => it.status !== '読取済み')
+  const targets = selected.filter((it) => it.status !== "読取済み");
   if (!targets.length) {
-    status.value = '完了'
-    hint.value = '選択項目はすべて読取済みです'
-    return
+    status.value = "完了";
+    hint.value = "選択項目はすべて読取済みです";
+    return;
   }
 
-  status.value = '読取中'
-  progress.value = 0
-  targets.forEach((it) => (it.status = '読取中'))
+  status.value = "読取中";
+  progress.value = 0;
+  targets.forEach((it) => (it.status = "読取中"));
 
   try {
-    const fd = new FormData()
-    targets.forEach((it) => fd.append('files', it.file))
-    const { data } = await api.post('/ocr/parse-batch', fd, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    const fd = new FormData();
+    targets.forEach((it) => fd.append("files", it.file));
+    const { data } = await api.post("/ocr/parse-batch", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
-    const items = data?.items || []
-    let ok = 0
+    const items = data?.items || [];
+    let ok = 0;
     items.forEach((row, j) => {
-      const img = targets[j]
-      if (!img) return
+      const img = targets[j];
+      if (!img) return;
       if (row?.error) {
-        img.status = '読み取り失敗'
-        return
+        img.status = "読み取り失敗";
+        return;
       }
-      img.issuer = row.issuer ?? img.issuer ?? ''
-      img.number = row.number ?? img.number ?? ''
-      img.amount = row.amount ?? img.amount ?? ''
-      img.date = row.date ?? img.date ?? ''
-      img.status = '読取済み'
-      ok++
-    })
+      img.issuer = row.issuer ?? img.issuer ?? "";
+      img.number = row.number ?? img.number ?? "";
+      img.amount = row.amount ?? img.amount ?? "";
+      img.date = row.date ?? img.date ?? "";
+      img.status = "読取済み";
+      ok++;
+    });
 
     // 中央に表示中の画像が今回の対象なら、フォームに最新値を即反映
-    const active = activeImage.value
-    if (active && targets.includes(active)) syncFormFromItem(active)
+    const active = activeImage.value;
+    if (active && targets.includes(active)) syncFormFromItem(active);
 
-    progress.value = Math.round((ok / targets.length) * 100)
-    status.value = '完了'
-    hint.value = `選択未読 ${targets.length} 枚のOCRが完了（成功 ${ok}/${targets.length}）`
+    progress.value = Math.round((ok / targets.length) * 100);
+    status.value = "完了";
+    hint.value = `選択未読 ${targets.length} 枚のOCRが完了（成功 ${ok}/${targets.length}）`;
   } catch (e) {
-    console.error(e)
-    status.value = '失敗'
-    hint.value = 'OCRに失敗しました'
+    console.error(e);
+    status.value = "失敗";
+    hint.value = "OCRに失敗しました";
   }
 }
 
-/** すべて OCR（未読のみ） */
 async function readAll() {
-  const targets = images.value.filter((it) => it.status !== '読取済み')
+  const targets = images.value.filter((it) => it.status !== "読取済み");
   if (!targets.length) {
-    hint.value = '未読の画像はありません'
-    return
+    hint.value = "未読の画像はありません";
+    return;
   }
 
-  status.value = '読取中'
-  progress.value = 0
-  targets.forEach((it) => (it.status = '読取中'))
+  status.value = "読取中";
+  progress.value = 0;
+  targets.forEach((it) => (it.status = "読取中"));
 
   try {
-    const fd = new FormData()
-    targets.forEach((it) => fd.append('files', it.file))
-    const { data } = await api.post('/ocr/parse-batch', fd, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    const fd = new FormData();
+    targets.forEach((it) => fd.append("files", it.file));
+    const { data } = await api.post("/ocr/parse-batch", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
-    const items = data?.items || []
-    let ok = 0
+    const items = data?.items || [];
+    let ok = 0;
     items.forEach((row, j) => {
-      const img = targets[j]
-      if (!img) return
+      const img = targets[j];
+      if (!img) return;
       if (row?.error) {
-        img.status = '読み取り失敗'
-        return
+        img.status = "読み取り失敗";
+        return;
       }
-      img.issuer = row.issuer ?? img.issuer ?? ''
-      img.number = row.number ?? img.number ?? ''
-      img.amount = row.amount ?? img.amount ?? ''
-      img.date = row.date ?? img.date ?? ''
-      img.status = '読取済み'
-      ok++
-    })
+      img.issuer = row.issuer ?? img.issuer ?? "";
+      img.number = row.number ?? img.number ?? "";
+      img.amount = row.amount ?? img.amount ?? "";
+      img.date = row.date ?? img.date ?? "";
+      img.status = "読取済み";
+      ok++;
+    });
 
     // 中央表示が対象だった場合、フォーム更新
-    const active = activeImage.value
-    if (active && targets.includes(active)) syncFormFromItem(active)
+    const active = activeImage.value;
+    if (active && targets.includes(active)) syncFormFromItem(active);
 
-    progress.value = Math.round((ok / targets.length) * 100)
-    status.value = '完了'
-    hint.value = '全未読のOCRが完了しました'
+    progress.value = Math.round((ok / targets.length) * 100);
+    status.value = "完了";
+    hint.value = "全未読のOCRが完了しました";
   } catch (e) {
-    console.error(e)
-    status.value = '失敗'
-    hint.value = 'OCRに失敗しました'
+    console.error(e);
+    status.value = "失敗";
+    hint.value = "OCRに失敗しました";
   }
 }
 
 /* ------------------------------------------------------------
  * 6) 保存（新規／更新／一括／取消）
  * ---------------------------------------------------------- */
-/** 値の正規化（比較用） */
-const norm = (v) => (v ?? '').toString().trim()
-
-/** 差分有無（保存済み→更新の判定に使用） */
+const norm = (v) => (v ?? "").toString().trim();
 function hasDiff(item, f) {
   return (
     norm(item.issuer) !== norm(f.issuer) ||
     norm(item.number) !== norm(f.number) ||
     norm(item.amount) !== norm(f.amount) ||
     norm(item.date) !== norm(f.date)
-  )
+  );
 }
 
-/** 新規保存（画像＋項目） */
 async function createWithImage(file, payload) {
-  const fd = new FormData()
-  fd.append('file', file)
-  fd.append('issuer', payload.issuer ?? '')
-  fd.append('number', payload.number ?? '')
-  fd.append('amount', String(payload.amount ?? ''))
-  fd.append('date', payload.date ?? '')
-  const { data } = await api.post('/ocr/save-with-image', fd, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })
-  return data // { id, status, message }
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("issuer", payload.issuer ?? "");
+  fd.append("number", payload.number ?? "");
+  fd.append("amount", String(payload.amount ?? ""));
+  fd.append("date", payload.date ?? "");
+  const { data } = await api.post("/ocr/save-with-image", fd, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data;
 }
 
-/** 更新保存（項目のみ） */
 async function updateMeta(id, payload) {
-  const { data } = await api.post('/ocr/update', {
+  const { data } = await api.post("/ocr/update", {
     id,
-    issuer: payload.issuer ?? '',
-    number: payload.number ?? '',
-    amount: payload.amount ?? '',
-    date: payload.date ?? ''
-  })
-  return data // { message }
+    issuer: payload.issuer ?? "",
+    number: payload.number ?? "",
+    amount: payload.amount ?? "",
+    date: payload.date ?? "",
+  });
+  return data;
 }
 
-/** 単体保存（未保存→新規、保存済→差分時のみ更新） */
 async function saveOne() {
-  const item = activeImage.value
-  if (!item) return
+  const item = activeImage.value;
+  if (!item) return;
 
-  // 保存済→差分なしはアラートで抑止
   if (item.savedId) {
     if (!hasDiff(item, form)) {
-      await ElMessageBox.alert('保存済みの内容と同一です。変更はありません。', 'お知らせ', {
-        confirmButtonText: '確認'
-      })
-      return
+      await ElMessageBox.alert(
+        "保存済みの内容と同一です。変更はありません。",
+        "お知らせ",
+        {
+          confirmButtonText: "確認",
+        }
+      );
+      return;
     }
     try {
-      item.status = '保存中'
-      await updateMeta(item.savedId, form)
-      Object.assign(item, form)
-      item.status = '保存済み'
-      ElMessage.success('変更内容を保存しました')
+      item.status = "保存中";
+      await updateMeta(item.savedId, form);
+      Object.assign(item, form);
+      item.status = "保存済み";
+      ElMessage.success("変更内容を保存しました");
     } catch (e) {
-      console.error(e)
-      item.status = '保存失敗'
-      ElMessage.error('保存に失敗しました')
+      console.error(e);
+      item.status = "保存失敗";
+      ElMessage.error("保存に失敗しました");
     }
-    return
+    return;
   }
 
-  // 未保存→新規
   if (!item.file) {
-    ElMessage.warning('画像ファイルがありません')
-    return
+    ElMessage.warning("画像ファイルがありません");
+    return;
   }
   try {
-    item.status = '保存中'
-    const res = await createWithImage(item.file, form)
-    const newId = res?.id
-    if (!newId) throw new Error('IDが取得できませんでした')
-    item.savedId = newId
-    Object.assign(item, form)
-    item.status = '保存済み'
-    ElMessage.success('保存しました')
+    item.status = "保存中";
+    const res = await createWithImage(item.file, form);
+    const newId = res?.id;
+    if (!newId) throw new Error("IDが取得できませんでした");
+    item.savedId = newId;
+    Object.assign(item, form);
+    item.status = "保存済み";
+    ElMessage.success("保存しました");
   } catch (e) {
-    console.error(e)
-    item.status = '保存失敗'
-    ElMessage.error('保存に失敗しました')
+    console.error(e);
+    item.status = "保存失敗";
+    ElMessage.error("保存に失敗しました");
   }
 }
 
-/** 一括保存（未保存→新規、保存済→幂等更新） */
 async function saveAll() {
-  if (!images.value.length) return
+  if (!images.value.length) return;
 
-  // 確認ダイアログ
   try {
-    await ElMessageBox.confirm('表示中のすべての画像を保存します。よろしいですか？', '確認', {
-      confirmButtonText: '保存する',
-      cancelButtonText: 'キャンセル',
-      type: 'warning'
-    })
+    await ElMessageBox.confirm(
+      "表示中のすべての画像を保存します。よろしいですか？",
+      "確認",
+      {
+        confirmButtonText: "保存する",
+        cancelButtonText: "キャンセル",
+        type: "warning",
+      }
+    );
   } catch {
-    return
+    return;
   }
 
-  status.value = '保存中'
-  progress.value = 0
+  status.value = "保存中";
+  progress.value = 0;
 
-  let okCount = 0
+  let okCount = 0;
   for (let i = 0; i < images.value.length; i++) {
-    const it = images.value[i]
+    const it = images.value[i];
     try {
-      it.status = '保存中'
+      it.status = "保存中";
       if (it.savedId) {
-        // 幂等更新（差分時のみ更新したい場合は hasDiff を利用して条件分岐）
         await updateMeta(it.savedId, {
           issuer: it.issuer,
           number: it.number,
           amount: it.amount,
-          date: it.date
-        })
-        it.status = '保存済み'
+          date: it.date,
+        });
+        it.status = "保存済み";
       } else {
-        if (!it.file) throw new Error('file missing')
+        if (!it.file) throw new Error("file missing");
         const res = await createWithImage(it.file, {
           issuer: it.issuer,
           number: it.number,
           amount: it.amount,
-          date: it.date
-        })
-        const newId = res?.id
-        if (!newId) throw new Error('id missing')
-        it.savedId = newId
-        it.status = '保存済み'
+          date: it.date,
+        });
+        const newId = res?.id;
+        if (!newId) throw new Error("id missing");
+        it.savedId = newId;
+        it.status = "保存済み";
       }
-      okCount++
+      okCount++;
     } catch (e) {
-      console.error(e)
-      it.status = '保存失敗'
+      console.error(e);
+      it.status = "保存失敗";
     }
-    progress.value = Math.round(((i + 1) / images.value.length) * 100)
+    progress.value = Math.round(((i + 1) / images.value.length) * 100);
   }
 
-  status.value = '完了'
-  hint.value = `保存完了（成功 ${okCount}/${images.value.length}）`
+  status.value = "完了";
+  hint.value = `保存完了（成功 ${okCount}/${images.value.length}）`;
 }
 
-/** 取消（保存済レコードの物理削除＋UIロールバック） */
 async function cancelSaveCurrent() {
-  const item = activeImage.value
-  if (!item?.savedId) return
+  const item = activeImage.value;
+  if (!item?.savedId) return;
 
   try {
     await ElMessageBox.confirm(
-      'この画像の保存を取り消しますか？データベースから削除されます。',
-      '確認',
-      { confirmButtonText: '削除する', cancelButtonText: 'キャンセル', type: 'warning' }
-    )
+      "この画像の保存を取り消しますか？データベースから削除されます。",
+      "確認",
+      {
+        confirmButtonText: "削除する",
+        cancelButtonText: "キャンセル",
+        type: "warning",
+      }
+    );
   } catch {
-    return
+    return;
   }
 
   try {
     await api.delete(`/ocr/${item.savedId}`, {
-      headers: { 'X-User-Id': sessionStorage.getItem('userId') || '1' }
-    })
-    // ロールバック：OCR 結果は維持、保存状態のみ解除
-    item.savedId = null
+      headers: { "X-User-Id": sessionStorage.getItem("userId") || "1" },
+    });
+    item.savedId = null;
     item.status =
-      item.status === '保存済み' || item.status === '保存中'
-        ? '読取済み'
-        : item.status
-    ElMessage.success('保存を取り消しました')
+      item.status === "保存済み" || item.status === "保存中"
+        ? "読取済み"
+        : item.status;
+    ElMessage.success("保存を取り消しました");
   } catch (e) {
-    console.error(e)
-    ElMessage.error('取り消しに失敗しました')
+    console.error(e);
+    ElMessage.error("取り消しに失敗しました");
   }
 }
 
 /* ------------------------------------------------------------
- * 7) Excel 出力（ファイル保存）
+ * 7) Excel 出力
  * ---------------------------------------------------------- */
 async function exportExcel() {
   try {
-    hint.value = 'Excel出力中…'
-    const res = await api.get('/ocr/export.xlsx', { responseType: 'blob' })
-    const url = URL.createObjectURL(res.data)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'receipts.xlsx'
-    a.click()
-    URL.revokeObjectURL(url)
-    hint.value = 'Excelを出力しました'
+    hint.value = "Excel出力中…";
+    const res = await api.get("/ocr/export.xlsx", { responseType: "blob" });
+    const url = URL.createObjectURL(res.data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "receipts.xlsx";
+    a.click();
+    URL.revokeObjectURL(url);
+    hint.value = "Excelを出力しました";
   } catch (e) {
-    console.error(e)
-    hint.value = 'Excel出力に失敗しました'
+    console.error(e);
+    hint.value = "Excel出力に失敗しました";
   }
 }
 
 /* ------------------------------------------------------------
- * 8) プレビュー操作（完全表示／ズーム／回転）
+ * 8) プレビュー操作
  * ---------------------------------------------------------- */
 function onImgLoad() {
-  fitToContainer()
+  fitToContainer();
 }
-
-/** コンテナに完全表示（ズーム＝1） */
 function fitToContainer() {
-  zoom.value = 1
-  // rotation は維持。必要なら下記を解放：
-  // rotation.value = 0
+  zoom.value = 1;
 }
-
-/** 元に戻す（ズーム／回転リセット） */
 function resetView() {
-  zoom.value = 1
-  rotation.value = 0
+  zoom.value = 1;
+  rotation.value = 0;
 }
-
-/** 拡大・縮小・回転 */
 function zoomIn() {
-  zoom.value = Math.min(zoom.value + 0.2, 5)
+  zoom.value = Math.min(zoom.value + 0.2, 5);
 }
 function zoomOut() {
-  zoom.value = Math.max(zoom.value - 0.2, 0.2)
+  zoom.value = Math.max(zoom.value - 0.2, 0.2);
 }
 function rotateLeft() {
-  rotation.value = (rotation.value - 90 + 360) % 360
+  rotation.value = (rotation.value - 90 + 360) % 360;
 }
 function rotateRight() {
-  rotation.value = (rotation.value + 90) % 360
+  rotation.value = (rotation.value + 90) % 360;
 }
-
-/** ウィンドウリサイズ時の再レイアウト */
 function onResize() {
-  if (activeImage.value) fitToContainer()
+  if (activeImage.value) fitToContainer();
 }
-onMounted(() => window.addEventListener('resize', onResize))
-onBeforeUnmount(() => window.removeEventListener('resize', onResize))
+onMounted(() => window.addEventListener("resize", onResize));
+onBeforeUnmount(() => window.removeEventListener("resize", onResize));
 
 /* ------------------------------------------------------------
  * 9) ユーティリティ
  * ---------------------------------------------------------- */
-/** 行→フォーム同期 */
-function syncFormFromItem(it) {
-  Object.assign(form, {
-    issuer: it.issuer || '',
-    number: it.number || '',
-    amount: it.amount || '',
-    date: it.date || ''
-  })
-}
-
-/** ステータス→タグ色 */
 function tagType(st) {
-  if (st === '読取済み' || st === '保存済み') return 'success'
-  if (st === '読取中' || st === '保存中') return 'warning'
-  if (st === '読み取り失敗' || st === '保存失敗') return 'danger'
-  return 'info'
+  if (st === "読取済み" || st === "保存済み") return "success";
+  if (st === "読取中" || st === "保存中") return "warning";
+  if (st === "読み取り失敗" || st === "保存失敗") return "danger";
+  return "info";
 }
 </script>
 
@@ -814,7 +837,7 @@ function tagType(st) {
   background: #fff;
 }
 .thumbs .thumb.active {
-  border-color: #409EFF;
+  border-color: #409eff;
 }
 .thumb-img {
   width: 48px;
