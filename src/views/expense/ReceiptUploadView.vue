@@ -427,7 +427,7 @@ onBeforeUnmount(() => {
 
 
 /* ------------------------------------------------------------
- * 5) OCR 実行（選択分／すべて・未読のみ）
+ * 5) OCR 実行（選択分／すべて・未読のみ）   
  * ---------------------------------------------------------- */
 async function readSelected() {
   const selected = images.value.filter((it) => it.checked);
