@@ -5,6 +5,7 @@
         <img :src="logo" alt="会社ロゴ" class="company-logo" />
         <h3 class="company-title">精算支援システム</h3>
       </div>
+
       <el-menu
         default-active="2"
         class="el-menu-vertical-demo"
@@ -66,7 +67,21 @@
           </template>
           <el-menu-item-group>
             <el-menu-item index="/final-adjustment">年末調整一覧</el-menu-item>
-            <el-menu-item index="/final-adjustment/entry">申告入力</el-menu-item>
+            <el-menu-item index="/final-adjustment/entry"
+              >申告入力</el-menu-item
+            >
+          </el-menu-item-group>
+        </el-sub-menu>
+
+        <el-sub-menu v-if="permissions.showExpense" index="9">
+          <template #title>
+            <el-icon><Document /></el-icon>
+            <span>経費管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="/expense/receipt-upload">領収書アップロード</el-menu-item>
+            <el-menu-item index="/expense/receipt-list">経費申請</el-menu-item>
+            <el-menu-item index="/expense/approval">経費承認</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
       </el-menu>
@@ -87,8 +102,9 @@ import {
   Wallet,
   Document,
   DocumentChecked,
-  DataAnalysis
-} from '@element-plus/icons-vue'
+  DataAnalysis,
+  Search,
+} from "@element-plus/icons-vue";
 
 const store = useStore()
 const planCode = computed(() => store.state.planCode)
@@ -110,11 +126,11 @@ const permissions = computed(() => {
 })
 
 const handleOpen = (key, keyPath) => {
-  console.log('打开菜单:', key, keyPath)
-}
+  console.log("打开菜单:", key, keyPath);
+};
 const handleClose = (key, keyPath) => {
-  console.log('关闭菜单:', key, keyPath)
-}
+  console.log("关闭菜单:", key, keyPath);
+};
 </script>
 
 <style scoped>

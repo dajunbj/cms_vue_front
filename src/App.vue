@@ -52,7 +52,7 @@ html, body {
 .content {
   flex: 1;
   padding: 20px;
-  overflow: hidden; /* 🚫 禁止内容整体滚动，只允许子组件内部滚动 */
+  overflow-y: auto; /* ✅ 让内容区域可以滚动 */
   background: linear-gradient(180deg, #FFFFFF, #F0F4F8);
   color: #333333;
 }
