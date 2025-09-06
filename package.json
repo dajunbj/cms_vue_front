@@ -18,6 +18,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "postcss": "^8.4.31",
+    "qrcode": "^1.5.4",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1",
     "vuex": "^4.1.0"

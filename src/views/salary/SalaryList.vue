@@ -114,7 +114,7 @@ function formatYen(v){ return '¥' + Number(v||0).toLocaleString() }
 async function fetchOptions(){
   loadingOptions.value = true
   try{
-    const res = await axios.get('/salary/options')
+    const res = await axios.get('/salarydetail/options')
     options.companies = res.data?.data?.companies ?? []
     options.departments = res.data?.data?.departments ?? []
     options.employees = res.data?.data?.employees ?? []
