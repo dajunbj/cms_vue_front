@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <h2>登录</h2>
+    <h2>注册临时登录</h2>
     <el-form
       class="login-form"
       :label-width="'90px'"
@@ -8,21 +8,15 @@
     >
       <el-form-item label="用户名">
         <el-input
-          v-model="username"
-          placeholder="请输入用户名"
+          v-model="login_id"
+          placeholder="请输入临时用户名"
         />
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="密码"> 
         <el-input
-          v-model="password"
+          v-model="pwd"
           type="password"
-          placeholder="请输入密码"
-        />
-      </el-form-item>
-      <el-form-item label="验证码"> 
-        <el-input
-          v-model="authCode"
-          placeholder="请输入验证码"
+          placeholder="请输入临时密码"
         />
       </el-form-item>
       <el-form-item>
@@ -39,49 +33,47 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { ref, onMounted } from 'vue'
+import { useRoute,useRouter } from 'vue-router'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
-const username = ref('')
-const password = ref('')
-const authCode = ref('')
+const login_id = ref('')
+const pwd = ref('')
+const token = ref('')
 
 const router = useRouter()
-const store = useStore()
+const route = useRoute()
+
+onMounted(() => {
+  token.value = route.query.token || '';
+})
+
+
 
 const handleLogin = async () => {
   axios.defaults.withCredentials = true
 
-  if (!username.value || !password.value) {
+  if (!login_id.value || !pwd.value) {
     ElMessage.error('请输入用户名和密码')
     return
   }
 
-  if(!authCode.value) {
-    ElMessage.error('请输入验证码')
-    return
-  }
-  
+
   try {
-    const response = await axios.post('http://localhost:8080/auth/login', {
-      username: username.value,
-      password: password.value,
-      authCode: authCode.value,
+    const response = await axios.post('http://localhost:8080/regist/login', {
+      login_id: login_id.value,
+      pwd: pwd.value,
+      token: token.value,
     })
 
     const data = response.data
 
     if (data.success) {
-      const token = data.token
-      sessionStorage.setItem('token', token)
-      sessionStorage.setItem('tokenExpiration', new Date().getTime() + 60 * 60 * 1000) // 1小时有效
-      store.commit('setPlanCode', data.company.plan_code)
-      store.commit('setUserRole', data.company.user_role)
-
-      router.push('/home')
+      router.push({
+        name: 'trueRegister',
+        params: { id: data.id }
+      })
     } else {
       ElMessage.error(data.message)
     }

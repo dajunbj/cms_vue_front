@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <!-- フィルター test-->
+    <!-- フィルター -->
     <el-card shadow="never" class="card">
       <el-form :inline="true" :model="query" label-width="90px" class="filter-form">
         <el-form-item label="会社名">

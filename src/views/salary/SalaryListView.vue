@@ -1,9 +1,8 @@
 <template>
   <div style="width: 100%; max-width: 1000px; overflow-x: hidden;">
-    <!-- 添加标题部分 -->
     <div class="header-container">
       <h2 class="header-title">
-        <i class="el-icon-user" /> 社員一覧画面
+        <i class="el-icon-user" /> 給料一覧画面
       </h2>
     </div>
     <div class="section-container">
@@ -16,6 +15,7 @@
           />
         </el-col>
       </el-row>
+
       <el-row>
         <el-col :span="6">
           <el-input
@@ -37,6 +37,7 @@
           />
         </el-col>
       </el-row>
+
       <el-row>
         <el-col :span="14">
           <el-button
@@ -56,22 +57,14 @@
           <el-button
             icon="el-icon-delete"
             type="primary"
-            @click="deleteAllSelected('/employee/deleteAll')"
+            @click="() => deleteAllSelected('/employee/deleteAll')"
           >
             全削除
-          </el-button>
-          <el-button
-            icon="el-icon-delete"
-            type="primary"
-            @click="printTest"
-          >
-            印刷
           </el-button>
         </el-col>
       </el-row>
     </div>
 
-    <!-- 检索结果和翻页部分 -->
     <div class="section-container">
       <el-row>
         <el-col :span="24">
@@ -99,13 +92,18 @@
               header-align="center"
             />
             <el-table-column
-              prop="gender"
+              prop="sex"
               label="性別"
               header-align="center"
             />
             <el-table-column
               prop="date_of_birth"
               label="誕生日"
+              header-align="center"
+            />
+            <el-table-column
+              prop="address"
+              label="住所"
               header-align="center"
             />
             <el-table-column
@@ -166,21 +164,23 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 import CommonSearchDialog from '@/components/CommonSearchDialog.vue';
 import { deleteAllSelected } from '@/js/ListView.js';
 
 const router = useRouter();
-
 const employeeName = ref('');
 const companyName = ref('');
 const companyId = ref('');
 const dialogVisible = ref(false);
 const dialogData = ref([]);
+
 const dialogColumns = [
   { prop: 'id', label: 'ID', width: '100' },
   { prop: 'name', label: '名前', width: '220' },
   { prop: 'department', label: '部門', width: '220' },
 ];
+
 const dialogFilters = [
   {
     prop: 'name',
@@ -207,14 +207,35 @@ const dialogFilters = [
 ];
 
 const employeeData = ref([]);
+const filteredEmployees = ref([]);
+const multipleSelection = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const totalEmployees = ref(0);
-const filteredEmployees = ref([]);
-const multipleSelection = ref([]);
 
 const showDialog = () => {
   dialogVisible.value = true;
+};
+
+const handleSelectCompany = (selectedCompany) => {
+  companyName.value = selectedCompany.name;
+  companyId.value = selectedCompany.id;
+};
+
+const clickReference = (row) => {
+  router.push({ path: `/employee/detail/${row.employeeId}` });
+};
+
+const clickEdit = (row) => {
+  router.push({ path: `/employee/edit/${row.employeeId}` });
+};
+
+const handleSelectionChange = (val) => {
+  multipleSelection.value = val.map(item => item.id);
+};
+
+const createRecord = () => {
+  router.push('/employee/register');
 };
 
 const findEmployees = async () => {
@@ -228,29 +249,8 @@ const findEmployees = async () => {
     filteredEmployees.value = response.data.data;
     totalEmployees.value = response.data.total;
   } catch (error) {
-    alert('データの取得に失敗しました' + error);
+    ElMessage.error('データの取得に失敗しました: ' + error);
   }
-};
-
-const handleSelectCompany = (selectedCompany) => {
-  companyName.value = selectedCompany.name;
-  companyId.value = selectedCompany.id;
-};
-
-const clickReference = (row) => {
-  router.push({ path: `/employee/detail/${row.employee_id}` });
-};
-
-const clickEdit = (row) => {
-  router.push({ path: `/employee/edit/${row.employee_id}` });
-};
-
-const handleSelectionChange = (val) => {
-  multipleSelection.value = val.map((item) => item.id);
-};
-
-const createRecord = () => {
-  router.push('/employee/register');
 };
 
 const handlePageChange = (page) => {
@@ -267,29 +267,6 @@ const handleSizeChange = (size) => {
 onMounted(() => {
   filteredEmployees.value = employeeData.value;
 });
-
-const printTest = async () => {
-  axios.defaults.withCredentials = true
-
-  try {
-    const response = await axios.post('http://localhost:8080/print/printPDF', {
-    })
-
-    const data = response.data
-
-    if (data.success) {
-      router.push({
-        name: 'trueRegister',
-        params: { id: data.id }
-      })
-    } else {
-      alert('印刷に失敗しました')
-
-    }
-  } catch (err) {
-    alert('印刷に失敗しました')
-  }
-}
 </script>
 
 <style scoped>
@@ -335,5 +312,11 @@ const printTest = async () => {
 .el-table th .cell {
   font-size: 14px;
   text-align: center;
+}
+.input-label .el-input__inner {
+  border: none;
+  background-color: transparent;
+  color: #333;
+  box-shadow: none;
 }
 </style>

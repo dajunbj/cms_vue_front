@@ -12,6 +12,11 @@ import ResponsibleRegisterView from '@/views/customer/ResponsibleRegisterView.vu
 
 import axios from 'axios';
 
+import EmployeeInviteView from '@/views/inviteRegister/EmployeeInviteView.vue';
+import loginRegister from '@/views/inviteRegister/loginRegister.vue';
+import trueRegister from '@/views/inviteRegister/trueRegister.vue';
+import authenticatorRequest from '@/views/inviteRegister/authenticatorRequest.vue';
+
 const routes = [
   {
     path: "/",
@@ -22,6 +27,11 @@ const routes = [
     name: "Login",
     component: LoginView,
   },
+  
+  { path: "/regist/loginRegister", name: "loginRegister", component: loginRegister },
+  { path: "/regist/trueRegister/:id", name: "trueRegister", component: trueRegister },
+  { path: "/regist/authenticatorRequest/:otpurl", name: "authenticatorRequest", component: authenticatorRequest },
+  
   {
     path: "/home",
     name: "Home",
@@ -38,6 +48,9 @@ const routes = [
       requiresAuth: true,
     },
   },
+
+   { path: "/invite", name: "Invite", component: EmployeeInviteView, meta: { requiresAuth: true } },
+
   {
     path: "/employee/register",
     component: EmployeeRegisterView,
@@ -144,12 +157,12 @@ const routes = [
   { path: "/SalaryList", name: "SalaryList",component: () => import("@/views/salary/SalaryList.vue")},
   { path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalarySlip.vue")},
 
-
-  // 領収書アップロード・確認画面
- {
+  {
     path: "/expense/receipt-upload",
     component: () => import("@/views/expense/ReceiptUploadView.vue"),
-    meta: { requiresAuth: true },
+    meta: {
+      requiresAuth: true,
+    },
   },
 
   {
@@ -169,6 +182,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
 ];
+
+  // 領収書アップロード・確認画面
+  
 
 const router = createRouter({
   history: createWebHistory(),
