@@ -5,7 +5,6 @@
         <img :src="logo" alt="会社ロゴ" class="company-logo" />
         <h3 class="company-title">精算支援システム</h3>
       </div>
-
       <el-menu
         default-active="2"
         class="el-menu-vertical-demo"
@@ -23,6 +22,7 @@
             <el-menu-item index="/employee">社員一覧</el-menu-item>
             <el-menu-item index="/setting">休暇一覧</el-menu-item>
             <el-menu-item index="/employee">履歴</el-menu-item>
+            <el-menu-item v-if="permissions.showPayroll" index="/invite">招待登録</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
 
@@ -103,7 +103,6 @@ import {
   Document,
   DocumentChecked,
   DataAnalysis,
-  Search,
 } from "@element-plus/icons-vue";
 
 const store = useStore()

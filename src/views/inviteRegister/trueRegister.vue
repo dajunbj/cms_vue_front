@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <h2>登录</h2>
+    <h2>アカウント有効化登録</h2>
     <el-form
       class="login-form"
       :label-width="'90px'"
@@ -12,26 +12,20 @@
           placeholder="请输入用户名"
         />
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="密码"> 
         <el-input
           v-model="password"
           type="password"
           placeholder="请输入密码"
         />
       </el-form-item>
-      <el-form-item label="验证码"> 
-        <el-input
-          v-model="authCode"
-          placeholder="请输入验证码"
-        />
-      </el-form-item>
       <el-form-item>
         <el-button
           type="primary"
           style="width: 100%;"
-          @click="handleLogin"
+          @click="handleRegist"
         >
-          登录
+          注册
         </el-button>
       </el-form-item>
     </el-form>
@@ -40,19 +34,18 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const username = ref('')
 const password = ref('')
-const authCode = ref('')
+const route = useRoute()  
+const id = route.params.id
 
 const router = useRouter()
-const store = useStore()
 
-const handleLogin = async () => {
+const handleRegist = async () => {
   axios.defaults.withCredentials = true
 
   if (!username.value || !password.value) {
@@ -60,28 +53,23 @@ const handleLogin = async () => {
     return
   }
 
-  if(!authCode.value) {
-    ElMessage.error('请输入验证码')
-    return
-  }
-  
+
   try {
-    const response = await axios.post('http://localhost:8080/auth/login', {
-      username: username.value,
+    const response = await axios.post('http://localhost:8080/regist/register', {
+      login_id: username.value,
       password: password.value,
-      authCode: authCode.value,
+      employee_id: id,
     })
 
     const data = response.data
 
     if (data.success) {
-      const token = data.token
-      sessionStorage.setItem('token', token)
-      sessionStorage.setItem('tokenExpiration', new Date().getTime() + 60 * 60 * 1000) // 1小时有效
-      store.commit('setPlanCode', data.company.plan_code)
-      store.commit('setUserRole', data.company.user_role)
-
-      router.push('/home')
+      router.push({
+        name: 'authenticatorRequest',
+        params: {
+          otpurl: encodeURIComponent(data.otpAuthUrl),
+        }
+      })
     } else {
       ElMessage.error(data.message)
     }

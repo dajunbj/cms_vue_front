@@ -60,6 +60,13 @@
           >
             全削除
           </el-button>
+          <el-button
+            icon="el-icon-delete"
+            type="primary"
+            @click="printTest"
+          >
+            印刷
+          </el-button>
         </el-col>
       </el-row>
     </div>
@@ -260,6 +267,29 @@ const handleSizeChange = (size) => {
 onMounted(() => {
   filteredEmployees.value = employeeData.value;
 });
+
+const printTest = async () => {
+  axios.defaults.withCredentials = true
+
+  try {
+    const response = await axios.post('http://localhost:8080/print/printPDF', {
+    })
+
+    const data = response.data
+
+    if (data.success) {
+      router.push({
+        name: 'trueRegister',
+        params: { id: data.id }
+      })
+    } else {
+      alert('印刷に失敗しました')
+
+    }
+  } catch (err) {
+    alert('印刷に失敗しました')
+  }
+}
 </script>
 
 <style scoped>
