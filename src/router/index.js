@@ -143,15 +143,13 @@ const routes = [
   { path: "/attendance/registview", name: "AttendanceRegistView",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
   { path: "/SalaryList", name: "SalaryList",component: () => import("@/views/salary/SalaryList.vue")},
   { path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalarySlip.vue")},
-  ];
+
 
   // 領収書アップロード・確認画面
-  {
+ {
     path: "/expense/receipt-upload",
     component: () => import("@/views/expense/ReceiptUploadView.vue"),
-    meta: {
-      requiresAuth: true,
-    },
+    meta: { requiresAuth: true },
   },
 
   {
