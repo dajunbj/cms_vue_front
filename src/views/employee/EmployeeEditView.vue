@@ -1,101 +1,191 @@
 <template>
   <div style="width: 100%; max-width: 1000px; overflow-x: hidden;">
-    <!-- 添加标题部分 -->
     <div class="header-container">
       <h2 class="header-title">
-        <i class="el-icon-edit"></i> 社員情報編集画面
+        <i class="el-icon-edit" /> 社員情報編集画面
       </h2>
     </div>
 
-    <!-- 表单部分 -->
     <div class="section-container">
-      <el-form :model="form" :rules="rules" ref="employeeForm" label-width="150px">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="150px"
+      >
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="社員ID" prop="employeeId">
-              <el-input v-model="form.employeeId" readonly class="el-input-disabled"></el-input>
+            <el-form-item
+              label="名前"
+              prop="name"
+            >
+              <el-input
+                v-model="form.name"
+                clearable
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="名前" prop="name">
-              <el-input v-model="form.name" placeholder="名前をご入力ください。" clearable></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="性別" prop="sex">
-              <el-radio-group v-model="form.sex">
-                <el-radio label="1">男性</el-radio>
-                <el-radio label="2">女性</el-radio>
+            <el-form-item
+              label="性別"
+              prop="gender"
+            >
+              <el-radio-group v-model="form.gender">
+                <el-radio label="男">
+                  男性
+                </el-radio>
+                <el-radio label="女">
+                  女性
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="生年月日" prop="birthday">
+            <el-form-item
+              label="生年月日"
+              prop="date_of_birth"
+            >
               <el-date-picker
-                v-model="form.birthday"
+                v-model="form.date_of_birth"
                 type="date"
-                placeholder="生年月日を選択してください"
                 style="width: 100%;"
-              ></el-date-picker>
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="年齢"
+              prop="age"
+            >
+              <el-input-number
+                v-model="form.age"
+                :min="0"
+                style="width: 100%;"
+                :disabled="true"
+              />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="住所" prop="address">
-              <el-input v-model="form.address" placeholder="住所をご入力ください。" clearable></el-input>
+            <el-form-item
+              label="電話番号"
+              prop="phone_number"
+            >
+              <el-input
+                v-model="form.phone_number"
+                clearable
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="携帯" prop="phone">
-              <el-input v-model="form.phone" placeholder="携帯をご入力ください。" clearable></el-input>
+            <el-form-item
+              label="メールアドレス"
+              prop="email"
+            >
+              <el-input
+                v-model="form.email"
+                clearable
+              />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="入社年月日" prop="joiningDate">
+            <el-form-item
+              label="ログインID"
+              prop="login_id"
+            >
+              <el-input
+                v-model="form.login_id"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="在留カード番号"
+              prop="residence_card_number"
+            >
+              <el-input
+                v-model="form.residence_card_number"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item
+              label="在留資格"
+              prop="residence_status"
+            >
+              <el-input
+                v-model="form.residence_status"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="プランCD"
+              prop="plan_code"
+            >
+              <el-input
+                v-model="form.plan_code"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item
+              label="在留期限（開始）"
+              prop="residence_expiry_date_from"
+            >
               <el-date-picker
-                v-model="form.joiningDate"
+                v-model="form.residence_expiry_date_from"
                 type="date"
-                placeholder="入社年月日を選択してください"
                 style="width: 100%;"
-              ></el-date-picker>
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="メール" prop="mail">
-              <el-input v-model="form.mail" placeholder="メールをご入力ください。" clearable></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="職種" prop="jobType">
-              <el-select v-model="form.jobType" placeholder="職種を選択してください" clearable>
-                <el-option label="営業" value="営業"></el-option>
-                <el-option label="開発" value="開発"></el-option>
-                <el-option label="経理" value="経理"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="給料" prop="salary">
-              <el-input-number v-model="form.salary" placeholder="給料をご入力ください" :min="0" :max="1000000" style="width: 100%;"></el-input-number>
+            <el-form-item
+              label="在留期限（終了）"
+              prop="residence_expiry_date_end"
+            >
+              <el-date-picker
+                v-model="form.residence_expiry_date_end"
+                type="date"
+                style="width: 100%;"
+              />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row>
-          <el-col :span="24" style="text-align: center; margin-top: 20px;">
-            <el-button type="primary" @click="submitForm">保存</el-button>
-            <el-button type="default" @click="goBack">キャンセル</el-button>
+          <el-col
+            :span="24"
+            style="text-align: center; margin-top: 20px;"
+          >
+            <el-button
+              type="primary"
+              @click="submitForm"
+            >
+              保存
+            </el-button>
+            <el-button @click="goBack">
+              キャンセル
+            </el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -103,97 +193,97 @@
   </div>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import axios from 'axios'
 
-export default {
-  name: "EmployeeEditView",
-  data() {
-    return {
-      form: {
-        employeeId: "",
-        name: "",
-        sex: "1",
-        birthday: "",
-        address: "",
-        phone: "",
-        joiningDate: "",
-        mail: "",
-        jobType: "",
-        salary: 0,
-      },
-      rules: {
-        employeeId: [
-          { required: true, message: "社員IDを入力してください", trigger: "blur" },
-        ],
-        name: [
-          { required: true, message: "名前を入力してください", trigger: "blur" },
-        ],
-        sex: [
-          { required: true, message: "性別を選択してください", trigger: "change" },
-        ],
-        birthday: [
-          { required: true, message: "生年月日を選択してください", trigger: "change" },
-        ],
-        address: [
-          { required: true, message: "住所を入力してください", trigger: "blur" },
-        ],
-        phone: [
-          { required: true, message: "携帯を入力してください", trigger: "blur" },
-        ],
-        joiningDate: [
-          { required: true, message: "入社年月日を選択してください", trigger: "change" },
-        ],
-        mail: [
-          { required: true, message: "メールを入力してください", trigger: "blur" },
-          { type: "email", message: "正しいメール形式を入力してください", trigger: "blur" },
-        ],
-        jobType: [
-          { required: true, message: "職種を選択してください", trigger: "change" },
-        ],
-        salary: [
-          { required: true, message: "給料を入力してください", trigger: "blur" },
-        ],
-      },
-    };
-  },
-  created() {
-    const id = this.$route.params.id; // URL から ID を取得
-    this.fetchEmployeeDetails(id);
-  },
-  methods: {
-    async fetchEmployeeDetails(id) {
+const route = useRoute()
+const router = useRouter()
+const formRef = ref(null)
+
+const form = reactive({
+  name: '',
+  gender: '男',
+  date_of_birth: '',
+  age: null,
+  phone_number: '',
+  email: '',
+  login_id: '',
+  residence_card_number: '',
+  residence_status: '',
+  plan_code: '',
+  residence_expiry_date_from: '',
+  residence_expiry_date_end: ''
+})
+
+const rules = {
+  name: [{ required: true, message: '名前を入力してください', trigger: 'blur' }],
+  gender: [{ required: true, message: '性別を選択してください', trigger: 'change' }],
+  date_of_birth: [{ required: true, message: '生年月日を選択してください', trigger: 'blur' }],
+  phone_number: [{ required: true, message: '電話番号を入力してください', trigger: 'blur' }],
+  email: [
+    { required: true, message: 'メールアドレスを入力してください', trigger: 'blur' },
+    { type: 'email', message: '正しい形式で入力してください', trigger: 'blur' }
+  ],
+  login_id: [{ required: true, message: 'ログインIDを入力してください', trigger: 'blur' }],
+  residence_card_number: [{ required: true, message: '在留カード番号を入力してください', trigger: 'blur' }],
+  residence_status: [{ required: true, message: '在留資格を入力してください', trigger: 'blur' }],
+  plan_code: [{ required: true, message: 'プランCDを入力してください', trigger: 'blur' }],
+  residence_expiry_date_from: [{ required: true, message: '在留期限（開始）を選択してください', trigger: 'change' }],
+  residence_expiry_date_end: [{ required: true, message: '在留期限（終了）を選択してください', trigger: 'change' }]
+}
+
+onMounted(() => {
+  const id = route.params.id
+  fetchEmployeeDetails(id)
+})
+
+const fetchEmployeeDetails = async (id) => {
+  try {
+    const response = await axios.get(`/employee/detail/${id}`)
+    Object.assign(form, response.data.data)
+  } catch (error) {
+    ElMessage.error('社員情報の取得に失敗しました')
+  }
+}
+
+watch(() => form.date_of_birth, (newDate) => {
+  if (newDate) {
+    const today = new Date()
+    const birthDate = new Date(newDate)
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const m = today.getMonth() - birthDate.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    form.age = age
+  } else {
+    form.age = null
+  }
+})
+
+const submitForm = () => {
+  formRef.value.validate(async (valid) => {
+    if (valid) {
       try {
-        const response = await axios.get(`/employee/detail/${id}`);
-        this.form = response.data;
+        await axios.put('/employee/update', form)
+        ElMessage.success('更新が成功しました')
+        router.push('/employee')
       } catch (error) {
-        this.$message.error("社員情報の取得に失敗しました");
+        ElMessage.error('更新に失敗しました: ' + error.message)
       }
-    },
-    async submitForm() {
-      this.$refs.employeeForm.validate(async (valid) => {
-        if (valid) {
-          try {
-            await axios.put(`/employee/update`, this.form);
-            this.$message.success("更新が成功しました");
-            this.$router.push("/employee");
-          } catch (error) {
-            this.$message.error("更新に失敗しました: " + error.message);
-          }
-        }
-      });
-    },
-    goBack() {
-      this.$router.push("/employee");
-    },
-  },
-};
+    }
+  })
+}
+
+const goBack = () => {
+  router.push('/employee')
+}
 </script>
 
 <style scoped>
-.el-input-disabled >>> .el-input__inner {
-  background-color: lightgray !important;
-}
 .header-container {
   padding: 15px;
   margin-bottom: 20px;
@@ -204,7 +294,7 @@ export default {
   margin: 0;
   font-size: 24px;
   font-weight: bold;
-  color: #333333;
+  color: #333;
   display: flex;
   align-items: center;
 }
@@ -214,9 +304,8 @@ export default {
   color: #409EFF;
 }
 .section-container {
-  background-color: #FFFFFF;
+  background-color: #fff;
   padding: 15px;
-  margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

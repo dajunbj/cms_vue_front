@@ -1,23 +1,35 @@
 <template>
-  <el-dialog :visible.sync="localVisible" :title="title" @close="handleClose">
+  <el-dialog
+    v-model:visible="localVisible"
+    :title="title"
+    @close="handleClose"
+  >
     <!-- 动态条件区域 -->
-    <el-form :model="filterValues" label-width="120px">
+    <el-form
+      :model="filterValues"
+      label-width="120px"
+    >
       <el-row :gutter="20">
-        <el-col v-for="filter in filters" :key="filter.prop" :span="20">
+        <el-col
+          v-for="filter in filters"
+          :key="filter.prop"
+          :span="20"
+        >
           <el-form-item :label="filter.label">
             <component
               :is="filter.type"
               v-model="filterValues[filter.prop]"
               v-bind="filter.props"
+              :style="{ width: filter.width + 'px' }"
               @input="onFilterChange"
-              :style="{ width: filter.width + 'px' }" >
+            >
               <el-option
-              v-for="option in filter.props.options"
-              :key="option.value"
-              :label="option.label"
-              :value="option.value"
-              ></el-option>
-          </component>
+                v-for="option in filter.props.options"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </component>
           </el-form-item>
         </el-col>
       </el-row>
@@ -25,128 +37,135 @@
 
     <!-- 检索按钮 -->
     <div style="margin: 10px 0; text-align: right;">
-      <el-button type="primary" @click="searchCaseInfo">検索</el-button>
+      <el-button
+        type="primary"
+        @click="searchCaseInfo"
+      >
+        検索
+      </el-button>
     </div>
 
     <!-- 表格区域 -->
-    <el-table :data="searchResult" border @row-click="rowClick">
+    <el-table
+      :data="searchResult"
+      border
+      @row-click="rowClick"
+    >
       <el-table-column
         v-for="column in columns"
         :key="column.prop"
         :prop="column.prop"
         :label="column.label"
         :width="column.width"
-      ></el-table-column>
+      />
     </el-table>
 
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="closeDialog">閉じる</el-button>
-    </div>
+    <!-- Footer 插槽 -->
+    <template #footer>
+      <el-button @click="closeDialog">
+        閉じる
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 
+<script setup>
+import { ref, watch, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import axios from 'axios'
 
-<script>
+// Props
+const props = defineProps({
+  visible: { type: Boolean, required: true },
+  title: { type: String, default: 'Dialog' },
+  tableData: { type: Array, default: () => [] },
+  columns: { type: Array, default: () => [] },
+  filters: { type: Array, default: () => [] }
+})
 
-import axios from 'axios';
+const emit = defineEmits(['update:visible', 'select-case'])
 
-export default {
-  name: "CommonSearchDialog",
-  props: {
-    visible: {
-      type: Boolean,
-      required: true,
-    },
-    title: {
-      type: String,
-      default: "Dialog",
-    },
-    tableData: {
-      type: Array,
-      default: () => [],
-    },
-    columns: {
-      type: Array,
-      default: () => [],
-    },
-    filters: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  data() {
-    return {
-      localVisible: this.visible,
-      filterValues: {},
-      searchResult: [],
-    };
-  },
-  watch: {
-    visible(newVal) {
-      this.localVisible = newVal;
-    },
-    localVisible(newVal) {
-      this.$emit("update:visible", newVal);
-    },
-    tableData: {
-      handler(newData) {
-        this.applyFilters(newData);
-      },
-      immediate: true,
-    },
-    filterValues: {
-      handler() {
-        this.applyFilters(this.tableData);
-      },
-      deep: true,
-    },
-  },
-  //◆メソッド定義
-  methods: {
-    //子画面を閉じる
-    closeDialog() {
-      this.localVisible = false;
-    },
-    handleClose() {
-      this.localVisible = false;
-    },
-    //入力条件が変更される場合、既存データによりフィルダーする
-    onFilterChange() {
-      this.searchResult = this.tableData.filter((item) => {
-        return Object.keys(this.filterValues).every((key) => {
-          return this.filterValues[key]
-            ? String(item[key]).includes(this.filterValues[key])
-            : true;
-        });
-      });
-    },
+// 状态变量
+const localVisible = ref(props.visible)
+const filterValues = ref({})
+const searchResult = ref([])
 
-    //会社検索
-    async searchCaseInfo() {  
-
-      try {
-        const response = await axios.post('/contract/caseSearch', 
-        { case_title: this.filterValues.case_title,//案件名
-        });
-        this.searchResult = response.data.data;
-      } catch (error) {
-        this.$message.error('データの取得に失敗しました' + error);
-      }
-    },
-
-  // 点击表格行时触发，传递选中数据给父组件
-  rowClick(row) {
-    this.$emit("select-case", row); // 触发事件，传递选中行的数据
-    this.closeDialog(); // 关闭对话框
-  },
-
-  },
-  //◆画面初期化
-  mounted() {
- 
-  this.searchResult = this.tableData;
+// 同步 v-model:visible
+watch(
+  () => props.visible,
+  (newVal) => {
+    localVisible.value = newVal
   }
-};
+)
+
+watch(localVisible, (newVal) => {
+  emit('update:visible', newVal)
+})
+
+// 表格数据变化时同步结果
+watch(
+  () => props.tableData,
+  (newData) => {
+    applyFilters(newData)
+  },
+  { immediate: true }
+)
+
+watch(
+  filterValues,
+  () => {
+    applyFilters(props.tableData)
+  },
+  { deep: true }
+)
+
+// 过滤函数
+function applyFilters(data) {
+  searchResult.value = data
+}
+
+// 条件变化时重新过滤
+function onFilterChange() {
+  searchResult.value = props.tableData.filter((item) => {
+    return Object.keys(filterValues.value).every((key) => {
+      return filterValues.value[key]
+        ? String(item[key]).includes(filterValues.value[key])
+        : true
+    })
+  })
+}
+
+// 检索事件
+async function searchCaseInfo() {
+  try {
+    const response = await axios.post('/contract/caseSearch', {
+      case_title: filterValues.value.case_title
+    })
+    searchResult.value = response.data.data
+  } catch (error) {
+    ElMessage.error('データの取得に失敗しました: ' + error)
+  }
+}
+
+// 点击行事件
+function rowClick(row) {
+  emit('select-case', row)
+  closeDialog()
+}
+
+// 关闭弹窗
+function closeDialog() {
+  localVisible.value = false
+}
+
+function handleClose() {
+  localVisible.value = false
+}
+
+// 初始赋值
+onMounted(() => {
+  searchResult.value = props.tableData
+})
 </script>
 
 <style scoped>

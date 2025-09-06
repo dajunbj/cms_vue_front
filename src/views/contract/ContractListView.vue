@@ -1,399 +1,425 @@
 <template>
   <div style="width: 100%; max-width: 1400px; overflow-x: hidden;">
-    <!-- 添加标题部分 -->
     <div class="header-container">
       <h2 class="header-title">
-        <i class="el-icon-user"></i> 契約管理画面
+        <i class="el-icon-edit" /> 契約編集画面
       </h2>
     </div>
+
     <div class="section-container">
-      <el-form :model="form" :rules="rules" ref="contractForm" label-width="150px">
-    <el-row>
-      <el-col :span="10">
-        <el-form-item label="社員名" prop="employeeName">
-          <el-input v-model="form.employeeName" placeholder="姓名" clearable></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="10">
-        <el-form-item label="責任者名" prop="responsibleName">
-          <el-input v-model="form.responsibleName" placeholder="責任者名" clearable></el-input>
-        </el-form-item>
-      </el-col>
-    </el-row>
+      <el-form
+        ref="contractForm"
+        :model="form"
+        :rules="rules"
+        label-width="150px"
+      >
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item
+              label="契約ID"
+              prop="contract_id"
+            >
+              <el-input
+                v-model="form.contract_id"
+                readonly
+                class="el-input-disabled"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="顧客名"
+              prop="customer_name"
+            >
+              <el-input
+                v-model="form.customer_name"
+                placeholder="顧客名をご入力ください。"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-    <el-row>  
-      <el-col :span="10">
-        <el-form-item label="顧客名" prop="customer_name">
-          <el-input v-model="form.customerName" placeholder="顧客名" clearable></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="10">
-        <el-form-item label="社員種別" prop="employeeType">
-            <el-radio v-model="form.employeeType" label="1">BP</el-radio>
-            <el-radio v-model="form.employeeType" label="2">正社員</el-radio>
-            <el-radio v-model="form.employeeType" label="3">すべて</el-radio>
-        </el-form-item>
-      </el-col>
-    </el-row>
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item label="顧客ID">
+              <div class="input-with-button">
+                <el-input
+                  v-model="form.customer_id"
+                  placeholder="顧客ID"
+                  disabled
+                />
+                <el-button
+                  icon="el-icon-search"
+                  @click="showCustomerDialog"
+                />
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="姓名"
+              prop="name"
+            >
+              <el-input
+                v-model="form.name"
+                placeholder="姓名をご入力ください。"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-    <el-row>  
-      
-      <el-col :span="10">
-        <el-form-item label="契約開始日" prop="startDate">
-            <el-date-picker v-model="form.startDate" type="date" placeholder="契約開始日"></el-date-picker>
-        </el-form-item>
-      </el-col>
-      <el-col :span="3">
-        <el-form-item label="案件"></el-form-item>
-      </el-col>
-      <el-col :span="1">
-        <el-button  icon="el-icon-search" @click="showDialog"></el-button>
-      </el-col>
-      <el-col :span="3">
-        <el-input v-model="form.case_id" :disabled="true"></el-input>
-      </el-col>
-    </el-row>
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item label="社員ID">
+              <div class="input-with-button">
+                <el-input
+                  v-model="form.employee_id"
+                  placeholder="社員ID"
+                  disabled
+                />
+                <el-button
+                  icon="el-icon-search"
+                  @click="showEmployeeDialog"
+                />
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="社員タイプ"
+              prop="employee_type"
+            >
+              <el-select
+                v-model="form.employee_type"
+                placeholder="社員タイプを選択してください"
+                clearable
+              >
+                <el-option
+                  label="BP"
+                  value="1"
+                />
+                <el-option
+                  label="正社員"
+                  value="2"
+                />
+                <el-option
+                  label="すべて"
+                  value="3"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-    <el-row>  
-      <el-col :span="10">
-        <el-form-item label="契約終了日" prop="startDate">
-            <el-date-picker v-model="form.finishDate" type="date" placeholder="契約終了日"></el-date-picker>
-        </el-form-item>
-      </el-col>
-    </el-row>
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item
+              label="契約開始日"
+              prop="start_date"
+            >
+              <el-date-picker
+                v-model="form.start_date"
+                type="date"
+                placeholder="契約開始日を選択してください"
+                style="width: 100%;"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="契約終了日"
+              prop="end_date"
+            >
+              <el-date-picker
+                v-model="form.end_date"
+                type="date"
+                placeholder="契約終了日を選択してください"
+                style="width: 100%;"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item
+              label="単価"
+              prop="unit_price"
+            >
+              <el-input
+                v-model="form.unit_price"
+                placeholder="単価をご入力ください。"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="税率"
+              prop="tax_rate"
+            >
+              <el-input
+                v-model="form.tax_rate"
+                placeholder="税率をご入力ください。"
+                clearable
+              >
+                <template #suffix>
+                  %
+                </template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item
+              label="最低勤務時間"
+              prop="working_hours_min"
+            >
+              <el-input
+                v-model="form.working_hours_min"
+                placeholder="最低勤務時間をご入力ください。"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="最大勤務時間"
+              prop="working_hours_max"
+            >
+              <el-input
+                v-model="form.working_hours_max"
+                placeholder="最大勤務時間をご入力ください。"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-    <el-row>
-      <el-col :span="3">
-        <el-button icon="el-icon-search" @click="findContracts" type="primary">検索</el-button>
-      </el-col>
-      <el-col :span="3">
-        <el-button icon="el-icon-plus" @click="createRecord" type="primary">新規</el-button>
-      </el-col>
-      <el-col :span="3">
-        <el-date-picker v-model="finishManual" placeholder="終了日期" clearable>
-        </el-date-picker>
-      </el-col>
-      <el-col :span="3" :offset="3">
-        <el-button icon="el-icon-coffee-cup" :loading="isEndLoading" @click="finishAll" type="primary">終了</el-button>
-      </el-col>
-      <el-col :span="4">
-        <el-date-picker v-model="extendAll" placeholder="延長日期" clearable>
-          </el-date-picker>
-      </el-col>
-      <el-col :span="3" :offset="1">
-        <el-button icon="el-icon-timer" :loading="isExtendLoading" @click="extend" type="primary">延期</el-button>
-      </el-col>
-    </el-row>
-  </el-form>
-</div>
-    <!-- 检索结果和翻页部分 -->
-    <div class="section-container">
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item
+              label="最大残業時間"
+              prop="overtime_limit_hours"
+            >
+              <el-input
+                v-model="form.overtime_limit_hours"
+                placeholder="最大残業時間をご入力ください。"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+              label="残業有無"
+              prop="overtime_included"
+            >
+              <el-radio
+                v-model="form.overtime_included"
+                :label="1"
+              >
+                ある
+              </el-radio>
+              <el-radio
+                v-model="form.overtime_included"
+                :label="0"
+              >
+                なし
+              </el-radio>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-    <el-row>
-      <el-col :span="24">
-        <el-table :data="filteredContracts" border style="width: 100%; margin-top: 20px;" height="300px" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center"></el-table-column>
-          <el-table-column label="姓名" header-align="center" align="center">
-             <template slot-scope="scope">
-               <el-button @click="handleNameClick(scope.row)" type="text" size="small">{{ scope.row.name }}</el-button>
-             </template>
-      </el-table-column>
-          <el-table-column prop="customer_name" label="顧客名" header-align="center" align="center"></el-table-column>
-          <el-table-column prop="start_date" label="契約開始日" header-align="center" align="center"></el-table-column>
-          <el-table-column prop="end_date" label="契約終了日" header-align="center" align="center"></el-table-column>
-          <el-table-column prop="unit_price" label="単価" header-align="center" align="center"></el-table-column>
-          <el-table-column prop="responsible_name" label="顧客責任者" header-align="center" align="center"></el-table-column>
-          <el-table-column prop="employee_type" label="社員タイプ" header-align="center" align="center"></el-table-column>
-          <el-table-column label="アクション" align="center">
-            <template slot-scope="scope">
-              <el-button v-if="isDateValid(scope.row.start_date,scope.row.end_date)" @click="clickEdit(scope.row)" type="text" size="small">編集</el-button>
-              <el-button v-if="isDateValid(scope.row.start_date,scope.row.end_date)" @click="showDeleteDialog(scope.row)" type="text" size="small">削除</el-button>
-              <el-button @click="clickCopy(scope.row)" type="text" size="small">复写</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        
-        <!-- 翻页组件 -->
-        <el-pagination
-          style="margin-top: 20px; text-align: center;"
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :current-page.sync="currentPage"
-          :page-size.sync="pageSize"
-          :page-sizes="[10, 20, 50, 100, 200]" 
-          :total="totalEmployees"
-          @current-change="handlePageChange"
-          @size-change="handleSizeChange">
-        </el-pagination>
-      </el-col>
-    </el-row>
-  
-    <!-- 使用通用弹窗 -->
-    <CaseSearchDialog
-      :visible.sync="dialogVisible"
-      :title="'案件選択画面'"
-      :tableData="dialogData"
-      :columns="dialogColumns"
-      :filters="dialogFilters"
-      :type="dialogType"
-      @select-case="handleSelectCase" 
-    />
-    <!-- 删除确认弹窗 -->
-    <el-dialog
-      title="確認"
-      :visible.sync="deleteDialogVisible"
-      width="30%"
-      @close="closeDeleteDialog">
-      <span>選択したレコードを削除しますか？</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleDeleteDialogCancel">キャンセル</el-button>
-        <el-button type="primary" @click="handleDeleteDialogConfirm">確認</el-button>
-      </span>
-    </el-dialog>
+        <el-row
+          v-if="form.overtime_included === 1"
+          :gutter="20"
+        >
+          <el-col :span="10">
+            <el-form-item
+              label="残業代開始時間"
+              prop="overtime_start_time"
+            >
+              <el-input
+                v-model="form.overtime_start_time"
+                placeholder="開始時間をご入力ください。"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-  </div>
+        <el-row>
+          <el-col
+            :span="24"
+            style="text-align: center; margin-top: 20px;"
+          >
+            <el-button
+              type="primary"
+              :loading="isLoading"
+              @click="submitForm"
+            >
+              保存
+            </el-button>
+            <el-button
+              type="default"
+              @click="goBack"
+            >
+              戻る
+            </el-button>
+          </el-col>
+        </el-row>
+
+        <CaseSearchDialog
+          v-model:visible="dialogVisible"
+          :title="dialogTitle"
+          :table-data="dialogData"
+          :columns="dialogColumns"
+          :filters="dialogFilters"
+          :type="dialogType"
+          @select-case="handleSelectCase"
+        />
+      </el-form>
+    </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import CaseSearchDialog from "@/components/CaseSearchDialog.vue";
-import { deleteAllSelected } from "@/js/ListView.js";
+import { ElMessage } from 'element-plus';
+import CaseSearchDialog from '@/components/CaseSearchDialog.vue';
 
-export default {
-  name: "ContractListView",
-  components: { CaseSearchDialog },
-  data() {
-    return {
-      form:{
-      contract_id: "",
-      case_id: "",
-      employeeType: "3",
-      pickerOptions:{
-        disabledDate: (time) => {
-          return time.getTime() > Date.now();
-        }},
-      startDate: "",
-      finishDate: "",
-      customerName: "",
-      responsibleName: "",
-      employeeName: "",
-      companyName: "",
-      case_title: "",
-      update_time: "",
-    },
-      finishManual: "",
-      extendAll: "",
-      dialogVisible: false,
-      deleteDialogVisible: false,
-      dialogData: [],
-      dialogColumns: [
-        { prop: "case_title", label: "案件名", width: "220" },
-        { prop: "case_id", label: "案件のユニーク識別子", width: "220" },
-      ],
-      dialogFilters: [
-        {
-          prop: "case_title",
-          label: "案件名",
-          type: "el-input",
-          width: 300,
-          props: { placeholder: "案件名を入力してください", clearable: true },
-        },
-      ],
-      dialogType: "caseSearch",
-      contractData: [],
-      currentPage: 1, // 当前页
-      pageSize: 10, // 每页数量
-      totalEmployees: 0, // 总条目数
-      filteredContracts: [],
-      isEndLoading: false,
-      isExtendLoading: false,
+const route = useRoute();
+const router = useRouter();
 
-      
-    };
-  },
-  methods: {
-    deleteAllSelected,//外部のメソッドを呼び出す
-    showDialog() {
-      this.dialogVisible = true;
-    },
+const form = reactive({
+  contract_id: '',
+  name: '',
+  employee_id: '',
+  customer_name: '',
+  customer_id: '',
+  employee_type: '',
+  phone_number: '',
+  start_date: '',
+  end_date: '',
+  unit_price: '',
+  tax_rate: '',
+  working_hours_min: '',
+  working_hours_max: '',
+  overtime_limit_hours: '',
+  overtime_included: 0,
+  overtime_start_time: '',
+  case_id: '',
+  responsible_id: '',
+  update_time: '',
+});
 
-    isDateValid(start_date,end_date){
-      const currentDate = new Date();
-      const start = new Date(start_date);
-      const end = new Date(end_date);
-      if(currentDate > start && currentDate < end){
-        return false;
-      }else{
-        return true;
-      }
-    },
+const dialogTitle = ref('');
+const dialogVisible = ref(false);
+const dialogData = ref([]);
+const dialogColumns = ref([]);
+const dialogFilters = ref([]);
+const dialogType = ref('');
+const isLoading = ref(false);
 
-    async findContracts() {
-      try {
-        const response = await axios.post('/contract/search', {
-        name: this.form.employeeName,
-        customer_name: this.form.customerName,
-        responsible_name: this.form.responsibleName,
-        start_date: this.form.startDate,
-        end_date: this.form.finishDate,
-        employee_type: this.form.employeeType,
-        currentPage: this.currentPage, // 当前页
-        pageSize: this.pageSize, // 每页数量
-        });
-        this.filteredContracts = response.data.data; // 使用返回的分页数据
-        this.totalEmployees = response.data.total; // 设置总条目数
-      } catch (error) {
-        this.$message.error('データの取得に失敗しました' + error);
-      }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-    },
-    async handleSelectCase(selectedCase) {
-      try{
-        const response = await axios.post('/contract/searchCustomer', {
-        custom_id: selectedCase.customer_id,
-        });
-        this.form.customerName = response.data.data[0].customer_name;
-        this.form.responsibleName = response.data.data[0].responsible_name;
-      }
-      catch(error){
-        this.$message.error('データの取得に失敗しました' + error);
-      }
-      //PopUp画面戻り値の設定
-      
-      this.form.case_id = selectedCase.case_id;
-    },
-    clickEdit(row) {
-      this.$router.push({ path: `/contract/edit/${row.contract_id}` }); // 跳转编辑画面
-    },
-
-    clickCopy(row) {
-      this.$router.push({ path: `/contract/register/${row.contract_id}` }); // 跳转复制画面
-    },
-    
-    handleNameClick(row) {
-      this.$router.push({ path: `/contract/detail/${row.contract_id}` });  // 跳转明细画面
-    },
-
-
-    showDeleteDialog(row) {
-      this.deleteDialogVisible = true;
-      this.selectedRow = row;
-    },
-
-    closeDeleteDialog() {
-      this.deleteDialogVisible = false;
-    },
-
-    handleDeleteDialogCancel(){
-      this.deleteDialogVisible = false;
-    },
-    
-    handleDeleteDialogConfirm() {
-      this.deleteDialogVisible = false;
-      this.deleteSelectedRow();
-    },
-
-    async deleteSelectedRow() {
-      try {
-        const response = await axios.post('/contract/deleteSelected', {
-          contract_id: this.selectedRow.contract_id,
-          update_time: this.selectedRow.update_time,
-        });
-        if (response.data.status === 'success') {
-          this.$message.success(response.data.message);
-          this.findContracts();
-        } else {
-          this.$message.error(response.data.message);
-        }
-      } catch (error) {
-        this.$message.error('操作失敗しました:'+ (error.response?.data?.message || error.message));
-      }
-    },
-
-    handleSelectionChange(val) {
-      this.multipleSelection = val.map(item => item.contract_id);
-    },
-    createRecord() {
-      this.$router.push('/contract/register');
-    },
-
-    async finishAll() {
-      this.isEndLoading = true;
-  try {
-    
-    if (!Array.isArray(this.multipleSelection) || this.multipleSelection.length === 0) {
-      this.$message.error('選択された契約がありません。');
-      return;
-    }
-    const requestData = this.multipleSelection.map(contractId => ({
-    contract_id: contractId,
-    end_date: this.finishManual,
-  }));
-    if(requestData.length === 0) {
-      this.$message.error('選択された契約がありません。');
-      return;
-    }
-  const response = await axios.post('/contract/finishManual', requestData);
-  if (response.data.status === 'success') {
-    this.$message.success(response.data.message);
-    this.findContracts();
-  } else {
-    this.$message.error(response.data.message);
+onMounted(() => {
+  const contract_id = route.params.id;
+  if (contract_id) {
+    fetchContractDetails(contract_id);
   }
-} catch (error) {
-  this.$message.error('操作失敗しました: ' + (error.response?.data?.message || error.message));
-}
-this.isEndLoading = false;
-},
+});
 
-async extend(){
-  this.isExtendLoading = true;
+const fetchContractDetails = async (contract_id) => {
   try {
-      if (!Array.isArray(this.multipleSelection) || this.multipleSelection.length === 0) {
-      this.$message.error('選択された契約がありません。');
-      return;
-    }
-    const requestData = this.multipleSelection.map(contractId => ({
-    contract_id: contractId,
-    end_date: this.extendAll
-  }));  
-  const response = await axios.post('/contract/extendManual', requestData);
-  if (response.data.status === 'success') {
-    this.$message.success(response.data.message);
-    this.findContracts();
-  } else {
-    this.$message.error(response.data.message);
-  }
+    const res = await axios.get(`/contract/contractDetail/${contract_id}`);
+    Object.assign(form, res.data);
+    form.overtime_included = res.data.overtime_included ? 1 : 0;
   } catch (error) {
-  this.$message.error('操作失敗しました: ' + (error.response?.data?.message || error.message));
+    ElMessage.error('契約情報の取得に失敗しました');
   }
-  this.isExtendLoading = false;
-  },
+};
 
-    // 页码改变事件
-    handlePageChange(page) {
-      this.currentPage = page;
-      this.findContracts(); // 重新调用查询方法
-    },
+const submitForm = async () => {
+  isLoading.value = true;
+  if (form.overtime_included === 0) {
+    form.overtime_start_time = '';
+  }
+  try {
+    const response = await axios.put('/contract/update', form);
+    if (response.data.status === 'success') {
+      ElMessage.success('更新が成功しました');
+      router.push('/contract');
+    } else {
+      ElMessage.error('更新に失敗しました: ' + (response.data.message || ''));
+    }
+  } catch (error) {
+    ElMessage.error('更新に失敗しました: ' + error.message);
+  }
+  isLoading.value = false;
+};
 
-    // 每页数量改变事件
-    handleSizeChange(size) {
-      this.pageSize = size;
-      this.currentPage = 1; // 重置为第一页
-      this.findContracts(); // 重新调用查询方法
+const goBack = () => {
+  router.push('/contract');
+};
+
+const showCustomerDialog = () => {
+  dialogVisible.value = true;
+  dialogTitle.value = '顧客検索';
+  dialogType.value = 'customerSearch';
+  dialogColumns.value = [
+    { prop: 'customer_name', label: '顧客名', width: '200' },
+    { prop: 'customer_id', label: '顧客ID', width: '200' },
+  ];
+  dialogFilters.value = [
+    {
+      prop: 'customer_name',
+      label: '顧客名',
+      type: 'el-input',
+      width: 200,
+      props: { placeholder: '顧客名を入力してください', clearable: true },
     },
-  },
-  mounted() {
-    this.filteredContracts = this.contractData;
-  },
+  ];
+};
+
+const showEmployeeDialog = () => {
+  dialogVisible.value = true;
+  dialogTitle.value = '社員検索';
+  dialogType.value = 'employeeSearch';
+  dialogColumns.value = [
+    { prop: 'name', label: '氏名', width: '200' },
+    { prop: 'employee_id', label: '社員ID', width: '200' },
+  ];
+  dialogFilters.value = [
+    {
+      prop: 'name',
+      label: '氏名',
+      type: 'el-input',
+      width: 200,
+      props: { placeholder: '社員名を入力してください', clearable: true },
+    },
+  ];
+};
+
+const handleSelectCase = (selectedCase) => {
+  if (dialogType.value === 'employeeSearch') {
+    form.employee_id = selectedCase.employee_id;
+    form.name = selectedCase.name;
+  } else if (dialogType.value === 'customerSearch') {
+    form.customer_id = selectedCase.customer_id;
+    form.customer_name = selectedCase.customer_name;
+    form.responsible_id = selectedCase.responsible_id;
+  }
+  dialogVisible.value = false;
 };
 </script>
 
 <style scoped>
 .header-container {
-  /* background-color: #F5F7FA; */
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 8px;
@@ -414,45 +440,16 @@ async extend(){
 }
 .section-container {
   background-color: #FFFFFF;
-  padding: 15px;
-  margin-bottom: 20px;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-.section-title {
-  margin: 0 0 15px 0;
-  font-size: 20px;
-  font-weight: bold;
-  color: #333333;
+.input-with-button {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
-.section-title i {
-  margin-right: 10px;
-  font-size: 24px;
-  color: #409EFF;
-}
-.el-input {
-  margin-bottom: 10px;
-}
-.no-wrap-column .cell {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.el-table th {
-  background-color: #E3F2FD;
-  color: #333333;
-  font-weight: bold;
-}
-.el-table th .cell {
-  font-size: 14px;
-  text-align: center;
-}
-.input-label .el-input__inner {
-  border: none; /* 去掉边框 */
-  background-color: transparent; /* 设置背景为透明 */
-  color: #333; /* 设置字体颜色（可选） */
-  box-shadow: none; /* 去掉阴影（如果有） */
+.input-with-button .el-input {
+  flex: 1;
 }
 </style>
