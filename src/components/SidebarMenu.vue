@@ -36,19 +36,7 @@
             <el-menu-item index="/SalaryDetail">給料詳細</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
-
-        <el-sub-menu v-if="permissions.showExpenseApproval" index="3">
-          <template #title>
-            <el-icon><Document /></el-icon>
-            <span>費用OCR</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="/file/receipt">費用申請</el-menu-item>
-            <el-menu-item index="/file/receipt">領収書</el-menu-item>
-            <el-menu-item index="/setting">ファイル一覧</el-menu-item>
-          </el-menu-item-group>
-        </el-sub-menu>
-
+        
         <el-sub-menu v-if="permissions.showSettlement" index="4">
           <template #title>
             <el-icon><DataAnalysis /></el-icon>

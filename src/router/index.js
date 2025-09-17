@@ -27,11 +27,23 @@ const routes = [
     name: "Login",
     component: LoginView,
   },
-  
-  { path: "/regist/loginRegister", name: "loginRegister", component: loginRegister },
-  { path: "/regist/trueRegister/:id", name: "trueRegister", component: trueRegister },
-  { path: "/regist/authenticatorRequest/:otpurl", name: "authenticatorRequest", component: authenticatorRequest },
-  
+
+  {
+    path: "/regist/loginRegister",
+    name: "loginRegister",
+    component: loginRegister,
+  },
+  {
+    path: "/regist/trueRegister/:id",
+    name: "trueRegister",
+    component: trueRegister,
+  },
+  {
+    path: "/regist/authenticatorRequest/:otpurl",
+    name: "authenticatorRequest",
+    component: authenticatorRequest,
+  },
+
   {
     path: "/home",
     name: "Home",
@@ -49,7 +61,12 @@ const routes = [
     },
   },
 
-   { path: "/invite", name: "Invite", component: EmployeeInviteView, meta: { requiresAuth: true } },
+  {
+    path: "/invite",
+    name: "Invite",
+    component: EmployeeInviteView,
+    meta: { requiresAuth: true },
+  },
 
   {
     path: "/employee/register",
@@ -73,10 +90,6 @@ const routes = [
   {
     path: "/employee/edit/:id",
     component: () => import("@/views/employee/EmployeeEditView.vue"),
-  },
-  {
-    path: "/file/receipt",
-    component: () => import("@/views/file/ReceiptUploadView.vue"),
   },
 
   {
@@ -151,11 +164,26 @@ const routes = [
     component: () => import("@/views/customer/ResponsibleDetailView.vue"),
   },
 
-
-  { path: "/attendance/listview", name: "AttendanceListView",component: () => import("@/views/attendance/AttendanceListView.vue")},
-  { path: "/attendance/registview", name: "AttendanceRegistView",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
-  { path: "/SalaryList", name: "SalaryList",component: () => import("@/views/salary/SalaryList.vue")},
-  { path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalarySlip.vue")},
+  {
+    path: "/attendance/listview",
+    name: "AttendanceListView",
+    component: () => import("@/views/attendance/AttendanceListView.vue"),
+  },
+  {
+    path: "/attendance/registview",
+    name: "AttendanceRegistView",
+    component: () => import("@/views/attendance/AttendanceRegistView.vue"),
+  },
+  {
+    path: "/SalaryList",
+    name: "SalaryList",
+    component: () => import("@/views/salary/SalaryList.vue"),
+  },
+  {
+    path: "/SalaryDetail",
+    name: "SalaryDetail",
+    component: () => import("@/views/salary/SalarySlip.vue"),
+  },
 
   {
     path: "/expense/receipt-upload",
@@ -179,6 +207,11 @@ const routes = [
   {
     path: "/expense/approval/:id",
     component: () => import("@/views/expense/ExpenseApprovalDetailView.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/expense/receipt-edit/:id",
+    component: () => import("@/views/expense/ReceiptEditView.vue"),
     meta: { requiresAuth: true },
   },
 ];
