@@ -68,6 +68,8 @@
               v-if="row.imagePath"
               :src="resolveImageUrl(row.imagePath)"
               :preview-src-list="[resolveImageUrl(row.imagePath)]"
+              :preview-teleported="true"
+              :z-index="5000"
               fit="cover"
               style="width: 80px; height: 80px; border-radius: 4px"
             >

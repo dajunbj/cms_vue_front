@@ -34,6 +34,8 @@
               v-if="row.imagePath"
               :src="row.imagePath"
               :preview-src-list="[row.imagePath]"
+              :preview-teleported="true"
+              :z-index="5000"
               fit="cover"
               style="width: 80px; height: 80px; border-radius: 4px;"
             >
