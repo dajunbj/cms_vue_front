@@ -6,14 +6,8 @@
     <el-row class="toolbar" justify="space-between" align="middle">
       <div class="left" style="display: flex; gap: 8px; align-items: center">
         <!-- 画像アップロード（選択のみ、自動アップロードなし） -->
-        <el-upload
-          ref="uploadRef"
-          :auto-upload="false"
-          :multiple="true"
-          :show-file-list="false"
-          accept="image/*"
-          @change="onFilePicked"
-        >
+        <el-upload ref="uploadRef" :auto-upload="false" :multiple="true" :show-file-list="false" accept="image/*"
+          @change="onFilePicked">
           <el-button type="primary">画像をアップロード</el-button>
         </el-upload>
 
@@ -50,12 +44,8 @@
           </template>
 
           <el-scrollbar class="thumb-scroll">
-            <div
-              v-for="(img, idx) in images"
-              :key="img.localId"
-              :class="['thumb', { active: idx === activeIndex }]"
-              @click="onThumbClick(idx)"
-            >
+            <div v-for="(img, idx) in images" :key="img.localId" :class="['thumb', { active: idx === activeIndex }]"
+              @click="onThumbClick(idx)">
               <el-image :src="img.previewUrl" fit="cover" class="thumb-img" />
               <div class="thumb-meta">
                 <div class="thumb-title">
@@ -64,11 +54,7 @@
                   <!-- ファイル名（省略表示） -->
                   <span class="name" :title="img.name">{{ img.name }}</span>
                   <!-- ステータスタグ -->
-                  <el-tag
-                    size="small"
-                    class="status-tag"
-                    :type="tagType(img.status)"
-                  >
+                  <el-tag size="small" class="status-tag" :type="tagType(img.status)">
                     {{ img.status || "未処理" }}
                   </el-tag>
                 </div>
@@ -78,12 +64,7 @@
                 }}</small>
               </div>
               <!-- 行削除（クリック伝播停止） -->
-              <el-button
-                text
-                type="danger"
-                size="small"
-                @click.stop="remove(idx)"
-              >
+              <el-button text type="danger" size="small" @click.stop="remove(idx)">
                 削除
               </el-button>
             </div>
@@ -97,9 +78,7 @@
           <template #header>
             <div class="viewer-header">
               <div>
-                <el-tag type="info"
-                  >No. {{ activeImage?.localId ?? "-" }}</el-tag
-                >
+                <el-tag type="info">No. {{ activeImage?.localId ?? "-" }}</el-tag>
                 <span class="file-name">{{ activeImage?.name }}</span>
               </div>
               <div class="viewer-tools">
@@ -117,14 +96,8 @@
           </template>
 
           <div class="viewer-canvas" ref="viewerRef">
-            <img
-              v-if="activeImage"
-              ref="imgRef"
-              class="preview-img"
-              :src="activeImage.previewUrl"
-              :style="{ transform: `scale(${zoom}) rotate(${rotation}deg)` }"
-              @load="onImgLoad"
-            />
+            <img v-if="activeImage" ref="imgRef" class="preview-img" :src="activeImage.previewUrl"
+              :style="{ transform: `scale(${zoom}) rotate(${rotation}deg)` }" @load="onImgLoad" />
             <div v-else class="placeholder">画像が未選択</div>
           </div>
         </el-card>
@@ -148,11 +121,11 @@
                 <el-input v-model="form.amount" placeholder="金額" />
               </el-form-item>
               <el-form-item label="発行日">
-                <el-date-picker
-                  v-model="form.date"
-                  type="date"
-                  placeholder="日付を選択"
-                />
+                <el-date-picker v-model="form.date" type="date" placeholder="日付を選択" />
+              </el-form-item>
+              <el-form-item label="OCR全文">
+                <el-input v-model="form.full_text" type="textarea" :autosize="{ minRows: 8, maxRows: 20 }"
+                  placeholder="OCR結果の全文" />
               </el-form-item>
               <el-form-item>
                 <!-- 保存ボタン（未保存→新規／保存済→差分更新） -->
@@ -160,19 +133,12 @@
                   {{ activeImage?.savedId ? "変更後内容を保存" : "現在を保存" }}
                 </el-button>
                 <!-- 取消ボタン（保存済のみ表示） -->
-                <el-button
-                  v-if="activeImage?.savedId"
-                  type="danger"
-                  plain
-                  @click="cancelSaveCurrent"
-                >
+                <el-button v-if="activeImage?.savedId" type="danger" plain @click="cancelSaveCurrent">
                   保存を取り消す
                 </el-button>
               </el-form-item>
             </el-form>
-
             <el-divider />
-
             <!-- 下：固定ヘッダ＋内部スクロールのテーブル（全画像がソース） -->
             <div class="table-wrap">
               <el-table :data="images" height="100%" size="small" border>
@@ -270,7 +236,9 @@ const images = ref([]);
 const activeIndex = ref(-1);
 
 /** アクティブ画像の編集フォーム */
-const form = reactive({ issuer: "", number: "", amount: "", date: "" });
+const form = reactive({
+  issuer: "", number: "", amount: "", date: "", full_text: ""
+});
 
 /** 進捗・ヒント */
 const status = ref("待機");
@@ -318,6 +286,7 @@ function syncFormFromItem(it) {
     number: it.number || "",
     amount: it.amount || "",
     date: it.date || "",
+    full_text: it.full_text || "",
   });
 }
 
@@ -393,6 +362,7 @@ function onFilePicked(_uploadFile, uploadFiles) {
       number: '',
       amount: '',
       date: '',
+      full_text: '',
       status: '未処理',
       checked: false,
     })
@@ -472,6 +442,7 @@ async function readSelected() {
       img.number = row.number ?? img.number ?? "";
       img.amount = row.amount ?? img.amount ?? "";
       img.date = row.date ?? img.date ?? "";
+      img.full_text = row.full_text ?? img.full_text ?? "";
       img.status = "読取済み";
       ok++;
     });
@@ -521,6 +492,7 @@ async function readAll() {
       img.number = row.number ?? img.number ?? "";
       img.amount = row.amount ?? img.amount ?? "";
       img.date = row.date ?? img.date ?? "";
+      img.full_text = row.full_text ?? img.full_text ?? "";
       img.status = "読取済み";
       ok++;
     });
@@ -559,6 +531,7 @@ async function createWithImage(file, payload) {
   fd.append("number", payload.number ?? "");
   fd.append("amount", String(payload.amount ?? ""));
   fd.append("date", payload.date ?? "");
+  fd.append("full_text", payload.full_text ?? "");
   const { data } = await api.post("/ocr/save-with-image", fd, {
     headers: { "Content-Type": "multipart/form-data" },
   });
@@ -572,6 +545,7 @@ async function updateMeta(id, payload) {
     number: payload.number ?? "",
     amount: payload.amount ?? "",
     date: payload.date ?? "",
+    full_text: payload.full_text ?? "",
   });
   return data;
 }
@@ -656,6 +630,7 @@ async function saveAll() {
           number: it.number,
           amount: it.amount,
           date: it.date,
+          full_text: it.full_text,
         });
         it.status = "保存済み";
       } else {
@@ -665,6 +640,7 @@ async function saveAll() {
           number: it.number,
           amount: it.amount,
           date: it.date,
+          full_text: it.full_text,
         });
         const newId = res?.id;
         if (!newId) throw new Error("id missing");
@@ -802,6 +778,7 @@ function tagType(st) {
   flex: 1;
   min-height: 0;
 }
+
 .stretch {
   height: 100%;
 }
@@ -821,10 +798,12 @@ function tagType(st) {
   justify-content: space-between;
   align-items: center;
 }
+
 .thumb-scroll {
   flex: 1;
   min-height: 0;
 }
+
 .thumbs .thumb {
   display: flex;
   align-items: center;
@@ -836,9 +815,11 @@ function tagType(st) {
   cursor: pointer;
   background: #fff;
 }
+
 .thumbs .thumb.active {
   border-color: #409eff;
 }
+
 .thumb-img {
   width: 48px;
   height: 48px;
@@ -846,24 +827,29 @@ function tagType(st) {
   background: #f5f7fa;
   flex-shrink: 0;
 }
+
 .thumb-meta {
   flex: 1;
   min-width: 0;
 }
+
 .thumb-title {
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 .thumb-title .name {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .status-tag {
   margin-left: auto;
 }
+
 .issuer {
   color: #909399;
 }
@@ -874,9 +860,11 @@ function tagType(st) {
   justify-content: space-between;
   align-items: center;
 }
+
 .file-name {
   margin-left: 8px;
 }
+
 .viewer-canvas {
   flex: 1;
   min-height: 0;
@@ -901,16 +889,20 @@ function tagType(st) {
 
 /* 右：フォーム＋表（固定ヘッダ＋内部スクロール） */
 .form .form-body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  height: 100%;
+  overflow: auto;
 }
+
+
 .table-wrap {
   flex: 1;
   min-height: 0;
   display: flex;
 }
+
 .table-wrap :deep(.el-table) {
   height: 100%;
   width: 100%;
