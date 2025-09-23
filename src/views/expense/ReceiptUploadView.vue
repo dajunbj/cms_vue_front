@@ -37,10 +37,17 @@
           <template #header>
             <div class="thumbs-header">
               <span>画像（{{ images.length }}）</span>
-              <!-- 全選択（半選択表示あり） -->
-              <el-checkbox v-model="allChecked" :indeterminate="indeterminate">
-                全選択
-              </el-checkbox>
+
+              <div class="thumbs-actions">
+                <!-- 全選択（半選択表示あり） -->
+                <el-checkbox v-model="allChecked" :indeterminate="indeterminate">
+                  全選択
+                </el-checkbox>
+                <!-- 新增：选中删除（只删一览，不调后端） -->
+                <el-button size="small" type="danger" plain :disabled="!anySelected" @click.stop="removeSelected">
+                  選択削除
+                </el-button>
+              </div>
             </div>
           </template>
 
@@ -379,11 +386,11 @@ let changeDebounceTimer = null
 
 const uploadRef = ref(null)
 function clearBeforePick() {
-//每次点开选项框前,把上一次的fileList清掉,避免历史残留
-uploadRef.value?.clearFiles()
+  //每次点开选项框前,把上一次的fileList清掉,避免历史残留
+  uploadRef.value?.clearFiles()
 }
 
- function fileKey(f) {
+function fileKey(f) {
   return f ? [f.name, f.size, f.lastModified].join('::') : ''
 }
 
@@ -817,6 +824,74 @@ function tagType(st) {
   if (st === "読み取り失敗" || st === "保存失敗") return "danger";
   return "info";
 }
+
+
+// ① 是否有勾选的条目（供「選択削除」按钮禁用态使用）
+const anySelected = computed(() => images.value.some(it => it.checked))
+
+// ② 选中删除（只删一览，不调后端）
+async function removeSelected() {
+  // 选中的下标
+  const idxList = images.value
+    .map((it, idx) => (it.checked ? idx : -1))
+    .filter(i => i >= 0)
+
+  if (!idxList.length) return
+
+  try {
+    await ElMessageBox.confirm(
+      `選択された ${idxList.length} 件を一覧から削除します。よろしいですか？`,
+      '確認',
+      { confirmButtonText: '削除する', cancelButtonText: 'キャンセル', type: 'warning' }
+    )
+  } catch {
+    return // 取消
+  }
+
+  // 删除前的活动项
+  const activeBefore = activeImage.value || null
+
+  // 释放 blob: URL，并生成保留列表
+  const toRemove = new Set(idxList)
+  const remaining = []
+  images.value.forEach((it, idx) => {
+    if (toRemove.has(idx)) {
+      if (it?.previewUrl?.startsWith('blob:')) URL.revokeObjectURL(it.previewUrl)
+    } else {
+      remaining.push(it)
+    }
+  })
+
+  // 用新数组替换（保持响应式）
+  images.value = remaining
+
+  // 清掉勾选状态
+  images.value.forEach(it => (it.checked = false))
+
+  // 联动右上预览/表单
+  if (images.value.length === 0) {
+    activeIndex.value = -1
+    // 如果你已有 clearForm() 就用它；没有就用下面一行替代：
+    // Object.assign(form, { issuer:'', number:'', amount:'', date:'', full_text:'' })
+    clearForm?.() ?? Object.assign(form, { issuer:'', number:'', amount:'', date:'', full_text:'' })
+    resetView()
+  } else {
+    // 若原活动项仍存在就保持不变，否则跳到最靠近被删处的一张
+    const stillHasActive = activeBefore && images.value.includes(activeBefore)
+    if (stillHasActive) {
+      activeIndex.value = images.value.indexOf(activeBefore)
+    } else {
+      const nearest = Math.min(Math.min(...idxList), images.value.length - 1)
+      activeIndex.value = Math.max(0, nearest)
+    }
+    const nextItem = images.value[activeIndex.value]
+    syncFormFromItem(nextItem)
+    nextTick(() => fitToContainer())
+  }
+
+  ElMessage.success('選択した画像を削除しました')
+}
+
 </script>
 
 <style scoped>
