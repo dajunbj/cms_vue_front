@@ -65,7 +65,7 @@
                 }}</small>
               </div>
               <!-- 行削除（クリック伝播停止） -->
-              <el-button text type="danger" size="small" @click.stop="remove(idx)">
+              <el-button text type="danger" size="small" @click.stop="onRemoveClick(idx)">
                 削除
               </el-button>
             </div>
@@ -321,14 +321,52 @@ function next() {
     focusOnly(activeIndex.value + 1);
 }
 
-/** 行削除（Blob URL 解放＋インデックス整合） */
-function remove(idx) {
-  const it = images.value[idx];
-  if (it?.previewUrl?.startsWith("blob:")) URL.revokeObjectURL(it.previewUrl);
-  images.value.splice(idx, 1);
-  if (activeIndex.value >= images.value.length) {
-    activeIndex.value = images.value.length - 1;
+/** 清空右上表单 */
+function clearForm() {
+  Object.assign(form, {
+    issuer: '', number: '', amount: '', date: '', full_text: '',
+  })
+}
+
+/** 旧 remove 的核心删除动作，抽成内部函数 */
+function doRemove(idx) {
+  const it = images.value[idx]
+  if (it?.previewUrl?.startsWith('blob:')) {
+    URL.revokeObjectURL(it.previewUrl)
   }
+  images.value.splice(idx, 1)
+
+  // 根据剩余条目决定 active 与表单
+  if (images.value.length === 0) {
+    activeIndex.value = -1
+    clearForm()
+    // 可选：重置预览视图
+    resetView()
+    hint.value = '画像はありません'
+    return
+  }
+
+  // 还剩图片：定位到“邻近一张”
+  const newIndex = Math.min(idx, images.value.length - 1)
+  activeIndex.value = newIndex
+  const nextItem = images.value[newIndex]
+  syncFormFromItem(nextItem)   // 未读则空白，已读则显示结果
+  nextTick(() => fitToContainer())
+}
+
+/** 点击删除：先确认，再删除并联动右上表单 */
+async function onRemoveClick(idx) {
+  try {
+    await ElMessageBox.confirm(
+      'この画像を一覧から削除します。よろしいですか？',
+      '確認',
+      { confirmButtonText: '削除する', cancelButtonText: 'キャンセル', type: 'warning' }
+    )
+  } catch {
+    return // 用户取消
+  }
+  doRemove(idx)
+  ElMessage.success('削除しました')
 }
 
 // —— 用于累计一轮选择中新增加的数量（去抖显示） ——
