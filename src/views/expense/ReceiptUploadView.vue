@@ -8,7 +8,8 @@
         <!-- 画像アップロード（選択のみ、自動アップロードなし） -->
         <el-upload ref="uploadRef" :auto-upload="false" :multiple="true" :show-file-list="false" accept="image/*"
           @change="onFilePicked">
-          <el-button type="primary">画像をアップロード</el-button>
+          <!-- 先清空，再由 el-upload 打开文件选择框 -->
+          <el-button type="primary" @click="clearBeforePick">画像をアップロード</el-button>
         </el-upload>
 
         <!-- OCR 実行 -->
@@ -337,27 +338,50 @@ let changeDebounceTimer = null
 /* ------------------------------------------------------------
  * 4) アップロード（重複除外・自動初期選択）＋去抖累计提示
  * ---------------------------------------------------------- */
+
+const uploadRef = ref(null)
+function clearBeforePick() {
+//每次点开选项框前,把上一次的fileList清掉,避免历史残留
+uploadRef.value?.clearFiles()
+}
+
+ function fileKey(f) {
+  return f ? [f.name, f.size, f.lastModified].join('::') : ''
+}
+
 function onFilePicked(_uploadFile, uploadFiles) {
   const before = images.value.length
   const newly = []
 
+  // (A) 先对同一轮 fileLists 去重
+  const roundSeen = new Set()
+  const uniqueUFs = []
   for (const uf of uploadFiles) {
-    if (!uf.raw) continue
-    const dup = images.value.some(
-      (x) =>
-        x.file &&
-        x.file.name === uf.raw.name &&
-        x.file.size === uf.raw.size &&
-        x.file.lastModified === uf.raw.lastModified
-    )
-    if (dup) continue
+    if (!uf?.raw) continue
+    const key = fileKey(uf.raw)
+    if (roundSeen.has(key)) continue
+    roundSeen.add(key)
+    uniqueUFs.push(uf)
+  }
 
-    const objUrl = URL.createObjectURL(uf.raw)
+  // (B) 再和当前一览做去重，仅添加不在一览中的
+  const existKeys = new Set(
+    images.value
+      .map(x => (x.file ? fileKey(x.file) : null))
+      .filter(Boolean)
+  )
+
+  for (const uf of uniqueUFs) {
+    const raw = uf.raw
+    const key = fileKey(raw)
+    if (existKeys.has(key)) continue
+
+    const objUrl = URL.createObjectURL(raw)
     newly.push({
       localId: idSeq++,
-      name: uf.raw.name,
+      name: raw.name,
       previewUrl: objUrl,
-      file: uf.raw,
+      file: raw,
       issuer: '',
       number: '',
       amount: '',
@@ -366,6 +390,7 @@ function onFilePicked(_uploadFile, uploadFiles) {
       status: '未処理',
       checked: false,
     })
+    existKeys.add(key) // 防止同一轮再次命中
   }
 
   if (newly.length) {
@@ -373,13 +398,13 @@ function onFilePicked(_uploadFile, uploadFiles) {
     if (activeIndex.value === -1) focusOnly(0)
   }
 
-  // 本次 onChange 实际新增的数量
-  const addedNow = images.value.length - before
-  if (addedNow > 0) {
-    pendingAdded.value += addedNow
-  }
+  // (C) 清空 el-upload 内部列表，防止历史文件残留到下次 change
+  uploadRef.value?.clearFiles()
 
-  // 去抖：多次 onChange（每个文件一次）结束后统一提示本轮合计
+  // —— 原来的“新增数量提示去抖”保持不变 ——
+  const addedNow = images.value.length - before
+  if (addedNow > 0) pendingAdded.value += addedNow
+
   if (changeDebounceTimer) clearTimeout(changeDebounceTimer)
   changeDebounceTimer = setTimeout(() => {
     if (pendingAdded.value > 0) {
@@ -389,6 +414,7 @@ function onFilePicked(_uploadFile, uploadFiles) {
     changeDebounceTimer = null
   }, 120)
 }
+
 
 // 卸载时清理定时器
 onBeforeUnmount(() => {
