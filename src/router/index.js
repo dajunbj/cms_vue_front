@@ -12,6 +12,8 @@ import ResponsibleRegisterView from '@/views/customer/ResponsibleRegisterView.vu
 
 import axios from 'axios';
 
+import ChangePwdSendMailView from '@/views/ChangePwdSendMailView.vue';
+
 import EmployeeInviteView from '@/views/inviteRegister/EmployeeInviteView.vue';
 import loginRegister from '@/views/inviteRegister/loginRegister.vue';
 import trueRegister from '@/views/inviteRegister/trueRegister.vue';
@@ -180,6 +182,11 @@ const routes = [
     path: "/expense/approval/:id",
     component: () => import("@/views/expense/ExpenseApprovalDetailView.vue"),
     meta: { requiresAuth: true },
+  },
+
+  {
+    path: "/changePwd",
+    component: ChangePwdSendMailView,
   },
 ];
 

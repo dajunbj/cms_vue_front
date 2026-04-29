@@ -34,6 +34,15 @@
           登录
         </el-button>
       </el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          style="width: 100%;"
+          @click="handleForgetPassword"
+        >
+          忘记密码
+        </el-button>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -89,6 +98,11 @@ const handleLogin = async () => {
     ElMessage.error('登录失败，请检查网络或服务器错误')
   }
 }
+
+const handleForgetPassword = async () => {
+  router.push('/changePwd')
+}
+
 </script>
 
 <style scoped>

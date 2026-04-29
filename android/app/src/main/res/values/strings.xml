@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">eigyoSystem</string>
+    <string name="title_activity_main">eigyoSystem</string>
+    <string name="package_name">kyoei.eigyo.System</string>
+    <string name="custom_url_scheme">kyoei.eigyo.System</string>
+</resources>
