@@ -3,20 +3,20 @@
 // 各プランによるメニュー表示制御設定
 export const PLAN_PERMISSIONS = {
   basic: {
-    showPayroll: false, // 給料：非表示
+    showPayroll: true, // 給料：非表示
     showExpense: true, // 費用申請OCR：表示
-    showSettlement: false, // 決算：非表示
-    showFinalAdjustment: false, // 年末調整：非表示
-    showCustomer: false, // 顧客管理：非表示
-    showExpenseApproval: false,
+    showSettlement: true, // 決算：非表示
+    showFinalAdjustment: true, // 年末調整：非表示
+    showCustomer: true, // 顧客管理：非表示
+    showExpenseApproval: true,
     showOcrAuth: true,
     showExpense: true,
   },
   standard: {
     showPayroll: true,
     showExpense: true,
-    showSettlement: false,
-    showFinalAdjustment: false,
+    showSettlement: true,
+    showFinalAdjustment: true,
     showCustomer: true,
     showExpenseApproval: true,
     showOcrAuth: true,
