@@ -30,164 +30,48 @@ const routes = [
     component: LoginView,
   },
   
-  { path: "/regist/loginRegister", name: "loginRegister", component: loginRegister },
-  { path: "/regist/trueRegister/:id", name: "trueRegister", component: trueRegister },
-  { path: "/regist/authenticatorRequest/:otpurl", name: "authenticatorRequest", component: authenticatorRequest },
+  {path: "/regist/loginRegister", name: "loginRegister", component: loginRegister },
+  {path: "/regist/trueRegister/:id", name: "trueRegister", component: trueRegister },
+  {path: "/regist/authenticatorRequest/:otpurl", name: "authenticatorRequest", component: authenticatorRequest },
   
-  {
-    path: "/home",
-    name: "Home",
-    component: HomeView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/employee",
-    name: "User",
-    component: EmployeeListView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
+  {path: "/home",name: "Home",component: HomeView,meta: {requiresAuth: true,},},
+  {path: "/invite", name: "Invite", component: EmployeeInviteView, meta: { requiresAuth: true } },
+  {path: "/setting",name: "Setting",component: SettingView,meta: {requiresAuth: true,},},
 
-   { path: "/invite", name: "Invite", component: EmployeeInviteView, meta: { requiresAuth: true } },
+  {path: "/employee",name: "User",component: EmployeeListView,meta: {requiresAuth: true,},},
+  {path: "/employee/register",component: EmployeeRegisterView,meta: {requiresAuth: true,},},
+  {path: "/employee/detail/:id",component: () => import("@/views/employee/EmployeeDetailView.vue"),},
+  {path: "/employee/edit/:id",component: () => import("@/views/employee/EmployeeEditView.vue"),},
+  {path: "/file/receipt",component: () => import("@/views/file/ReceiptUploadView.vue"),},
 
-  {
-    path: "/employee/register",
-    component: EmployeeRegisterView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/setting",
-    name: "Setting",
-    component: SettingView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/employee/detail/:id",
-    component: () => import("@/views/employee/EmployeeDetailView.vue"),
-  },
-  {
-    path: "/employee/edit/:id",
-    component: () => import("@/views/employee/EmployeeEditView.vue"),
-  },
-  {
-    path: "/file/receipt",
-    component: () => import("@/views/file/ReceiptUploadView.vue"),
-  },
+  {path: "/contract",component: ContractListView,meta: {requiresAuth: true,},},
+  {path: "/contract/register",component: ContractRegisterView,meta: {requiresAuth: true,},},
+  {path: "/contract/register/:id",component: () => import("@/views/contract/ContractRegisterView.vue"),},
+  {path: "/contract/edit/:id",component: () => import("@/views/contract/ContractEditView.vue"),},
+  {path: "/contract/detail/:id",component: () => import("@/views/contract/ContractDetailView.vue"),},
 
-  {
-    path: "/contract",
-    component: ContractListView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/contract/register",
-    component: ContractRegisterView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/contract/register/:id",
-    component: () => import("@/views/contract/ContractRegisterView.vue"),
-  },
-  {
-    path: "/contract/edit/:id",
-    component: () => import("@/views/contract/ContractEditView.vue"),
-  },
-  {
-    path: "/contract/detail/:id",
-    component: () => import("@/views/contract/ContractDetailView.vue"),
-  },
-
-  {
-    path: "/customer",
-    component: CustomerView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/customer/register",
-    component: CustomerRegisterView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/customer/registerRes",
-    component: ResponsibleRegisterView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/customer/registerRes/:id",
-    component: ResponsibleRegisterView,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/customer/edit/:id",
-    component: () => import("@/views/customer/CustomerEditView.vue"),
-  },
-  {
-    path: "/customer/detail/:id",
-    component: () => import("@/views/customer/CustomerDetailView.vue"),
-  },
-  {
-    path: "/customer/editRes/:id",
-    component: () => import("@/views/customer/ResponsibleEditView.vue"),
-  },
-  {
-    path: "/customer/detailRes/:id",
-    component: () => import("@/views/customer/ResponsibleDetailView.vue"),
-  },
+  {path: "/customer",component: CustomerView,meta: {requiresAuth: true,},},
+  {path: "/customer/register",component: CustomerRegisterView,meta: {requiresAuth: true,},},
+  {path: "/customer/registerRes",component: ResponsibleRegisterView,meta: {requiresAuth: true,},},
+  {path: "/customer/registerRes/:id",component: ResponsibleRegisterView,meta: {requiresAuth: true,},},
+  {path: "/customer/edit/:id",component: () => import("@/views/customer/CustomerEditView.vue"),},
+  {path: "/customer/detail/:id",component: () => import("@/views/customer/CustomerDetailView.vue"),},
+  {path: "/customer/editRes/:id",component: () => import("@/views/customer/ResponsibleEditView.vue"),},
+  {path: "/customer/detailRes/:id",component: () => import("@/views/customer/ResponsibleDetailView.vue"),},
 
 
-  { path: "/attendance/listview", name: "AttendanceListView",component: () => import("@/views/attendance/AttendanceListView.vue")},
-  { path: "/attendance/registview", name: "AttendanceRegistView",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
-  { path: "/SalaryList", name: "SalaryList",component: () => import("@/views/salary/SalaryList.vue")},
-  { path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalarySlip.vue")},
+  {path: "/attendance/listview", name: "AttendanceListView",component: () => import("@/views/attendance/AttendanceListView.vue")},
+  {path: "/attendance/registview", name: "AttendanceRegistView",component: () => import("@/views/attendance/AttendanceRegistView.vue")},
+ 
+  {path: "/SalaryList", name: "SalaryList",component: () => import("@/views/salary/SalaryList.vue")},
+  {path: "/SalaryDetail", name: "SalaryDetail",component: () => import("@/views/salary/SalarySlip.vue")},
 
-  {
-    path: "/expense/receipt-upload",
-    component: () => import("@/views/expense/ReceiptUploadView.vue"),
-    meta: {
-      requiresAuth: true,
-    },
-  },
+  {path: "/expense/receipt-upload",component: () => import("@/views/expense/ReceiptUploadView.vue"),meta: {requiresAuth: true,},},
+  {path: "/expense/receipt-list",component: () => import("@/views/expense/ReceiptListView.vue"),meta: { requiresAuth: true },},
+  {path: "/expense/approval",component: () => import("@/views/expense/ExpenseApprovalView.vue"),meta: { requiresAuth: true },},
+  {path: "/expense/approval/:id",component: () => import("@/views/expense/ExpenseApprovalDetailView.vue"),meta: { requiresAuth: true },},
 
-  {
-    path: "/expense/receipt-list",
-    component: () => import("@/views/expense/ReceiptListView.vue"),
-    meta: { requiresAuth: true },
-  },
-
-  {
-    path: "/expense/approval",
-    component: () => import("@/views/expense/ExpenseApprovalView.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/expense/approval/:id",
-    component: () => import("@/views/expense/ExpenseApprovalDetailView.vue"),
-    meta: { requiresAuth: true },
-  },
-
-  {
-    path: "/changePwd",
-    component: ChangePwdSendMailView,
-  },
+  {path: "/changePwd",component: ChangePwdSendMailView,},
 ];
 
   // 領収書アップロード・確認画面

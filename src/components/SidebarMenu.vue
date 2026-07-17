@@ -113,7 +113,7 @@
             <el-menu-item index="/employee">社員一覧</el-menu-item>
             <el-menu-item index="/setting">休暇一覧</el-menu-item>
             <el-menu-item index="/employee">履歴</el-menu-item>
-            <el-menu-item v-if="permissions.showPayroll" index="/invite">招待登録</el-menu-item>
+            <el-menu-item index="/invite">招待登録</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
 
@@ -134,6 +134,7 @@
             <span>費用OCR</span>
           </template>
           <el-menu-item-group>
+            <el-menu-item index="/expense/receipt-list">費用一覧</el-menu-item>
             <el-menu-item index="/file/receipt">費用申請</el-menu-item>
             <el-menu-item index="/file/receipt">領収書</el-menu-item>
             <el-menu-item index="/setting">ファイル一覧</el-menu-item>
