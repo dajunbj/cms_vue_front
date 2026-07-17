@@ -128,7 +128,7 @@
           </el-menu-item-group>
         </el-sub-menu>
 
-        <el-sub-menu index="3">
+        <!-- <el-sub-menu index="3">
           <template #title>
             <el-icon><Document /></el-icon>
             <span>費用OCR</span>
@@ -139,9 +139,9 @@
             <el-menu-item index="/file/receipt">領収書</el-menu-item>
             <el-menu-item index="/setting">ファイル一覧</el-menu-item>
           </el-menu-item-group>
-        </el-sub-menu>
+        </el-sub-menu> -->
 
-        <el-sub-menu index="4">
+        <!-- <el-sub-menu index="4">
           <template #title>
             <el-icon><DataAnalysis /></el-icon>
             <span>会社決算</span>
@@ -150,9 +150,9 @@
             <el-menu-item index="/settlement/summary">損益表</el-menu-item>
             <el-menu-item index="/settlement/statement">決算書類</el-menu-item>
           </el-menu-item-group>
-        </el-sub-menu>
+        </el-sub-menu> -->
 
-        <el-sub-menu index="5">
+        <!-- <el-sub-menu index="5">
           <template #title>
             <el-icon><DocumentChecked /></el-icon>
             <span>年末調整</span>
@@ -163,7 +163,7 @@
               >申告入力</el-menu-item
             >
           </el-menu-item-group>
-        </el-sub-menu>
+        </el-sub-menu> -->
 
         <el-sub-menu index="9">
           <template #title>
