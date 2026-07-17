@@ -26,7 +26,7 @@
         </el-col>
         <el-col :span="1.5">
           <el-button
-            icon="el-icon-search"
+            class="action-button"
             @click="showDialog"
           />
         </el-col>
@@ -40,28 +40,28 @@
       <el-row>
         <el-col :span="14">
           <el-button
-            icon="el-icon-search"
+            class="action-button"
             type="primary"
             @click="findEmployees"
           >
             検索
           </el-button>
           <el-button
-            icon="el-icon-plus"
+            class="action-button"
             type="primary"
             @click="createRecord"
           >
             新規
           </el-button>
           <el-button
-            icon="el-icon-delete"
+            class="action-button"
             type="primary"
             @click="deleteAllSelected('/employee/deleteAll')"
           >
             全削除
           </el-button>
           <el-button
-            icon="el-icon-delete"
+            class="action-button"
             type="primary"
             @click="printTest"
           >
@@ -334,6 +334,13 @@ const printTest = async () => {
 }
 .el-table th .cell {
   font-size: 14px;
+  text-align: center;
+}
+.action-button {
+  width: 92px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 </style>
