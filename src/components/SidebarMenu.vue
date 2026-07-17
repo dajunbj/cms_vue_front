@@ -128,7 +128,7 @@
           </el-menu-item-group>
         </el-sub-menu>
 
-        <!-- <el-sub-menu index="3">
+        <el-sub-menu index="3">
           <template #title>
             <el-icon><Document /></el-icon>
             <span>費用OCR</span>
@@ -139,7 +139,7 @@
             <el-menu-item index="/file/receipt">領収書</el-menu-item>
             <el-menu-item index="/setting">ファイル一覧</el-menu-item>
           </el-menu-item-group>
-        </el-sub-menu> -->
+        </el-sub-menu>
 
         <!-- <el-sub-menu index="4">
           <template #title>
