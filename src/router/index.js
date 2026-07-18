@@ -70,8 +70,21 @@ const routes = [
   {path: "/expense/receipt-list",component: () => import("@/views/expense/ReceiptListView.vue"),meta: { requiresAuth: true },},
   {path: "/expense/approval",component: () => import("@/views/expense/ExpenseApprovalView.vue"),meta: { requiresAuth: true },},
   {path: "/expense/approval/:id",component: () => import("@/views/expense/ExpenseApprovalDetailView.vue"),meta: { requiresAuth: true },},
-
+  //パスワード変更
   {path: "/changePwd",component: ChangePwdSendMailView,},
+  
+  //■部門
+  {path: "/department/list",component: () => import("@/views/department/DepartmentListView.vue"),meta: {requiresAuth: true,},},
+  {path: "/department/regist",component: () => import("@/views/department/DepartmentRegisterView.vue"),meta: { requiresAuth: true },},
+  {path: "/department/edit/:id",component: () => import("@/views/department/DepartmentEditView.vue"),meta: { requiresAuth: true },},
+  {path: "/department/detail/:id",component: () => import("@/views/department/DepartmentDetailView.vue"),meta: { requiresAuth: true },},
+
+  //■部門責任者
+  {path: "/departmentresponsible/list",component: () => import("@/views/departmentresponsible/DepartmentResponsibleListView.vue"),meta: {requiresAuth: true,},},
+  {path: "/departmentresponsible/regist",component: () => import("@/views/departmentresponsible/DepartmentResponsibleRegisterView.vue"),meta: { requiresAuth: true },},
+  {path: "/departmentresponsible/edit/:id",component: () => import("@/views/departmentresponsible/DepartmentResponsibleEditView.vue"),meta: { requiresAuth: true },},
+  {path: "/departmentresponsible/detail/:id",component: () => import("@/views/departmentresponsible/DepartmentResponsibleDetailView.vue"),meta: { requiresAuth: true },},
+
 ];
 
   // 領収書アップロード・確認画面

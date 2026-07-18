@@ -1,39 +1,34 @@
 <template>
   <div style="width: 100%; max-width: 1000px; overflow-x: hidden;">
-    <!-- 添加标题部分 -->
     <div class="header-container">
       <h2 class="header-title">
-        <i class="el-icon-user" /> 社員一覧画面
+        <i class="el-icon-user" /> 部門責任者一覧画面
       </h2>
     </div>
     <div class="section-container">
       <el-row>
         <el-col :span="6">
-          <el-input
-            v-model="employeeName"
-            placeholder="社員名をご入力ください。"
+          <el-select
+            v-model="departmentId"
+            placeholder="部門を選択してください。"
             clearable
-          />
+            style="width: 100%;"
+          >
+            <el-option
+              v-for="dept in departmentOptions"
+              :key="dept.department_id"
+              :label="dept.department_name"
+              :value="dept.department_id"
+            />
+          </el-select>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="6">
           <el-input
-            v-model="companyName"
-            placeholder="会社をご入力ください。"
+            v-model="employeeName"
+            placeholder="責任者名をご入力ください。"
             clearable
-          />
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            class="action-button"
-            @click="showDialog"
-          />
-        </el-col>
-        <el-col :span="3">
-          <el-input
-            v-model="companyId"
-            disabled
           />
         </el-col>
       </el-row>
@@ -42,7 +37,7 @@
           <el-button
             class="action-button"
             type="primary"
-            @click="findEmployees"
+            @click="findResponsibles"
           >
             検索
           </el-button>
@@ -56,16 +51,9 @@
           <el-button
             class="action-button"
             type="primary"
-            @click="deleteAllSelected('/employee/deleteAll')"
+            @click="deleteAllSelected('/departmentResponsible/deleteAll')"
           >
             全削除
-          </el-button>
-          <el-button
-            class="action-button"
-            type="primary"
-            @click="printTest"
-          >
-            印刷
           </el-button>
         </el-col>
       </el-row>
@@ -76,7 +64,7 @@
       <el-row>
         <el-col :span="24">
           <el-table
-            :data="filteredEmployees"
+            :data="filteredResponsibles"
             border
             style="width: 100%; margin-top: 20px;"
             height="300px"
@@ -88,29 +76,24 @@
               align="center"
             />
             <el-table-column
-              prop="employee_id"
+              prop="responsible_id"
               label="ID"
               header-align="center"
               class-name="no-wrap-column"
             />
             <el-table-column
-              prop="name"
-              label="名前"
+              prop="department_name"
+              label="部門名"
               header-align="center"
             />
             <el-table-column
-              prop="gender"
-              label="性別"
+              prop="employee_name"
+              label="責任者名"
               header-align="center"
             />
             <el-table-column
-              prop="date_of_birth"
-              label="誕生日"
-              header-align="center"
-            />
-            <el-table-column
-              prop="phone_number"
-              label="電話"
+              prop="level"
+              label="責任者レベル"
               header-align="center"
             />
             <el-table-column
@@ -143,21 +126,12 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :page-sizes="[10, 20, 50, 100, 200]"
-            :total="totalEmployees"
+            :total="totalResponsibles"
             @current-change="handlePageChange"
             @size-change="handleSizeChange"
           />
         </el-col>
       </el-row>
-
-      <CommonSearchDialog
-        v-model:visible="dialogVisible"
-        title="会社選択画面"
-        :table-data="dialogData"
-        :columns="dialogColumns"
-        :filters="dialogFilters"
-        @select-company="handleSelectCompany"
-      />
     </div>
   </div>
 </template>
@@ -166,130 +140,80 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import CommonSearchDialog from '@/components/CommonSearchDialog.vue';
 import { deleteAllSelected } from '@/js/ListView.js';
 
 const router = useRouter();
 
+const departmentId = ref('');
 const employeeName = ref('');
-const companyName = ref('');
-const companyId = ref('');
-const dialogVisible = ref(false);
-const dialogData = ref([]);
-const dialogColumns = [
-  { prop: 'id', label: 'ID', width: '100' },
-  { prop: 'name', label: '名前', width: '220' },
-  { prop: 'department', label: '部門', width: '220' },
-];
-const dialogFilters = [
-  {
-    prop: 'name',
-    label: '名前',
-    type: 'el-input',
-    width: 300,
-    props: { placeholder: '名前を入力してください', clearable: true },
-  },
-  {
-    prop: 'department',
-    label: '部門',
-    type: 'el-select',
-    width: 300,
-    props: {
-      placeholder: '部門を選択してください',
-      clearable: true,
-      options: [
-        { label: '営業', value: '営業' },
-        { label: '開発', value: '開発' },
-        { label: '経理', value: '経理' },
-      ],
-    },
-  },
-];
+const departmentOptions = ref([]);
 
-const employeeData = ref([]);
+const responsibleData = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
-const totalEmployees = ref(0);
-const filteredEmployees = ref([]);
+const totalResponsibles = ref(0);
+const filteredResponsibles = ref([]);//検索結果
 const multipleSelection = ref([]);
 
-const showDialog = () => {
-  dialogVisible.value = true;
+const fetchDepartments = async () => {
+  //部門選択を初期化する
+  try {
+    const response = await axios.get('/departmentresponsible/departments');
+    departmentOptions.value = response.data.data;
+  } catch (error) {
+    alert('部門情報の取得に失敗しました' + error);
+  }
 };
 
-const findEmployees = async () => {
+const findResponsibles = async () => {
+  //検索を行う
   try {
-    const response = await axios.post('/employee/search', {
+    const response = await axios.post('/departmentresponsible/search', {
+      departmentId: departmentId.value,
       employeeName: employeeName.value,
-      companyName: companyName.value,
       currentPage: currentPage.value,
       pageSize: pageSize.value,
     });
-    filteredEmployees.value = response.data.data;
-    totalEmployees.value = response.data.total;
+    filteredResponsibles.value = response.data.data;
+    totalResponsibles.value = response.data.total;
   } catch (error) {
     alert('データの取得に失敗しました' + error);
   }
 };
 
-const handleSelectCompany = (selectedCompany) => {
-  companyName.value = selectedCompany.name;
-  companyId.value = selectedCompany.id;
-};
-
 const clickReference = (row) => {
-  router.push({ path: '/employee/detail/${row.employee_id}'});
+  //参照画面へ遷移する
+  router.push({ path: '/departmentresponsible/detail/${row.responsible_id}'});
 };
 
 const clickEdit = (row) => {
-  router.push({ path:'/employee/edit/${row.employee_id}'});
+  //編集画面へ遷移する
+  router.push({ path: '/departmentresponsible/edit/${row.responsible_id}'});
 };
 
 const handleSelectionChange = (val) => {
-  multipleSelection.value = val.map((item) => item.id);
+  multipleSelection.value = val.map((item) => item.responsible_id);
 };
 
 const createRecord = () => {
-  router.push('/employee/register');
+  router.push('/departmentresponsible/regist');
 };
 
 const handlePageChange = (page) => {
   currentPage.value = page;
-  findEmployees();
+  findResponsibles();
 };
 
 const handleSizeChange = (size) => {
   pageSize.value = size;
   currentPage.value = 1;
-  findEmployees();
+  findResponsibles();
 };
 
 onMounted(() => {
-  filteredEmployees.value = employeeData.value;
+  fetchDepartments();
+  filteredResponsibles.value = responsibleData.value;
 });
-
-const printTest = async () => {
-  axios.defaults.withCredentials = true
-
-  try {
-    const response = await axios.post('http://localhost:8080/print/printPDF', {
-    })
-
-    const data = response.data
-
-    if (data.success) {
-      router.push({
-        name: 'trueRegister',
-        params: { id: data.id }
-      })
-    } else {
-      alert('印刷に失敗しました')
-
-    }
-  } catch (err) {
-    alert('印刷に失敗しました')
-  }
-}
 </script>
 
 <style scoped>
@@ -319,7 +243,7 @@ const printTest = async () => {
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-.el-input {
+.el-input, .el-select {
   margin-bottom: 10px;
 }
 .no-wrap-column .cell {

@@ -94,7 +94,7 @@
     <el-col :span="24">
       <div class="logo-title-row">
         <img :src="logo" alt="会社ロゴ" class="company-logo" />
-        <h3 class="company-title">精算支援システム</h3>
+        <h3 class="company-title">費用OCR</h3>
       </div>
       <el-menu
         default-active="2"
@@ -141,7 +141,18 @@
           </el-menu-item-group>
         </el-sub-menu>
 
-        <!-- <el-sub-menu index="4">
+        <el-sub-menu index="4">
+          <template #title>
+            <el-icon><Document /></el-icon>
+            <span>部門管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="/department/list">部門一覧</el-menu-item>
+            <el-menu-item index="/departmentresponsible/list">部門責任者</el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
+
+        <!-- <el-sub-menu index="5">
           <template #title>
             <el-icon><DataAnalysis /></el-icon>
             <span>会社決算</span>
@@ -152,7 +163,7 @@
           </el-menu-item-group>
         </el-sub-menu> -->
 
-        <!-- <el-sub-menu index="5">
+        <!-- <el-sub-menu index="6">
           <template #title>
             <el-icon><DocumentChecked /></el-icon>
             <span>年末調整</span>
@@ -165,7 +176,7 @@
           </el-menu-item-group>
         </el-sub-menu> -->
 
-        <el-sub-menu index="9">
+        <el-sub-menu index="7">
           <template #title>
             <el-icon><Document /></el-icon>
             <span>経費管理</span>
